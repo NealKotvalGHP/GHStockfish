@@ -41,7 +41,8 @@ class Board:
         if (
             self._is_valid_range(move) and 
             not self._is_empty(move) and 
-            self._is_turn(move)
+            self._is_turn(move) and
+            self._is_valid_path(move)
             ):
             return True
         return False
@@ -138,6 +139,49 @@ class Board:
     
     def get_turn(self):
         return self.turn
+
+    def _is_valid_path(self, move):
+        start_col = self.rowDict[move[0]]
+        start_row = int(move[1])
+        end_col = self.rowDict[move[2]]
+        end_row = int(move[3])
+
+        row_diff = end_row - start_row
+        col_diff = end_col - start_col
+        print(start_row)
+        print(start_col)
+        # Check if it is a diagonal move
+        if abs(row_diff) == abs(col_diff):
+            row_dir = 1 if row_diff > 0 else -1
+            col_dir = 1 if col_diff > 0 else -1
+
+            row = start_row + row_dir
+            col = start_col + col_dir
+            # Check if any squares in the diagonal path are occupied
+            while row != end_row and col != end_col:
+                if self.board[row][col] != 0:
+                    return False
+                row += row_dir
+                col += col_dir
+
+        # Check if it is a straight line move (horizontal or vertical)
+        elif row_diff == 0 or col_diff == 0:
+            row_dir = 0 if row_diff == 0 else 1
+            col_dir = 0 if col_diff == 0 else 1
+
+            row = start_row + row_dir
+            col = start_col + col_dir
+
+            # Check if any squares in the straight path are occupied
+            while row != end_row or col != end_col:
+                if self.board[row][col] != 0:
+                    return False
+                row += row_dir
+                col += col_dir
+
+        # Return True if it is a valid path (no pieces in the way)
+        return True
+
 
 def fen_to_matrix(fen):
     # Create an empty 8x8 matrix
