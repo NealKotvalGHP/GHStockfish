@@ -35,9 +35,10 @@ class Board:
             print("Invalid Move")
 
     def is_valid_move(self, move):
-        # print("ValRange: " + str(self._is_valid_range(move)))
-        # print("IsEmpty: " + str(not self._is_empty(move)))
-        # print("IsTurn: " + str(self._is_turn(move)))
+        print("ValRange: " + str(self._is_valid_range(move)))
+        print("IsEmpty: " + str(not self._is_empty(move)))
+        print("IsTurn: " + str(self._is_turn(move)))
+        print("ValidPath: " + str(self._is_valid_path(move)))
         if (
             self._is_valid_range(move) and 
             not self._is_empty(move) and 
@@ -140,6 +141,9 @@ class Board:
     def get_turn(self):
         return self.turn
 
+    def chessToMatrix(self, chessDex):
+        indexToMatrix(self.rowDict(chessDex[0]), chessDex[1])
+
     def _is_valid_path(self, move):
         start_col = self.rowDict[move[0]]
         start_row = int(move[1])
@@ -152,40 +156,74 @@ class Board:
         print(start_col)
         # Check if it is a diagonal move
         if abs(row_diff) == abs(col_diff):
-            row_dir = 1 if row_diff > 0 else -1
-            col_dir = 1 if col_diff > 0 else -1
-
-            row = start_row + row_dir
-            col = start_col + col_dir
-            # Check if any squares in the diagonal path are occupied
-            row += row_dir
-            col += col_dir
-            while row != end_row and col != end_col:
+            if self.turn == "w":
+                row_dir = 1 if row_diff > 0 else -1
+                col_dir = 1 if col_diff > 0 else -1
+                start_row_mat, start_col_mat = self.chessToMatrix(move[:2])
+                # Check if any squares in the diagonal path are occupied
                 
-                row_mat, col_mat = indexToMatrix(row, col)
-                if self.board[row_mat][col_mat] != 0:
-                    return False
-                row += row_dir
-                col += col_dir
+                while row != end_row and col != end_col:
+                    row_mat, col_mat = indexToMatrix(row, col)
+                    if start_row_mat != row_mat and start_col_mat != col_mat:
+                        row_mat, col_mat = indexToMatrix(row, col)
+                        print(row_mat, col_mat)
+                        if self.board[row_mat][col_mat] != 0:
+                            return False
+                    row += row_dir
+                    col += col_dir
+            if self.turn == "b":
+                row_dir = 1 if row_diff > 0 else -1
+                col_dir = 1 if col_diff > 0 else -1
+                start_row_mat, start_col_mat = self.chessToMatrix(move[:2])
+                
+                while row != end_row and col != end_col:
+                    
+                    row_mat, col_mat = indexToMatrix(row, col)
+                    print(row_mat, col_mat)
+                    if self.board[row_mat][col_mat] != 0:
+                        return False
+                    row -= row_dir
+                    col -= col_dir
 
         # Check if it is a straight line move (horizontal or vertical)
         elif row_diff == 0 or col_diff == 0:
-            row_dir = 0 if row_diff == 0 else 1
-            col_dir = 0 if col_diff == 0 else 1
 
-            row = start_row + row_dir
-            col = start_col + col_dir
-            row += row_dir
-            col += col_dir
-            # Check if any squares in the straight path are occupied
-            while row != end_row or col != end_col:
+            
 
-                row_mat, col_mat = indexToMatrix(row, col)
-                print("RowMat, ColMat")
-                print(row_mat,col_mat)
-                
-                if self.board[row_mat][col_mat] != 0:
-                    return False
+            if self.turn == "w":
+                row_dir = 0 if row_diff == 0 else 1
+                col_dir = 0 if col_diff == 0 else 1
+
+                row = start_row + row_dir
+                col = start_col + col_dir
+               
+                # Check if any squares in the straight path are occupied
+                while row != end_row or col != end_col:
+
+                    row_mat, col_mat = indexToMatrix(row, col)
+                    print("RowMat, ColMat")
+                    print(row_mat,col_mat)
+                    
+                    if self.board[row_mat][col_mat] != 0:
+                        return False
+                    row += row_dir
+                    col += col_dir
+            if self.turn == "b":
+                row_dir = 0 if row_diff == 0 else 1
+                col_dir = 0 if col_diff == 0 else 1
+
+                row = start_row - row_dir
+                col = start_col - col_dir
+
+                # Check if any squares in the straight path are occupied
+                while row != end_row or col != end_col:
+
+                    row_mat, col_mat = indexToMatrix(row, col)
+                    
+                    if self.board[row_mat][col_mat] != 0:
+                        return False
+                    row -= row_dir
+                    col -= col_dir
 
         # Return True if it is a valid path (no pieces in the way)
         return True
