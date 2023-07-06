@@ -46,7 +46,7 @@ class Board:
         pass
 
     def get_piece(self, index):
-        col = self.rowDict[index[0]]
+        col = self.rowDict[index[0]]-1
         row = 8 - int(index[1])
 
         return self.board[row][col]
@@ -115,6 +115,7 @@ class Board:
         return False
     
     def _is_empty(self,move):
+        print(move[:2])
         print(self.get_piece(move[:2]))
         if self.get_piece(move[:2]) == 0:
             return True
