@@ -1,0 +1,3 @@
+import Board
+
+board = Board()
