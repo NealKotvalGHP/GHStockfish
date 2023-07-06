@@ -26,12 +26,18 @@ class Board:
             piece = self.board[start_row][start_col]
             self.board[start_row][start_col] = 0
             self.board[end_row][end_col] = piece
+            if self.turn == "w":
+                self.turn = "b"
+            else:
+                self.turn = "w"
 
         else:
             print("Invalid Move")
 
     def is_valid_move(self, move):
-        if (self._is_valid_range(move)):
+        if (self._is_valid_range(move) and not self._is_empty(move)):
+            print("Is Valid Range: " + str(self._is_valid_range(move)))
+            print("Is Empty: " + str(self._is_empty(move)))
             return True
         return False
 
@@ -40,8 +46,7 @@ class Board:
         pass
 
     def get_piece(self, index):
-        col = ord(index[0]) - ord('a')
-        print("Index: " + index)
+        col = self.rowDict[index[0]]
         row = 8 - int(index[1])
 
         return self.board[row][col]
@@ -53,24 +58,26 @@ class Board:
         end_row = int(move[3])
 
         # Piece-specific valid range checks
-        piece = self.get_piece(move)
+        piece = self.get_piece(move[:2])
         piece = piece[:1].lower()
+        print(piece)
 
         if piece == 'p':
             # Pawn
             if start_row == 2:
                 # First move, can move 2 squares forward
-                print("RowDiff: " + str(end_row-start_row))
-                if (end_row - start_row == 2 or end_row - start_row == 1) and end_col == start_col:
+                # print("RowDiff: " + str(end_row-start_row))
+                diff = abs(end_row - start_row)
+                if (diff == 2 or diff == 1) and end_col == start_col:
 
                     return True
                 else:
                     print("hi")
                     return False
-            if end_row - start_row == 1 and end_col == start_col:
+            if diff == 1 and end_col == start_col:
                 # Regular pawn move
                 return True
-            if end_row - start_row == 1 and abs(end_col - start_col) == 1:
+            if diff == 1 and abs(end_col - start_col) == 1 and self.get_piece(move[2:])[1].lower() == "b":
                 # Pawn capture
                 return True
         elif piece == 'r':
@@ -107,8 +114,17 @@ class Board:
 
         return False
     
-    def get_baord():
+    def _is_empty(self,move):
+        print(self.get_piece(move[:2]))
+        if self.get_piece(move[:2]) == 0:
+            return True
+        return False
+
+    def get_board(self):
         return self.board
+    
+    def get_turn(self):
+        return self.turn
 
 def fen_to_matrix(fen):
     # Create an empty 8x8 matrix
@@ -148,10 +164,3 @@ def fen_to_matrix(fen):
             col += 1
 
     return np.flipud(matrix)
-
-# Create a new chessboard instance and test it
-fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-board = Board()
-board.initialize()
-board.make_move("e2e5")
-board.print_board()
