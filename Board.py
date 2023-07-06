@@ -35,9 +35,14 @@ class Board:
             print("Invalid Move")
 
     def is_valid_move(self, move):
-        if (self._is_valid_range(move) and not self._is_empty(move)):
-            print("Is Valid Range: " + str(self._is_valid_range(move)))
-            print("Is Empty: " + str(self._is_empty(move)))
+        # print("ValRange: " + str(self._is_valid_range(move)))
+        # print("IsEmpty: " + str(not self._is_empty(move)))
+        # print("IsTurn: " + str(self._is_turn(move)))
+        if (
+            self._is_valid_range(move) and 
+            not self._is_empty(move) and 
+            self._is_turn(move)
+            ):
             return True
         return False
 
@@ -51,6 +56,11 @@ class Board:
 
         return self.board[row][col]
     
+    def _is_turn(self, move):
+        if (self.get_piece(move[:2]).lower()[1] != self.turn):
+            return False
+        return True
+
     def _is_valid_range(self, move):
         start_col = self.rowDict[move[0]]
         start_row = int(move[1])
@@ -60,24 +70,26 @@ class Board:
         # Piece-specific valid range checks
         piece = self.get_piece(move[:2])
         piece = piece[:1].lower()
-        print(piece)
+        rowDiff = abs(end_row - start_row)
+        colDiff = abs(end_col - start_col)
+        # print("Piece: " + str(piece))
+        # print("RowDiff: " + str(rowDiff))
+        # print("ColDiff: " + str(colDiff))
 
         if piece == 'p':
             # Pawn
-            if start_row == 2:
+            if (start_row == 2 and self.get_piece(move[:2])[1] == "W") or (start_row == 7 and self.get_piece(move[:2])[1] == "B"):
                 # First move, can move 2 squares forward
                 # print("RowDiff: " + str(end_row-start_row))
-                diff = abs(end_row - start_row)
-                if (diff == 2 or diff == 1) and end_col == start_col:
-
+                if (rowDiff == 2 or rowDiff == 1) and colDiff==0:
+                    # print("Passed Pawn Test")
                     return True
                 else:
-                    print("hi")
                     return False
-            if diff == 1 and end_col == start_col:
+            if rowDiff == 1 and end_col == start_col:
                 # Regular pawn move
                 return True
-            if diff == 1 and abs(end_col - start_col) == 1 and self.get_piece(move[2:])[1].lower() == "b":
+            if rowDiff == 1 and colDiff == 1 and self.get_piece(move[2:])[1].lower() == "b":
                 # Pawn capture
                 return True
         elif piece == 'r':
@@ -115,7 +127,6 @@ class Board:
         return False
     
     def _is_empty(self,move):
-        print(move[:2])
         print(self.get_piece(move[:2]))
         if self.get_piece(move[:2]) == 0:
             return True
