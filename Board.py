@@ -94,9 +94,10 @@ class Board:
                 return True
         elif piece == 'r':
             # Rook
-            if start_row == end_row or start_col == end_col:
+            if rowDiff == 0 or colDiff == 0:
                 # Moving in the same row or column
                 return True
+            
         elif piece == 'n':
             # Knight
             if abs(start_row - end_row) == 2 and abs(start_col - end_col) == 1:
@@ -115,7 +116,7 @@ class Board:
             if start_row == end_row or start_col == end_col:
                 # Moving in the same row or column
                 return True
-            if abs(start_row - end_row) == abs(start_col - end_col):
+            if rowDiff == colDiff:
                 # Moving diagonally
                 return True
         elif piece == 'k':
