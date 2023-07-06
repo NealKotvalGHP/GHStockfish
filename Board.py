@@ -158,8 +158,12 @@ class Board:
             row = start_row + row_dir
             col = start_col + col_dir
             # Check if any squares in the diagonal path are occupied
+            row += row_dir
+            col += col_dir
             while row != end_row and col != end_col:
-                if self.board[row][col] != 0:
+                
+                row_mat, col_mat = indexToMatrix(row, col)
+                if self.board[row_mat][col_mat] != 0:
                     return False
                 row += row_dir
                 col += col_dir
@@ -171,13 +175,17 @@ class Board:
 
             row = start_row + row_dir
             col = start_col + col_dir
-
+            row += row_dir
+            col += col_dir
             # Check if any squares in the straight path are occupied
             while row != end_row or col != end_col:
-                if self.board[row][col] != 0:
+
+                row_mat, col_mat = indexToMatrix(row, col)
+                print("RowMat, ColMat")
+                print(row_mat,col_mat)
+                
+                if self.board[row_mat][col_mat] != 0:
                     return False
-                row += row_dir
-                col += col_dir
 
         # Return True if it is a valid path (no pieces in the way)
         return True
@@ -221,3 +229,6 @@ def fen_to_matrix(fen):
             col += 1
 
     return np.flipud(matrix)
+
+def indexToMatrix(row,col):
+    return 8-row+1,col-1
