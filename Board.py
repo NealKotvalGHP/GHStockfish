@@ -41,63 +41,17 @@ class Board:
         self.board[end_row][end_col] = piece
         self.turn = "b" if self.turn == "w" else "w"
 
-    def is_valid_move(self, col, row, color):
-        if not (0 < col < 9 and 0 < row < 9):
+    def is_valid_move(self, col, row, selfColor):
+        if not (1 <= col <= 8 and 1 <= row <= 8):
             return False
 
         piece = self.board[row][col]
-        if str(piece) == "0" or piece.color != color:
+        if str(piece) == "0" or piece.color != selfColor:
             return True
 
         return False
 
-    def _is_valid_range(self, move):
-        start_col = self.letToNum[move[0]]
-        start_row = int(move[1])
-        end_col = self.letToNum[move[2]]
-        end_row = int(move[3])
-
-        piece = self.get_piece(move[:2])
-        piece = str(piece).lower()
-        row_diff = abs(end_row - start_row)
-        col_diff = abs(end_col - start_col)
-
-        if piece == 'p':
-            if (start_row == 2 and piece.color == "w") or (start_row == 7 and piece.color == "b"):
-                if (row_diff == 2 or row_diff == 1) and col_diff == 0:
-                    return True
-                else:
-                    return False
-            if row_diff == 1 and end_col == start_col:
-                return True
-            if row_diff == 1 and col_diff == 1 and str(self.get_piece(move[2:])).lower() == "b":
-                return True
-        elif piece == 'r':
-            if row_diff == 0 or col_diff == 0:
-                return True
-        elif piece == 'n':
-            if abs(start_row - end_row) == 2 and abs(start_col - end_col) == 1:
-                return True
-            if abs(start_row - end_row) == 1 and abs(start_col - end_col) == 2:
-                return True
-        elif piece == 'b':
-            if abs(start_row - end_row) == abs(start_col - end_col):
-                return True
-        elif piece == 'q':
-            if start_row == end_row or start_col == end_col:
-                return True
-            if row_diff == col_diff:
-                return True
-        elif piece == 'k':
-            if abs(start_row - end_row) <= 1 and abs(start_col - end_col) <= 1:
-                return True
-
-        return False
-
-    def _is_turn(self, move):
-        return self.get_piece(move[:2]).color == self.turn
-
-    def _is_empty(self, move):
+    def isEmptyMove(self, move):
         if self.get_piece(move[:2]) == 0:
             return True
         return False
@@ -115,7 +69,6 @@ class Board:
         x, y = indexToMatrix(col, row)
         piece = self.board[row][col]
         return str(piece) != "0" and piece.color != self.turn
-
 
 def fen_to_matrix(fen):
     matrix = [[0] * 8 for _ in range(8)]
