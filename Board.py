@@ -3,7 +3,7 @@ import ChessPiece
 
 """
 !!!WARNING!!!
-Before you enter my shithole of terrible code you must understand:
+Before you enter my mess of terrible code you must understand:
  - chessdex is a word i made up, its pretty much what you use when you play chess like e4,
  - the board is a 8x8 matrix of 0s and Piece subclasses (pawn, knight, bishop, queen, etc.)
  - i use three ways of "indexing", (row, col), [x][y], and chessDex, i use them interchangeably so everything becomes really confusing fast
