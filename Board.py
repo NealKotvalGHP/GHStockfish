@@ -62,17 +62,25 @@ class Board:
     def is_valid_move(self, col, row, selfColor):
         if not (1 <= col <= 8 and 1 <= row <= 8):
             return False
-
         #converts column row to matrix index, i.e column 1 row 2 to [0][6]
         x,y = indexToMatrix(col, row)
 
         piece = self.board[x][y]
 
-        #checks if piece returned is empty or an enemy piece
-        if str(piece) == "0" or piece.color != selfColor:
+        if (str(piece) != "0"):
+            print("Checking: " + str(col) + ", " + str(row))
+            print(selfColor)
+            print(piece.color)
+
+        if str(piece) == "0":
             return True
 
-        return False
+        if (selfColor == piece.color):
+            return False
+        
+        
+
+        return True
 
     #checks if a square is empty via (col, row)
     def isEmptyColRow(self, col, row):
