@@ -1,11 +1,13 @@
 import numpy as np
+import ChessPiece
 
 class Board:
     def __init__(self, fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"):
         self.fen = fen
         self.board = fen_to_matrix(self.fen)
         self.turn = fen.split()[1]
-        self.rowDict = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
+        self.letToNum = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
+        self.numToLet = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h'}
 
     def initialize(self):
         self.board = fen_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
@@ -16,62 +18,50 @@ class Board:
 
     def make_move(self, move):
         # Example of move format: 'e2e4'
+        print("Valid Moves: " + str(self.get_piece(move[:2]).valid_moves(self, self.letToNum[move[0]],int(move[1]))))
+        print(type(self.get_piece(move[:2])))
+        print(self.get_piece(move[:2]))
+        start_row = 8 - int(move[1])
+        start_col = ord(move[0]) - ord('a')
+        end_row = 8 - int(move[3])
+        end_col = ord(move[2]) - ord('a')
 
-        if self.is_valid_move(move):
-            start_row = 8 - int(move[1])
-            start_col = ord(move[0]) - ord('a')
-            end_row = 8 - int(move[3])
-            end_col = ord(move[2]) - ord('a')
-
-            piece = self.board[start_row][start_col]
-            self.board[start_row][start_col] = 0
-            self.board[end_row][end_col] = piece
-            if self.turn == "w":
-                self.turn = "b"
-            else:
-                self.turn = "w"
-
+        piece = self.board[start_row][start_col]
+        self.board[start_row][start_col] = 0
+        self.board[end_row][end_col] = piece
+        if self.turn == "w":
+            self.turn = "b"
         else:
-            print("Invalid Move")
+            self.turn = "w"
 
     def is_valid_move(self, move):
-        print("ValRange: " + str(self._is_valid_range(move)))
-        print("IsEmpty: " + str(not self._is_empty(move)))
-        print("IsTurn: " + str(self._is_turn(move)))
-        print("ValidPath: " + str(self._is_valid_path(move)))
+        # print("ValRange: " + str(self._is_valid_range(move)))
+        # print("IsEmpty: " + str(not self._is_empty(move)))
+        # print("IsTurn: " + str(self._is_turn(move)))
+        # print("ValidPath: " + str(self._is_valid_path(move)))
         if (
             self._is_valid_range(move) and 
             not self._is_empty(move) and 
-            self._is_turn(move) and
-            self._is_valid_path(move)
+            self._is_turn(move)
+            # self._is_valid_path(move)
             ):
             return True
         return False
 
-    def is_checkmate(self):
-        # Implement the logic to check if the game is in a checkmate state
-        pass
-
-    def get_piece(self, index):
-        col = self.rowDict[index[0]]-1
-        row = 8 - int(index[1])
-
-        return self.board[row][col]
-    
     def _is_turn(self, move):
-        if (self.get_piece(move[:2]).lower()[1] != self.turn):
+        if (self.get_piece(move[:2]).color != self.turn):
             return False
         return True
 
     def _is_valid_range(self, move):
-        start_col = self.rowDict[move[0]]
+        start_col = self.letToNum[move[0]]
         start_row = int(move[1])
-        end_col = self.rowDict[move[2]]
+        end_col = self.letToNum[move[2]]
         end_row = int(move[3])
 
         # Piece-specific valid range checks
         piece = self.get_piece(move[:2])
-        piece = piece[:1].lower()
+        piece = str(piece).lower()
         rowDiff = abs(end_row - start_row)
         colDiff = abs(end_col - start_col)
         # print("Piece: " + str(piece))
@@ -80,7 +70,7 @@ class Board:
 
         if piece == 'p':
             # Pawn
-            if (start_row == 2 and self.get_piece(move[:2])[1] == "W") or (start_row == 7 and self.get_piece(move[:2])[1] == "B"):
+            if (start_row == 2 and self.get_piece(move[:2]).color == "w") or (start_row == 7 and self.get_piece(move[:2]).color == "b"):
                 # First move, can move 2 squares forward
                 # print("RowDiff: " + str(end_row-start_row))
                 if (rowDiff == 2 or rowDiff == 1) and colDiff==0:
@@ -91,7 +81,7 @@ class Board:
             if rowDiff == 1 and end_col == start_col:
                 # Regular pawn move
                 return True
-            if rowDiff == 1 and colDiff == 1 and self.get_piece(move[2:])[1].lower() == "b":
+            if rowDiff == 1 and colDiff == 1 and str(self.get_piece(move[2:])).lower() == "b":
                 # Pawn capture
                 return True
         elif piece == 'r':
@@ -130,10 +120,31 @@ class Board:
         return False
     
     def _is_empty(self,move):
-        print(self.get_piece(move[:2]))
+        # print(self.get_piece(move[:2]))
         if self.get_piece(move[:2]) == 0:
             return True
         return False
+    
+    def isEmptyColRow(self, col, row):
+        if str(self.get_piece(self.xyToChess(col,row))) != "0":
+            print(self.get_piece(self.xyToChess(col,row)))
+            return False
+        return True
+
+
+    def xyToChess(self,col,row):
+        return self.numToLet[col] + str(row)
+
+    def is_checkmate(self):
+        # Implement the logic to check if the game is in a checkmate state
+        pass
+
+    def get_piece(self, index):
+        # print("Index " + str(index))
+        col = self.letToNum[index[0]]-1
+        row = 8 - int(index[1])
+
+        return self.board[row][col]
 
     def get_board(self):
         return self.board
@@ -142,92 +153,15 @@ class Board:
         return self.turn
 
     def chessToMatrix(self, chessDex):
-        indexToMatrix(self.rowDict(chessDex[0]), chessDex[1])
-
-    def _is_valid_path(self, move):
-        start_col = self.rowDict[move[0]]
-        start_row = int(move[1])
-        end_col = self.rowDict[move[2]]
-        end_row = int(move[3])
-
-        row_diff = end_row - start_row
-        col_diff = end_col - start_col
-        print(start_row)
-        print(start_col)
-        # Check if it is a diagonal move
-        if abs(row_diff) == abs(col_diff):
-            if self.turn == "w":
-                row_dir = 1 if row_diff > 0 else -1
-                col_dir = 1 if col_diff > 0 else -1
-                start_row_mat, start_col_mat = self.chessToMatrix(move[:2])
-                # Check if any squares in the diagonal path are occupied
-                
-                while row != end_row and col != end_col:
-                    row_mat, col_mat = indexToMatrix(row, col)
-                    if start_row_mat != row_mat and start_col_mat != col_mat:
-                        row_mat, col_mat = indexToMatrix(row, col)
-                        print(row_mat, col_mat)
-                        if self.board[row_mat][col_mat] != 0:
-                            return False
-                    row += row_dir
-                    col += col_dir
-            if self.turn == "b":
-                row_dir = 1 if row_diff > 0 else -1
-                col_dir = 1 if col_diff > 0 else -1
-                start_row_mat, start_col_mat = self.chessToMatrix(move[:2])
-                
-                while row != end_row and col != end_col:
-                    
-                    row_mat, col_mat = indexToMatrix(row, col)
-                    print(row_mat, col_mat)
-                    if self.board[row_mat][col_mat] != 0:
-                        return False
-                    row -= row_dir
-                    col -= col_dir
-
-        # Check if it is a straight line move (horizontal or vertical)
-        elif row_diff == 0 or col_diff == 0:
-
-            
-
-            if self.turn == "w":
-                row_dir = 0 if row_diff == 0 else 1
-                col_dir = 0 if col_diff == 0 else 1
-
-                row = start_row + row_dir
-                col = start_col + col_dir
-               
-                # Check if any squares in the straight path are occupied
-                while row != end_row or col != end_col:
-
-                    row_mat, col_mat = indexToMatrix(row, col)
-                    print("RowMat, ColMat")
-                    print(row_mat,col_mat)
-                    
-                    if self.board[row_mat][col_mat] != 0:
-                        return False
-                    row += row_dir
-                    col += col_dir
-            if self.turn == "b":
-                row_dir = 0 if row_diff == 0 else 1
-                col_dir = 0 if col_diff == 0 else 1
-
-                row = start_row - row_dir
-                col = start_col - col_dir
-
-                # Check if any squares in the straight path are occupied
-                while row != end_row or col != end_col:
-
-                    row_mat, col_mat = indexToMatrix(row, col)
-                    
-                    if self.board[row_mat][col_mat] != 0:
-                        return False
-                    row -= row_dir
-                    col -= col_dir
-
-        # Return True if it is a valid path (no pieces in the way)
-        return True
-
+        return indexToMatrix(self.letToNum[chessDex[0]], chessDex[1])
+    
+    #check whether enemy piece is at a certain square
+    def is_enemy_piece(self, square, color):
+        row, col = square
+        piece = self.board[row][col]
+        if piece == 0 or piece.color != self.turn:
+            return True
+        return False
 
 def fen_to_matrix(fen):
     # Create an empty 8x8 matrix
@@ -239,18 +173,18 @@ def fen_to_matrix(fen):
 
     # Map FEN characters to their corresponding piece values
     piece_values = {
-        'P': 'PW',
-        'N': 'NW',
-        'B': 'BW',
-        'R': 'RW',
-        'Q': 'QW',
-        'K': 'KW',
-        'p': 'PB',
-        'n': 'NB',
-        'b': 'BB',
-        'r': 'RB',
-        'q': 'QB',
-        'k': 'KB'
+        'P': ChessPiece.Pawn(color="w"),
+        'N': ChessPiece.Knight(color="w"),
+        'B': ChessPiece.Bishop(color="w"),
+        'R': ChessPiece.Rook(color="w"),
+        'Q': ChessPiece.Queen(color="w"),
+        'K': ChessPiece.King(color="w"),
+        'p': ChessPiece.Pawn(color="b"),
+        'n': ChessPiece.Knight(color="b"),
+        'b': ChessPiece.Bishop(color="b"),
+        'r': ChessPiece.Rook(color="b"),
+        'q': ChessPiece.Queen(color="b"),
+        'k': ChessPiece.King(color="b")
     }
 
 
@@ -269,4 +203,4 @@ def fen_to_matrix(fen):
     return np.flipud(matrix)
 
 def indexToMatrix(row,col):
-    return 8-row+1,col-1
+    return 8-int(row)+1,int(col)-1
