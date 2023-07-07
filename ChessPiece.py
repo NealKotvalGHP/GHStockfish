@@ -99,6 +99,17 @@ class Knight(ChessPiece):
 
     def valid_moves(self, board, col, row):
         valid_moves = []
+        directions = [
+            (2, 1), (1, 2), (-1, 2), (-2, 1),
+            (-2, -1), (-1, -2), (1, -2), (2, -1)
+        ]
+
+        for d in directions:
+            new_col = col + d[0]
+            new_row = row + d[1]
+            if board.is_valid_move(new_col, new_row, self.color):
+                valid_moves.append((new_col, new_row))
+
         return valid_moves
 
     def __str__(self):
@@ -108,25 +119,26 @@ class Bishop(ChessPiece):
     def __init__(self, color):
         super().__init__(color)
 
-    def valid_moves(self, board, current_square):
+    def valid_moves(self, board, col, row):
         valid_moves = []
-        row, col = current_square
 
-        #northeast
+        # Check valid moves in the diagonal directions
+        directions = [(1, 1), (-1, 1), (1, -1), (-1, -1)]
 
-        #northwest
+        for d in directions:
+            c, r = col, row
 
-        #southeast
+            while True:
+                c += d[0]
+                r += d[1]
 
-        #southwest
+                if board.is_valid_move(c, r, self.color):
+                    valid_moves.append((c, r))
 
-        #right
-
-        #left
-
-        #up
-
-        #down
+                    if str(board.get_piece(board.xyToChess(c,r))) != "0":
+                        break
+                else:
+                    break
 
         return valid_moves
 

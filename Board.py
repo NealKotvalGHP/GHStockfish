@@ -34,19 +34,21 @@ class Board:
         else:
             self.turn = "w"
 
-    def is_valid_move(self, move):
-        # print("ValRange: " + str(self._is_valid_range(move)))
-        # print("IsEmpty: " + str(not self._is_empty(move)))
-        # print("IsTurn: " + str(self._is_turn(move)))
-        # print("ValidPath: " + str(self._is_valid_path(move)))
-        if (
-            self._is_valid_range(move) and 
-            not self._is_empty(move) and 
-            self._is_turn(move)
-            # self._is_valid_path(move)
-            ):
+    def is_valid_move(self, col, row, color):
+        # Check if the move is within the bounds of the board
+        if not (0 < col < 9 and 0 < row < 9):
+            return False
+
+        # Check if the target square is empty or contains an enemy piece
+        piece = self.board[row][col]
+        print(str(piece))
+        if str(piece) == "0":
             return True
+        elif piece.color != color:
+            return True
+
         return False
+
 
     def _is_turn(self, move):
         if (self.get_piece(move[:2]).color != self.turn):
@@ -156,10 +158,10 @@ class Board:
         return indexToMatrix(self.letToNum[chessDex[0]], chessDex[1])
     
     #check whether enemy piece is at a certain square
-    def is_enemy_piece(self, square, color):
-        row, col = square
+    def is_enemy_piece(self, col, row, color):
+        x,y = indexToMatrix(col, row)
         piece = self.board[row][col]
-        if piece == 0 or piece.color != self.turn:
+        if str(piece) == "0" or piece.color != self.turn:
             return True
         return False
 
@@ -203,4 +205,4 @@ def fen_to_matrix(fen):
     return np.flipud(matrix)
 
 def indexToMatrix(row,col):
-    return 8-int(row)+1,int(col)-1
+    return col-1,8-row
