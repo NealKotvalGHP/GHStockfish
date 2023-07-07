@@ -45,7 +45,9 @@ class Board:
         if not (1 <= col <= 8 and 1 <= row <= 8):
             return False
 
-        piece = self.board[row][col]
+        x,y = indexToMatrix(col, row)
+
+        piece = self.board[x][y]
         if str(piece) == "0" or piece.color != selfColor:
             return True
 
@@ -68,7 +70,7 @@ class Board:
     def is_enemy_piece(self, col, row, color):
         x, y = indexToMatrix(col, row)
         piece = self.board[row][col]
-        return str(piece) != "0" and piece.color != self.turn
+        return str(piece) != "0" and piece.color != color
 
 def fen_to_matrix(fen):
     matrix = [[0] * 8 for _ in range(8)]

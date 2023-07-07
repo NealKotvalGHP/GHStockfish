@@ -70,7 +70,8 @@ class Bishop(ChessPiece):
                 #something wrong with is_valid_move function
                 if board.is_valid_move(c, r, self.color):
                     valid_moves.append((c, r))
-                    if not board.isEmptyColRow(c, r):
+
+                    if board.is_enemy_piece(c, r, self.color):
                         break
                 else:
                     break
@@ -87,13 +88,13 @@ class Queen(ChessPiece):
         valid_moves = []
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]
         for d in directions:
-            r, c = row, col
+            c, r = col, row
             while True:
                 r += d[0]
                 c += d[1]
-                if board.is_valid_move((r, c), self.color):
-                    valid_moves.append((r, c))
-                    if board.is_enemy_piece((r, c), self.color):
+                if board.is_valid_move((c, r), self.color):
+                    valid_moves.append((c, r))
+                    if board.is_enemy_piece(c, r, self.color):
                         break
                 else:
                     break
