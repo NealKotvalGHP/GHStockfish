@@ -26,12 +26,10 @@ class Board:
         col = self.letToNum[chessDex[0]]
         row = int(chessDex[1])
         x, y = indexToMatrix(col, row)
-        return self.board[x][y]
+        return self.board[y][x]
     
     def getPieceColRow(self, col, row):
         x, y = indexToMatrix(col, row)
-        print("X,Y: " + str(x) + ", " + str(y))
-        print("Hello " + str(self.board[y][x]))
         return self.board[y][x]
 
 
@@ -47,7 +45,7 @@ class Board:
         self.turn = "b" if self.turn == "w" else "w"
 
     def isValidMove(self, col, row, selfColor):
-        if (0 < col < 9 and 0 < row < 9 and (str(self.getPiece(col, row)) == "0" or self.getPiece(col, row).color != selfColor)):
+        if (0 < col < 9 and 0 < row < 9 and (str(self.getPieceColRow(col, row)) == "0" or self.getPieceColRow(col, row).color != selfColor)):
             return True
         return False
 
@@ -62,15 +60,13 @@ class Board:
 
     def isEnemyPiece(self, col, row, color):
         x, y = indexToMatrix(col, row)
-        piece = self.board[x][y]
+        piece = self.board[y][x]
         return str(piece) != "0" and piece.color != color
     
     def printValidMoves(self, move):
         col = self.letToNum[move[0]]
         row = int(move[1])
-        print(f"Piece: {str(self.getPieceColRow(col, row))}")
-        # print([move[:2]])
-        # print(f"Col, Row: {col, row}")
+
         if (str(self.getPieceColRow(col,row) != "0")):
             print(f"Valid Moves: {self.getPieceColRow(col, row).validMoves(self, col, row)}")
 
