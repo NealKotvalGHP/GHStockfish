@@ -8,7 +8,7 @@ def evaluate(board):
 
 # Minimax function with Alpha-Beta pruning
 def minimax_alpha_beta(board, depth, alpha, beta, maximizing_player):
-    if depth == 0 or game_over(board):
+    if depth == 0 or gameOver(board):
         return evaluate(board)
 
     if maximizing_player:

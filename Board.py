@@ -4,13 +4,13 @@ import ChessPiece
 class Board:
     def __init__(self, fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"):
         self.fen = fen
-        self.board = fen_to_matrix(self.fen)
+        self.board = fenToMatrix(self.fen)
         self.turn = fen.split()[1]
         self.letToNum = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
         self.numToLet = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h'}
 
     def initialize(self):
-        self.board = fen_to_matrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        self.board = fenToMatrix("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         self.turn = "w"
 
     def printBoard(self):
@@ -31,7 +31,8 @@ class Board:
     def getPieceColRow(self, col, row):
         x, y = indexToMatrix(col, row)
         print("X,Y: " + str(x) + ", " + str(y))
-        return self.board[x][y]
+        print("Hello " + str(self.board[y][x]))
+        return self.board[y][x]
 
 
     def makeMove(self, move):
@@ -68,10 +69,10 @@ class Board:
         col = self.letToNum[move[0]]
         row = int(move[1])
         print(f"Piece: {str(self.getPieceColRow(col, row))}")
-        print([move[:2]])
-        print(f"Col, Row: {col, row}")
-        if (str(self.getPiece(move[:2])) != "0"):
-            print(f"Valid Moves: {str(self.getPieceColRow(col, row).validMoves(self, col, row))}")
+        # print([move[:2]])
+        # print(f"Col, Row: {col, row}")
+        if (str(self.getPieceColRow(col,row) != "0")):
+            print(f"Valid Moves: {self.getPieceColRow(col, row).validMoves(self, col, row)}")
 
 
 def fenToMatrix(fen):
