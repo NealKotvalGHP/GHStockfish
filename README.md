@@ -17,8 +17,8 @@
   - ❌ Check
   - ❌ Checkmate
 - ❌ Edge Cases
-- ❌ Generate Moves Via Engine
-- ❌ Random Moves
+- ✅ Generate Moves Via Engine
+- ✅ Random Moves
 - ❌ Evaluation Function
 - ❌ Transposition Table
 - ❌ Openings
