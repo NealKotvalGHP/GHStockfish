@@ -13,7 +13,7 @@
 - ✅ Bishop Logic + Generate Moves
 - ✅ Queen Logic + Generate Moves
 - ✅ King Logic + Generate Moves
-- ❌ Castling
+  - ❌ Castling
 - ❌ Edge Cases
 - ❌ Generate Moves Via Engine
 - ❌ Random Moves
