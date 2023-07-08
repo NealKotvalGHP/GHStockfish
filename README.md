@@ -1,5 +1,5 @@
 # GHStockfish
-<img src="https://github.com/NealKotvalGHP/GHStockfish/assets/137081101/1203b9c2-8d3a-4e57-84e1-cefe4b5c3029" alt="Logo" width="300" height="200">
+<img src="https://github.com/NealKotvalGHP/GHStockfish/assets/137081101/1203b9c2-8d3a-4e57-84e1-cefe4b5c3029" alt="Logo" width="300" height="300">
 
 ## Checklist
 
