@@ -51,3 +51,71 @@ The `Board` class represents a chess board and is used to handle the state of th
 - `indexToMatrix(col, row)`: Converts the column and row coordinates to matrix index coordinates.
 
 **Note:** The code provided contains additional comments that explain the functionality and quirks of the implementation. It's recommended to review those comments for better understanding of the code.
+
+ChessPiece Class Documentation
+The ChessPiece class is a superclass for all chess pieces. It represents a generic chess piece and provides a common attribute for all pieces, which is the color of the piece.
+
+Class Attributes:
+color: A string representing the color of the chess piece ("w" for white or "b" for black).
+Class Methods:
+__init__(self, color): Initializes a ChessPiece object with the given color.
+__str__(self): Returns a string representation of the chess piece. This method is overridden in the subclasses.
+Pawn Class Documentation
+The Pawn class represents a pawn chess piece. It inherits from the ChessPiece superclass and adds an additional attribute for en passant moves.
+
+Class Attributes:
+color: A string representing the color of the pawn ("w" for white or "b" for black).
+rowDict: A dictionary mapping row numbers to chess notation letters for pawn promotion.
+en_passant_possible: A boolean indicating if the pawn can be captured en passant.
+Class Methods:
+__init__(self, color): Initializes a Pawn object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the pawn on the chess board.
+__str__(self): Returns a string representation of the pawn.
+Rook Class Documentation
+The Rook class represents a rook chess piece. It inherits from the ChessPiece superclass.
+
+Class Attributes:
+color: A string representing the color of the rook ("w" for white or "b" for black).
+can_castle: A boolean indicating if the rook can participate in castling.
+Class Methods:
+__init__(self, color): Initializes a Rook object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the rook on the chess board.
+__str__(self): Returns a string representation of the rook.
+Knight Class Documentation
+The Knight class represents a knight chess piece. It inherits from the ChessPiece superclass.
+
+Class Attributes:
+color: A string representing the color of the knight ("w" for white or "b" for black).
+Class Methods:
+__init__(self, color): Initializes a Knight object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the knight on the chess board.
+__str__(self): Returns a string representation of the knight.
+Bishop Class Documentation
+The Bishop class represents a bishop chess piece. It inherits from the ChessPiece superclass.
+
+Class Attributes:
+color: A string representing the color of the bishop ("w" for white or "b" for black).
+Class Methods:
+__init__(self, color): Initializes a Bishop object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the bishop on the chess board.
+__str__(self): Returns a string representation of the bishop.
+Queen Class Documentation
+The Queen class represents a queen chess piece. It inherits from the ChessPiece superclass.
+
+Class Attributes:
+color: A string representing the color of the queen ("w" for white or "b" for black).
+Class Methods:
+__init__(self, color): Initializes a Queen object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the queen on the chess board.
+__str__(self): Returns a string representation of the queen.
+King Class Documentation
+The King class represents a king chess piece. It inherits from the ChessPiece superclass.
+
+Class Attributes:
+color: A string representing the color of the king ("w" for white or "b" for black).
+can_castle: A boolean indicating if the king can participate in castling.
+Class Methods:
+__init__(self, color): Initializes a King object with the given color.
+valid_moves(self, board, col, row): Returns a list of valid moves for the king on the chess board.
+__str__(self): Returns a string representation of the king.
+Note: The code provided contains additional comments that explain the functionality of the code. It's recommended to review those comments for better understanding of the implementation.
