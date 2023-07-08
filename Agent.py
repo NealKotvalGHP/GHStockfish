@@ -7,6 +7,7 @@ class Agent:
         # Evaluation function to assign a score to the board position
         # Implement your evaluation function here
         # Return a positive score if the position is favorable for self.color, negative if unfavorable, and 0 for neutral
+        pass
 
     def minimax_alpha_beta(self, board, depth, alpha, beta, maximizing_player):
         if depth == 0 or board.is_game_over():

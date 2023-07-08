@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import ChessPiece
 
 class Board:
@@ -56,9 +57,10 @@ class Board:
         return self.numToLet[col] + str(row)
 
     def chessToMatrix(self, chessDex):
-        return indexToMatrix(self.letToNum[chessDex[0]], chessDex[1])
+        return indexToMatrix(self.letToNum[chessDex[0]], int(chessDex[1]))
 
     def isEnemyPiece(self, col, row, color):
+
         x, y = indexToMatrix(col, row)
         piece = self.board[y][x]
         return str(piece) != "0" and piece.color != color
@@ -91,6 +93,42 @@ class Board:
                     # Append the valid moves to the `possible_moves` list in the appropriate format
                     
         return possible_moves
+    
+    def tupleToChessMove(self, move):
+        chessStartRow = move[0]
+        chessStartCol = self.numToLet[move[1]]
+        chessEndRow = move[2]
+        chessEndCol = self.numToLet[move[3]]
+        return str(chessStartCol) + str(chessStartRow) + str(chessEndCol)  + str(chessEndRow)
+
+    
+    def checkPossible(self, move):
+        #convert move to (startingRow, StartingCol, EndingRow, EndingCol)
+        # startingCol = self.letToNum[move[0]]
+        # startingRow = move[1]
+
+        # endingCol = self.letToNum[move[2]]
+        # endingRow = move
+
+        # endingcol
+        col = self.letToNum[move[0]]
+        row = int(move[1])
+        col1 = self.letToNum[move[2]]
+        row1 = int(move[3])
+
+        convert = (row, col, row1, col1)
+        possibleMoves = self.getPossibleMoves(self.turn)
+        for move in possibleMoves:
+            if move == convert:
+                return True
+            
+        return False
+    
+    def randomMove(self):
+        moves = self.getPossibleMoves(self.turn)
+        choice = random.choice(moves)
+        return self.tupleToChessMove(choice)
+
 
 def fenToMatrix(fen):
     matrix = [[0] * 8 for _ in range(8)]

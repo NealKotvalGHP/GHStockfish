@@ -5,6 +5,8 @@ class ChessPiece:
     def getColor(self):
         return self.color
 
+
+
 # Pawn class, has en passant attribute
 class Pawn(ChessPiece):
     def __init__(self, color):
@@ -16,11 +18,19 @@ class Pawn(ChessPiece):
         validMoves = []
         direction = 1 if self.color == "w" else -1
 
+        # Check for a forward move
         if board.isEmptyColRow(col, row + direction):
-            validMoves.append((row + direction,col))
+            validMoves.append((row + direction, col))
 
+        # Check for the initial double-step move
         if board.isEmptyColRow(col, row + (direction * 2)) and ((row == 2 and self.color == "w") or (row == 7 and self.color == "b")):
             validMoves.append((row + (direction * 2), col))
+
+        # # Check for capturing moves diagonally
+        for capture_col in [col - 1, col + 1]:
+            if board.isValidMove(col, row, self.color) and board.isEnemyPiece(capture_col, row + direction, self.color):
+                validMoves.append((row + direction, capture_col))
+
         return validMoves
 
     def __str__(self):
