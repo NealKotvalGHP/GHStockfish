@@ -107,17 +107,19 @@ class Queen(ChessPiece):
     def validMoves(self, board, col, row):
         validMoves = []
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]
+
         for d in directions:
             c, r = col, row
             while True:
-                r += d[0]
-                c += d[1]
-                if board.isValidMove((c, r), self.color):
+                c += d[0]
+                r += d[1]
+                if board.isValidMove(c, r, self.color):
                     validMoves.append((c, r))
                     if board.isEnemyPiece(c, r, self.color):
                         break
                 else:
                     break
+
         return validMoves
 
     def __str__(self):
@@ -131,10 +133,13 @@ class King(ChessPiece):
 
     def validMoves(self, board, col, row):
         validMoves = []
-        moves = [(row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1), (row + 1, col + 1), (row + 1, col - 1), (row - 1, col + 1), (row - 1, col - 1)]
+        moves = [(col, row + 1), (col, row - 1), (col + 1, row), (col - 1, row),
+                 (col + 1, row + 1), (col + 1, row - 1), (col - 1, row + 1), (col - 1, row - 1)]
+
         for move in moves:
-            if board.isValidMove(move, self.color):
+            if board.isValidMove(move[0], move[1], self.color):
                 validMoves.append(move)
+
         return validMoves
 
     def __str__(self):
