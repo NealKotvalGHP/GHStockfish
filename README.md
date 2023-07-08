@@ -121,7 +121,125 @@ board.printBoard()
 - The `chessToMatrix` method converts chessDex notation to column and row indices.
 - The `isEnemyPiece` method checks if there is an enemy piece at a specific column and row for the given color.
 
+# ChessPiece Class
+
+The `ChessPiece` class is the superclass for all chess pieces in a chess game. It provides the basic attributes and methods common to all chess pieces.
+
+## Class Overview
+
+### Attributes
+
+- `color` (str): The color of the chess piece ("w" for white, "b" for black).
+
+### Methods
+
+- `__init__(color: str)`: Initializes a new instance of the `ChessPiece` class with the specified color.
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the chess piece on the specified board at the given column and row.
+- `__str__() -> str`: Returns a string representation of the chess piece.
+
+## Subclasses
+
+The following subclasses inherit from the `ChessPiece` superclass:
+
+### Pawn
+
+The `Pawn` class represents a pawn chess piece.
+
+#### Additional Attributes
+
+- `rowDict` (dict): A dictionary mapping row numbers to column letters.
+- `enPassantPossible` (bool): Indicates whether the en passant move is possible for the pawn.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the pawn on the specified board at the given column and row.
+
+### Rook
+
+The `Rook` class represents a rook chess piece.
+
+#### Additional Attributes
+
+- `canCastle` (bool): Indicates whether the rook can participate in castling moves.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the rook on the specified board at the given column and row.
+
+### Knight
+
+The `Knight` class represents a knight chess piece.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the knight on the specified board at the given column and row.
+
+### Bishop
+
+The `Bishop` class represents a bishop chess piece.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the bishop on the specified board at the given column and row.
+
+### Queen
+
+The `Queen` class represents a queen chess piece.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the queen on the specified board at the given column and row.
+
+### King
+
+The `King` class represents a king chess piece.
+
+#### Additional Attributes
+
+- `canCastle` (bool): Indicates whether the king can participate in castling moves.
+
+#### Additional Methods
+
+- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the king on the specified board at the given column and row.
+
+## Usage
+
+### Creating a Chess Piece
+
+```python
+piece = ChessPiece(color="w")
 ```
+
+### Getting the Color of a Chess Piece
+
+```python
+color = piece.color
+```
+
+### Getting the Valid Moves for a Chess Piece
+
+```python
+moves = piece.validMoves(board, col, row)
+```
+
+### Getting the String Representation of a Chess Piece
+
+```python
+pieceStr = str(piece)
+```
+
+## Notes
+
+- The `color` attribute represents the color of the chess piece ("w" for white, "b" for black).
+- Each subclass of `ChessPiece` overrides the `validMoves` method to provide the specific logic for calculating valid moves for that particular chess piece.
+- The `__str__` method returns a string representation of the chess piece, which is useful for printing the chess piece on the board or in other representations.
+- The `Pawn` class has an additional attribute `rowDict` to map row numbers to column letters and an `enPassantPossible` attribute to indicate whether the en passant move is possible for the pawn.
+- The `Rook` class has an additional attribute `canCastle` to indicate whether the rook can participate in castling moves.
+- The `King` class has an additional attribute `canCastle` to indicate whether the king can participate in castling moves.
+
+```
+
+Please note that this documentation assumes the availability of the `Board` class and its methods mentioned in the code.
 
 
 Please note that this documentation assumes the availability of the `ChessPiece` superclass and its subclasses (`Pawn`, `Rook`, `Knight`, `Bishop`, `Queen`, `King`) in the code.
