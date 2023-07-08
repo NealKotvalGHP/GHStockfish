@@ -2,6 +2,8 @@
 class ChessPiece:
     def __init__(self, color):
         self.color = color
+    def getColor(self):
+        return self.color
 
 # Pawn class, has en passant attribute
 class Pawn(ChessPiece):
@@ -15,10 +17,10 @@ class Pawn(ChessPiece):
         direction = 1 if self.color == "w" else -1
 
         if board.isEmptyColRow(col, row + direction):
-            validMoves.append((col, row + direction))
+            validMoves.append((row + direction,col))
 
         if board.isEmptyColRow(col, row + (direction * 2)) and ((row == 2 and self.color == "w") or (row == 7 and self.color == "b")):
-            validMoves.append((col, row + (direction * 2)))
+            validMoves.append((row + (direction * 2), col))
         return validMoves
 
     def __str__(self):
@@ -43,7 +45,7 @@ class Rook(ChessPiece):
                 r += d[1]
 
                 if board.isValidMove(c, r, self.color):
-                    validMoves.append((c, r))
+                    validMoves.append((r,c))
 
                     if board.isEnemyPiece(c, r, self.color):
                         break
@@ -66,7 +68,7 @@ class Knight(ChessPiece):
         for d in directions:
             newCol, newRow = col + d[0], row + d[1]
             if board.isValidMove(newCol, newRow, self.color):
-                validMoves.append((newCol, newRow))
+                validMoves.append((newRow, newCol))
         return validMoves
 
     def __str__(self):
@@ -87,7 +89,7 @@ class Bishop(ChessPiece):
                 r += d[1]
 
                 if board.isValidMove(c, r, self.color):
-                    validMoves.append((c, r))
+                    validMoves.append((r, c))
 
                     if board.isEnemyPiece(c, r, self.color):
                         break
@@ -114,7 +116,7 @@ class Queen(ChessPiece):
                 c += d[0]
                 r += d[1]
                 if board.isValidMove(c, r, self.color):
-                    validMoves.append((c, r))
+                    validMoves.append((r, c))
                     if board.isEnemyPiece(c, r, self.color):
                         break
                 else:

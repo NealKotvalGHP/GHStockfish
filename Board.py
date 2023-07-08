@@ -70,6 +70,28 @@ class Board:
         if (str(self.getPieceColRow(col,row) != "0")):
             print(f"Valid Moves: {self.getPieceColRow(col, row).validMoves(self, col, row)}")
 
+    def getPossibleMoves(self, color):
+        possible_moves = []
+
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                # Check if the current position contains a piece of the given color
+                # if (str(piece)!="0"):
+                #     # print(piece.color, color)
+                #     # print(str(piece) != "0")
+                #     # print(piece.getColor == color)
+                if str(piece) != "0" and piece.getColor() == color:
+                    rowInd, colInd = matrixToIndex(row, col)
+                    validMoves = piece.validMoves(self, colInd, rowInd)
+                    for move in validMoves:
+                        possible_moves.append((rowInd, colInd, move[0], move[1]))
+
+                    # Generate the possible moves for the piece at this position
+                    # Append the valid moves to the `possible_moves` list in the appropriate format
+                    
+        return possible_moves
+
 def fenToMatrix(fen):
     matrix = [[0] * 8 for _ in range(8)]
     parts = fen.split()
@@ -103,3 +125,6 @@ def fenToMatrix(fen):
 
 def indexToMatrix(col, row):
     return col - 1, 8 - row
+
+def matrixToIndex(row, col):
+    return 8 - row, col + 1
