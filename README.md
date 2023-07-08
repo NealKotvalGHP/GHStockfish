@@ -1,4 +1,5 @@
 # GHStockfish
+![ghp2023cs_outline_of_a_fish_logo_197ff0c5-a3cf-4b84-be49-0f9dd4f2fc69](https://github.com/NealKotvalGHP/GHStockfish/assets/137081101/1203b9c2-8d3a-4e57-84e1-cefe4b5c3029)
 
 ## Checklist
 
