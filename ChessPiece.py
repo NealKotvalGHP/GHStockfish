@@ -14,7 +14,6 @@ class Pawn(ChessPiece):
     def valid_moves(self, board, col, row):
         #list of all possible valid moves
         valid_moves = []
-
         #if white then the row direction is +1 since it goes up, otherwise it is -1
         direction = 1 if self.color == "w" else -1
 
@@ -23,7 +22,7 @@ class Pawn(ChessPiece):
             valid_moves.append((col, row + direction))
 
         #check if the space two spaces ahead is empty and if you are on home row
-        if board.isEmptyColRow(col, row + (direction * 2)) and ((row == 2 and self.color == "white") or (row == 7 and self.color == "black")):
+        if board.isEmptyColRow(col, row + (direction * 2)) and ((row == 2 and self.color == "w") or (row == 7 and self.color == "b")):
             valid_moves.append((col, row + (direction * 2)))
         return valid_moves
 
@@ -37,51 +36,27 @@ class Rook(ChessPiece):
         self.can_castle = True
     #check for rook valid moves
     def valid_moves(self, board, col, row):
-
         valid_moves = []
 
-        start_col = col
-        start_row = row
-        print(start_col, start_row)
-        direction = -1
-        start_col+=direction
+        # Check valid moves in horizontal and vertical directions
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-        while start_col < 9 and start_col > 0 and (board.isEmptyColRow(start_col, start_row)) :
-            valid_moves.append((start_col,start_row))
-            start_col+=direction
+        for d in directions:
+            c, r = col, row
 
-            #check right
-            start_col = col
-            start_row = row
-            direction = 1
-            start_col+=direction
+            while True:
+                c += d[0]
+                r += d[1]
 
-            while start_col < 9 and start_col > 0 and (board.isEmptyColRow(start_col, start_row)) :
-                valid_moves.append((start_col,start_row))
-                start_col+=direction
+                if board.is_valid_move(c, r, self.color):
+                    valid_moves.append((c, r))
 
-            #check up
-            start_col = col
-            start_row = row
+                    if board.is_enemy_piece(c, r, self.color):
+                        break
+                else:
+                    break
 
-            direction = 1
-            start_row+=direction
-            while start_row < 9 and start_row > 0 and (board.isEmptyColRow(start_col, start_row)) :
-                valid_moves.append((start_col,start_row))
-                start_row+=direction
-
-
-            #check down
-            start_col = col
-            start_row = row
-            direction = -1
-            start_row+=direction
-
-            while start_row < 9 and start_row > 0 and (board.isEmptyColRow(start_col, start_row)) :
-                valid_moves.append((start_col,start_row))
-                start_row+=direction
-
-            return valid_moves
+        return valid_moves
 
     def __str__(self):
         return "R"

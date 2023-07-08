@@ -38,16 +38,20 @@ class Board:
         return self.turn
 
     #returns the piece object at a certain chessDex, i.e "e4"
-    def get_piece(self, index):
-        col = self.letToNum[index[0]] - 1
-        row = 8 - int(index[1])
-        return self.board[row][col]
+    def get_piece(self, chessDex):
+        col = self.letToNum[chessDex[0]]
+        row = int(chessDex[1])
+        x, y = indexToMatrix(col, row)
+        return self.board[x][y]
+    
+    def get_piece_col_row(self, col ,row):
+        x, y = indexToMatrix(col, row)
+        print("X,Y: " + str(x) + ", " + str(y))
+        return self.board[x][y]
+
 
     #makes a move based off chessDex format, i.e "e2e4", takes piece on e2 and moves to e4
     def make_move(self, move):
-        print("Valid Moves: " + str(self.get_piece(move[:2]).valid_moves(self, self.letToNum[move[0]], int(move[1]))))
-        print(type(self.get_piece(move[:2])))
-        print(self.get_piece(move[:2]))
         start_row = 8 - int(move[1])
         start_col = ord(move[0]) - ord('a')
         end_row = 8 - int(move[3])
@@ -60,27 +64,9 @@ class Board:
 
     #checks if a square can be moved to via (col, row), requirements = no same color, no out of bounds
     def is_valid_move(self, col, row, selfColor):
-        if not (1 <= col <= 8 and 1 <= row <= 8):
-            return False
-        #converts column row to matrix index, i.e column 1 row 2 to [0][6]
-        x,y = indexToMatrix(col, row)
-
-        piece = self.board[x][y]
-
-        if (str(piece) != "0"):
-            print("Checking: " + str(col) + ", " + str(row))
-            print(selfColor)
-            print(piece.color)
-
-        if str(piece) == "0":
+        if (0 < col < 9 and 0 < row < 9 and (str(self.get_piece(col, row)) == "0" or self.get_piece(col, row).color != selfColor)):
             return True
-
-        if (selfColor == piece.color):
-            return False
-        
-        
-
-        return True
+        return False
 
     #checks if a square is empty via (col, row)
     def isEmptyColRow(self, col, row):
@@ -97,8 +83,17 @@ class Board:
     #checks if there is an enemy piece on some (col, row)
     def is_enemy_piece(self, col, row, color):
         x, y = indexToMatrix(col, row)
-        piece = self.board[row][col]
+        piece = self.board[x][y]
         return str(piece) != "0" and piece.color != color
+    
+    def print_Valid_moves(self,move):
+        col = self.letToNum[move[0]]
+        row = int(move[1])
+        print(f"Piece: {str(self.get_piece_col_row(col, row))}")
+        print([move[:2]])
+        print(f"Col, Row: {col, row}")
+        if (str(self.get_piece(move[:2])) != "0"):
+            print(f"Valid Moves: {str(self.get_piece_col_row(col, row).valid_moves(self, col, row))}")
 
 #loads FEN to 8x8 matrix
 def fen_to_matrix(fen):
@@ -135,5 +130,6 @@ def fen_to_matrix(fen):
     return np.flipud(matrix)
 
 #converts (row, col) to Matrix index
-def indexToMatrix(row, col):
+def indexToMatrix(col, row):
     return col - 1, 8 - row
+
