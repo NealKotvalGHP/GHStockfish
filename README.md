@@ -1,24 +1,27 @@
 # GHStockfish
 
-- [x] Board Class Created
-- [x] Piece Class Created
-- [x] Make Moves
-- [x] FEN to Matrix
-- [x] Pawn Logic + Generate Moves
-- [ ] En Passant
-- [x] Rook Logic + Generate Moves
-- [X] Knight Logic + Generate Moves
-- [X] Bishop Logic + Generate Moves
-- [X] Queen Logic + Generate Moves
-- [X] King Logic + Generate Moves
-- [ ] Castling
-- [ ] Edge Cases
-- [ ] Generate Moves Via Engine
-- [ ] Random Moves
-- [ ] Evaluation Function
-- [ ] Transposition Table
-- [ ] Openings
-- [ ] Machine Learning?
+## Checklist
+
+- ✅ Board Class Created ![Progress](http://progressed.io/bar/100)
+- ✅ Piece Class Created ![Progress](http://progressed.io/bar/100)
+- ✅ Make Moves ![Progress](http://progressed.io/bar/100)
+- ✅ FEN to Matrix ![Progress](http://progressed.io/bar/100)
+- ✅ Pawn Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+  - ❌ En Passant ![Progress](http://progressed.io/bar/0)
+- ✅ Rook Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+- ✅ Knight Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+- ✅ Bishop Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+- ✅ Queen Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+- ✅ King Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
+- ❌ Castling ![Progress](http://progressed.io/bar/0)
+- ❌ Edge Cases ![Progress](http://progressed.io/bar/0)
+- ❌ Generate Moves Via Engine ![Progress](http://progressed.io/bar/0)
+- ❌ Random Moves ![Progress](http://progressed.io/bar/0)
+- ❌ Evaluation Function ![Progress](http://progressed.io/bar/0)
+- ❌ Transposition Table ![Progress](http://progressed.io/bar/0)
+- ❌ Openings ![Progress](http://progressed.io/bar/0)
+- ❌ Machine Learning? ![Progress](http://progressed.io/bar/0)
+
 # Board Class
 
 The `Board` class represents a chessboard and provides methods to manage the state of the board and perform various operations.
