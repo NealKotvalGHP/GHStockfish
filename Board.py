@@ -70,7 +70,6 @@ class Board:
         if (str(self.getPieceColRow(col,row) != "0")):
             print(f"Valid Moves: {self.getPieceColRow(col, row).validMoves(self, col, row)}")
 
-
 def fenToMatrix(fen):
     matrix = [[0] * 8 for _ in range(8)]
     parts = fen.split()

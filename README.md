@@ -2,25 +2,25 @@
 
 ## Checklist
 
-- ✅ Board Class Created <!-- progress-bar: value=100 -->
-- ✅ Piece Class Created ![Progress](http://progressed.io/bar/100)
-- ✅ Make Moves ![Progress](http://progressed.io/bar/100)
-- ✅ FEN to Matrix ![Progress](http://progressed.io/bar/100)
-- ✅ Pawn Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-  - ❌ En Passant ![Progress](http://progressed.io/bar/0)
-- ✅ Rook Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-- ✅ Knight Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-- ✅ Bishop Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-- ✅ Queen Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-- ✅ King Logic + Generate Moves ![Progress](http://progressed.io/bar/100)
-- ❌ Castling ![Progress](http://progressed.io/bar/0)
-- ❌ Edge Cases ![Progress](http://progressed.io/bar/0)
-- ❌ Generate Moves Via Engine ![Progress](http://progressed.io/bar/0)
-- ❌ Random Moves ![Progress](http://progressed.io/bar/0)
-- ❌ Evaluation Function ![Progress](http://progressed.io/bar/0)
-- ❌ Transposition Table ![Progress](http://progressed.io/bar/0)
-- ❌ Openings ![Progress](http://progressed.io/bar/0)
-- ❌ Machine Learning? ![Progress](http://progressed.io/bar/0)
+- ✅ Board Class Created 
+- ✅ Piece Class Created
+- ✅ Make Moves
+- ✅ FEN to Matrix
+- ✅ Pawn Logic + Generate Moves
+  - ❌ En Passant
+- ✅ Rook Logic + Generate Moves 
+- ✅ Knight Logic + Generate Moves
+- ✅ Bishop Logic + Generate Moves
+- ✅ Queen Logic + Generate Moves
+- ✅ King Logic + Generate Moves
+- ❌ Castling
+- ❌ Edge Cases
+- ❌ Generate Moves Via Engine
+- ❌ Random Moves
+- ❌ Evaluation Function
+- ❌ Transposition Table
+- ❌ Openings
+- ❌ Machine Learning?
 
 # Board Class
 
