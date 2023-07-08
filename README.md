@@ -14,6 +14,8 @@
 - ✅ Queen Logic + Generate Moves
 - ✅ King Logic + Generate Moves
   - ❌ Castling
+  - ❌ Check
+  - ❌ Checkmate
 - ❌ Edge Cases
 - ❌ Generate Moves Via Engine
 - ❌ Random Moves
