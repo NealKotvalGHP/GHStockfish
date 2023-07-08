@@ -7,10 +7,12 @@
 - [x] Pawn Logic + Generate Moves
 - [ ] En Passant
 - [x] Rook Logic + Generate Moves
-- [ ] Knight Logic + Generate Moves
-- [ ] Bishop Logic + Generate Moves
-- [ ] Queen Logic + Generate Moves
-- [ ] King Logic + Generate Moves
+- [X] Knight Logic + Generate Moves
+- [X] Bishop Logic + Generate Moves
+- [X] Queen Logic + Generate Moves
+- [X] King Logic + Generate Moves
+- [ ] Castling
+- [ ] Edge Cases
 - [ ] Generate Moves Via Engine
 - [ ] Random Moves
 - [ ] Evaluation Function
