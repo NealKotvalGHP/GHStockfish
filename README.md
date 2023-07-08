@@ -2,7 +2,7 @@
 
 ## Checklist
 
-- ✅ Board Class Created ![Progress](http://progressed.io/bar/100)
+- ✅ Board Class Created <!-- progress-bar: value=100 -->
 - ✅ Piece Class Created ![Progress](http://progressed.io/bar/100)
 - ✅ Make Moves ![Progress](http://progressed.io/bar/100)
 - ✅ FEN to Matrix ![Progress](http://progressed.io/bar/100)
