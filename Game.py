@@ -8,6 +8,7 @@ while True:
     if board.getTurn() == "w":
         move = input("Enter move: ")
         possible = board.checkPossible(move)
+        print(board.getPossibleMoves(board.getTurn()))
 
         if possible:
             board.makeMove(move)
