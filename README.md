@@ -19,140 +19,109 @@
 - [ ] Transposition Table
 - [ ] Openings
 - [ ] Machine Learning?
+# Board Class
 
-# Board Class Documentation
+The `Board` class represents a chessboard and provides methods to manage the state of the board and perform various operations.
 
-The `Board` class represents a chess board and is used to handle the state of the board. It utilizes an 8x8 matrix to represent the positions of the chess pieces on the board.
+## Class Overview
 
-### Class Attributes:
+### Attributes
 
-- `fen`: A string representing the FEN (Forsyth–Edwards Notation) notation of the current state of the chess board.
-- `board`: A 2-dimensional list representing the 8x8 matrix of the chess board.
-- `turn`: A string representing the current turn, either 'w' for white or 'b' for black.
-- `letToNum`: A dictionary mapping chess notation letters (a-h) to column numbers (1-8).
-- `numToLet`: A dictionary mapping column numbers (1-8) to chess notation letters (a-h).
+- `fen` (str): The FEN notation representing the current state of the board.
+- `board` (numpy.ndarray): An 8x8 matrix representing the chessboard.
+- `turn` (str): The current turn in the game ("w" for white, "b" for black).
+- `letToNum` (dict): A dictionary mapping letters to column numbers.
+- `numToLet` (dict): A dictionary mapping column numbers to letters.
 
-### Class Methods:
+### Methods
 
-- `__init__(self, fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")`: Initializes a `Board` object with the given FEN notation or the default starting position.
-- `initialize(self)`: Resets the board to the starting position.
-- `print_board(self)`: Prints the current state of the chess board in a fancy format.
-- `get_board(self)`: Returns the current state of the chess board as a 2-dimensional list.
-- `get_turn(self)`: Returns the current turn, either 'w' for white or 'b' for black.
-- `get_piece(self, index)`: Returns the chess piece object at the given chessDex (e.g., "e4").
-- `make_move(self, move)`: Makes a move on the chess board based on the given chessDex move (e.g., "e2e4").
-- `is_valid_move(self, col, row, selfColor)`: Checks if a square can be moved to based on the given column, row, and selfColor (current player color).
-- `isEmptyColRow(self, col, row)`: Checks if a square at the given column and row is empty.
-- `xyToChess(self, col, row)`: Converts the column and row coordinates to chessDex notation (e.g., "e4").
-- `chessToMatrix(self, chessDex)`: Converts the chessDex notation (e.g., "e4") to matrix index coordinates.
-- `is_enemy_piece(self, col, row, color)`: Checks if there is an enemy piece at the given column and row coordinates.
+- `__init__(fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")`: Initializes a new instance of the `Board` class.
+- `initialize()`: Resets the board to the starting position.
+- `printBoard()`: Prints the current state of the board.
+- `getBoard() -> numpy.ndarray`: Returns the matrix representation of the board.
+- `getTurn() -> str`: Returns the current turn.
+- `getPiece(chessDex: str) -> ChessPiece`: Returns the chess piece object at the specified chessDex (e.g., "e4").
+- `getPieceColRow(col: int, row: int) -> ChessPiece`: Returns the chess piece object at the specified column and row.
+- `makeMove(move: str)`: Makes a move on the board based on the specified chessDex move (e.g., "e2e4").
+- `isValidMove(col: int, row: int, selfColor: str) -> bool`: Checks if a move to the specified column and row is valid for the given color.
+- `isEmptyColRow(col: int, row: int) -> bool`: Checks if the specified column and row on the board is empty.
+- `xyToChess(col: int, row: int) -> str`: Converts column and row indices to chessDex notation (e.g., (1, 1) becomes "a1").
+- `chessToMatrix(chessDex: str) -> Tuple[int, int]`: Converts chessDex notation to column and row indices.
+- `isEnemyPiece(col: int, row: int, color: str) -> bool`: Checks if there is an enemy piece at the specified column and row for the given color.
+- `printValidMoves(move: str)`: Prints the valid moves for the piece at the specified chessDex move.
 
-### Helper Functions:
+### Helper Functions
 
-- `fen_to_matrix(fen)`: Converts the FEN notation to an 8x8 matrix representing the chess board.
-- `indexToMatrix(col, row)`: Converts the column and row coordinates to matrix index coordinates.
+- `fenToMatrix(fen: str) -> numpy.ndarray`: Converts a FEN notation to a matrix representation of the board.
+- `indexToMatrix(col: int, row: int) -> Tuple[int, int]`: Converts column and row indices to matrix indices.
 
-**Note:** The code provided contains additional comments that explain the functionality and quirks of the implementation. It's recommended to review those comments for better understanding of the code.
+## Usage
 
-# ChessPiece Class Documentation
+### Creating a Board
 
-The `ChessPiece` class is a superclass for all chess pieces. It represents a generic chess piece and provides a common attribute for all pieces, which is the color of the piece.
+```python
+board = Board()
+```
 
-### Class Attributes:
+### Initializing the Board
 
-- `color`: A string representing the color of the chess piece ("w" for white or "b" for black).
+```python
+board.initialize()
+```
 
-### Class Methods:
+### Getting the Current Turn
 
-- `__init__(self, color)`: Initializes a `ChessPiece` object with the given color.
-- `__str__(self)`: Returns a string representation of the chess piece. This method is overridden in the subclasses.
+```python
+turn = board.getTurn()
+```
 
-# Pawn Class Documentation
+### Making a Move
 
-The `Pawn` class represents a pawn chess piece. It inherits from the `ChessPiece` superclass and adds an additional attribute for en passant moves.
+```python
+board.makeMove("e2e4")
+```
 
-### Class Attributes:
+### Getting the Piece at a Specific ChessDex
 
-- `color`: A string representing the color of the pawn ("w" for white or "b" for black).
-- `rowDict`: A dictionary mapping row numbers to chess notation letters for pawn promotion.
-- `en_passant_possible`: A boolean indicating if the pawn can be captured en passant.
+```python
+piece = board.getPiece("e4")
+```
 
-### Class Methods:
+### Printing the Valid Moves for a Move
 
-- `__init__(self, color)`: Initializes a `Pawn` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the pawn on the chess board.
-- `__str__(self)`: Returns a string representation of the pawn.
+```python
+board.printValidMoves("e4")
+```
 
-# Rook Class Documentation
+### Checking if a Move is Valid
 
-The `Rook` class represents a rook chess piece. It inherits from the `ChessPiece` superclass.
+```python
+isValid = board.isValidMove(5, 2, "w")
+```
 
-### Class Attributes:
+### Printing the Current State of the Board
 
-- `color`: A string representing the color of the rook ("w" for white or "b" for black).
-- `can_castle`: A boolean indicating if the rook can participate in castling.
+```python
+board.printBoard()
+```
 
-### Class Methods:
+## Notes
 
-- `__init__(self, color)`: Initializes a `Rook` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the rook on the chess board.
-- `__str__(self)`: Returns a string representation of the rook.
+- The board is represented as an 8x8 matrix, where the rows are numbered from 1 to 8 and the columns are represented by letters 'a' to 'h'.
+- The `fen` attribute represents the current state of the board in Forsyth–Edwards Notation (FEN).
+- The `board` attribute is a numpy ndarray where each element represents a chess piece object or 0 for an empty square.
+- The `turn` attribute stores the current turn in the game, "w" for white and "b" for black.
+- The `letToNum` and `numToLet` dictionaries are used for converting between letters and column numbers.
+- The `makeMove` method updates the board state by moving a piece from one position to another.
+- The `isValidMove` method checks if a move to a specific column and row is valid for the given color.
+- The `printValidMoves` method prints the valid moves for the piece at a specified chessDex move.
+- The `getPiece` method returns the chess piece object at a specified chessDex position.
+- The `isEmptyColRow` method checks if a specific column and row on the board is empty.
+- The `xyToChess` method converts column and row indices to chessDex notation.
+- The `chessToMatrix` method converts chessDex notation to column and row indices.
+- The `isEnemyPiece` method checks if there is an enemy piece at a specific column and row for the given color.
 
-# Knight Class Documentation
+```
 
-The `Knight` class represents a knight chess piece. It inherits from the `ChessPiece` superclass.
 
-### Class Attributes:
-
-- `color`: A string representing the color of the knight ("w" for white or "b" for black).
-
-### Class Methods:
-
-- `__init__(self, color)`: Initializes a `Knight` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the knight on the chess board.
-- `__str__(self)`: Returns a string representation of the knight.
-
-# Bishop Class Documentation
-
-The `Bishop` class represents a bishop chess piece. It inherits from the `ChessPiece` superclass.
-
-### Class Attributes:
-
-- `color`: A string representing the color of the bishop ("w" for white or "b" for black).
-
-### Class Methods:
-
-- `__init__(self, color)`: Initializes a `Bishop` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the bishop on the chess board.
-- `__str__(self)`: Returns a string representation of the bishop.
-
-# Queen Class Documentation
-
-The `Queen` class represents a queen chess piece. It inherits from the `ChessPiece` superclass.
-
-### Class Attributes:
-
-- `color`: A string representing the color of the queen ("w" for white or "b" for black).
-
-### Class Methods:
-
-- `__init__(self, color)`: Initializes a `Queen` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the queen on the chess board.
-- `__str__(self)`: Returns a string representation of the queen.
-
-# King Class Documentation
-
-The `King` class represents a king chess piece. It inherits from the `ChessPiece` superclass.
-
-### Class Attributes:
-
-- `color`: A string representing the color of the king ("w" for white or "b" for black).
-- `can_castle`: A boolean indicating if the king can participate in castling.
-
-### Class Methods:
-
-- `__init__(self, color)`: Initializes a `King` object with the given color.
-- `valid_moves(self, board, col, row)`: Returns a list of valid moves for the king on the chess board.
-- `__str__(self)`: Returns a string representation of the king.
-
-**Note:** The code provided contains additional comments that explain the functionality of the code. It's recommended to review those comments for better understanding of the implementation.
+Please note that this documentation assumes the availability of the `ChessPiece` superclass and its subclasses (`Pawn`, `Rook`, `Knight`, `Bishop`, `Queen`, `King`) in the code.
