@@ -47,7 +47,8 @@ class Board:
 
     def isValidMove(self, col, row, selfColor):
         if (0 < col < 9 and 0 < row < 9 and (str(self.getPieceColRow(col, row)) == "0" or self.getPieceColRow(col, row).color != selfColor)):
-            return True
+            if (not self.isCheck(self.turn)):
+                return True
         return False
 
     def isEmptyColRow(self, col, row):
@@ -130,6 +131,14 @@ class Board:
         return self.tupleToChessMove(choice)
 
 
+    def copy(self):
+        copied_board = Board(fen=self.fen)
+        copied_board.board = np.copy(self.board)
+        copied_board.turn = self.turn
+        return copied_board
+
+
+
 def fenToMatrix(fen):
     matrix = [[0] * 8 for _ in range(8)]
     parts = fen.split()
@@ -161,6 +170,7 @@ def fenToMatrix(fen):
 
     return np.flipud(matrix)
 
+    
 def indexToMatrix(col, row):
     return col - 1, 8 - row
 
