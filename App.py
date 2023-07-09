@@ -4,7 +4,7 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import math
 from copy import copy
-import agent.Board
+import Board
 
 
 class Piece:
