@@ -215,8 +215,8 @@ def game():
 
     # This is where you would input a move to play. Player still has to choose
     # which piece to promote to when promoting.
-    playMove("e2e4")
-    playMove("e7e5")
+    # playMove("e2e4")
+    # playMove("e7e5")
 
     root.mainloop()
 
@@ -867,47 +867,47 @@ def unhighlightSquares(legalMoves):
 
 def initializePieces():
     pieces = [
-        Piece("P", "w", 48, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 49, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 50, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 51, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 52, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 53, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 54, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("P", "w", 55, 1, 100, PhotoImage(file = 'Sprites\White_Pawn.png')),
-        Piece("R", "w", 56, 5, 100, PhotoImage(file = 'Sprites\White_Rook.png')),
-        Piece("R", "w", 63, 5, 100, PhotoImage(file = 'Sprites\White_Rook.png')),
-        Piece("N", "w", 57, 3, 50, PhotoImage(file = 'Sprites\White_Knight.png')),
-        Piece("N", "w", 62, 3, 50, PhotoImage(file = 'Sprites\White_Knight.png')),
-        Piece("B", "w", 58, 3, 50, PhotoImage(file = 'Sprites\White_Bishop.png')),
-        Piece("B", "w", 61, 3, 50, PhotoImage(file = 'Sprites\White_Bishop.png')),
-        Piece("Q", "w", 59, 9, 100, PhotoImage(file = 'Sprites\White_Queen.png')),
-        Piece("K", "w", 60, 9999, 0, PhotoImage(file = 'Sprites\White_King.png')),
-        Piece("P", "b", 8, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 9, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 10, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 11, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 12, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 13, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 14, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("P", "b", 15, 1, 100, PhotoImage(file = 'Sprites\Black_Pawn.png')),
-        Piece("R", "b", 0, 5, 100, PhotoImage(file = 'Sprites\Black_Rook.png')),
-        Piece("R", "b", 7, 5, 100, PhotoImage(file = 'Sprites\Black_Rook.png')),
-        Piece("N", "b", 1, 3, 50, PhotoImage(file = 'Sprites\Black_Knight.png')),
-        Piece("N", "b", 6, 3, 50, PhotoImage(file = 'Sprites\Black_Knight.png')),
-        Piece("B", "b", 2, 3, 50, PhotoImage(file = 'Sprites\Black_Bishop.png')),
-        Piece("B", "b", 5, 3, 50, PhotoImage(file = 'Sprites\Black_Bishop.png')),
-        Piece("Q", "b", 3, 9, 100, PhotoImage(file = 'Sprites\Black_Queen.png')),
-        Piece("K", "b", 4, 9999, 0, PhotoImage(file = 'Sprites\Black_King.png')),
+        Piece("P", "w", 48, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 49, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 50, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 51, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 52, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 53, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 54, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("P", "w", 55, 1, 100, PhotoImage(file = 'Sprites/White_Pawn.png')),
+        Piece("R", "w", 56, 5, 100, PhotoImage(file = 'Sprites/White_Rook.png')),
+        Piece("R", "w", 63, 5, 100, PhotoImage(file = 'Sprites/White_Rook.png')),
+        Piece("N", "w", 57, 3, 50, PhotoImage(file = 'Sprites/White_Knight.png')),
+        Piece("N", "w", 62, 3, 50, PhotoImage(file = 'Sprites/White_Knight.png')),
+        Piece("B", "w", 58, 3, 50, PhotoImage(file = 'Sprites/White_Bishop.png')),
+        Piece("B", "w", 61, 3, 50, PhotoImage(file = 'Sprites/White_Bishop.png')),
+        Piece("Q", "w", 59, 9, 100, PhotoImage(file = 'Sprites/White_Queen.png')),
+        Piece("K", "w", 60, 9999, 0, PhotoImage(file = 'Sprites/White_King.png')),
+        Piece("P", "b", 8, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 9, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 10, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 11, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 12, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 13, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 14, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("P", "b", 15, 1, 100, PhotoImage(file = 'Sprites/Black_Pawn.png')),
+        Piece("R", "b", 0, 5, 100, PhotoImage(file = 'Sprites/Black_Rook.png')),
+        Piece("R", "b", 7, 5, 100, PhotoImage(file = 'Sprites/Black_Rook.png')),
+        Piece("N", "b", 1, 3, 50, PhotoImage(file = 'Sprites/Black_Knight.png')),
+        Piece("N", "b", 6, 3, 50, PhotoImage(file = 'Sprites/Black_Knight.png')),
+        Piece("B", "b", 2, 3, 50, PhotoImage(file = 'Sprites/Black_Bishop.png')),
+        Piece("B", "b", 5, 3, 50, PhotoImage(file = 'Sprites/Black_Bishop.png')),
+        Piece("Q", "b", 3, 9, 100, PhotoImage(file = 'Sprites/Black_Queen.png')),
+        Piece("K", "b", 4, 9999, 0, PhotoImage(file = 'Sprites/Black_King.png')),
 
-        Piece("Q", "wp", -100, 0, 0, PhotoImage(file = 'Sprites\White_Queen.png')),
-        Piece("N", "wp", -100, 0, 0, PhotoImage(file = 'Sprites\White_Knight.png')),
-        Piece("R", "wp", -100, 0, 0, PhotoImage(file = 'Sprites\White_Rook.png')),
-        Piece("B", "wp", -100, 0, 0, PhotoImage(file = 'Sprites\White_Bishop.png')),
-        Piece("Q", "bp", -100, 0, 0, PhotoImage(file = 'Sprites\Black_Queen.png')),
-        Piece("N", "bp", -100, 0, 0, PhotoImage(file = 'Sprites\Black_Knight.png')),
-        Piece("R", "bp", -100, 0, 0, PhotoImage(file = 'Sprites\Black_Rook.png')),
-        Piece("B", "bp", -100, 0, 0, PhotoImage(file = 'Sprites\Black_Bishop.png'))
+        Piece("Q", "wp", -100, 0, 0, PhotoImage(file = 'Sprites/White_Queen.png')),
+        Piece("N", "wp", -100, 0, 0, PhotoImage(file = 'Sprites/White_Knight.png')),
+        Piece("R", "wp", -100, 0, 0, PhotoImage(file = 'Sprites/White_Rook.png')),
+        Piece("B", "wp", -100, 0, 0, PhotoImage(file = 'Sprites/White_Bishop.png')),
+        Piece("Q", "bp", -100, 0, 0, PhotoImage(file = 'Sprites/Black_Queen.png')),
+        Piece("N", "bp", -100, 0, 0, PhotoImage(file = 'Sprites/Black_Knight.png')),
+        Piece("R", "bp", -100, 0, 0, PhotoImage(file = 'Sprites/Black_Rook.png')),
+        Piece("B", "bp", -100, 0, 0, PhotoImage(file = 'Sprites/Black_Bishop.png'))
     ]
     return pieces
 
@@ -954,7 +954,7 @@ def pieceBinds():
     chessBoard.tag_bind(113, "<Button-1>", lambda x: promoteTo("R", "b", 5))
     chessBoard.tag_bind(114, "<Button-1>", lambda x: promoteTo("B", "b", 3))
 
-def playMove(move):
+def playMove(move):5
     global root
 
     originCoordinates = move[0] + move[1]
