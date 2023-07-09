@@ -954,7 +954,7 @@ def pieceBinds():
     chessBoard.tag_bind(113, "<Button-1>", lambda x: promoteTo("R", "b", 5))
     chessBoard.tag_bind(114, "<Button-1>", lambda x: promoteTo("B", "b", 3))
 
-def playMove(move):5
+def playMove(move):
     global root
 
     originCoordinates = move[0] + move[1]
