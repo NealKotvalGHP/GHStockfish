@@ -103,33 +103,27 @@ class Board:
         return str(chessStartCol) + str(chessStartRow) + str(chessEndCol)  + str(chessEndRow)
 
     
-    def checkPossible(self, move):
-        #convert move to (startingRow, StartingCol, EndingRow, EndingCol)
-        # startingCol = self.letToNum[move[0]]
-        # startingRow = move[1]
-
-        # endingCol = self.letToNum[move[2]]
-        # endingRow = move
-
-        # endingcol
-        col = self.letToNum[move[0]]
-        row = int(move[1])
-        col1 = self.letToNum[move[2]]
-        row1 = int(move[3])
-
-        convert = (row, col, row1, col1)
-        possibleMoves = self.getPossibleMoves(self.turn)
-        for move in possibleMoves:
-            if move == convert:
-                return True
-            
-        return False
+    def isInCheck(self):
+        #requires possible moves
+        kingPos = self.findKing(self.turn)
+        #if king is in possible moves -> check
+        
+        #find king
+        pass
     
     def randomMove(self):
         moves = self.getPossibleMoves(self.turn)
         choice = random.choice(moves)
         return self.tupleToChessMove(choice)
 
+    def findKing(self, color):
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if str(piece) == "K" and piece.getColor() == color:
+                    col_label = self.numToLet[col]
+                    row_label = str(8 - row)
+                    return col_label + row_label
 
     def copy(self):
         copied_board = Board(fen=self.fen)
