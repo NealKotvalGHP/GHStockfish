@@ -4,7 +4,8 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import math
 from copy import copy
-import Board
+from Board import Board
+from Agent import Agent
 
 
 class Piece:
@@ -57,7 +58,7 @@ def game():
     HIGHLIGHTED_DARK_SQUARE_COLOR = "#55554C"
 
     global HIGHLIGHTED_LIGHT_SQUARE_COLOR
-    HIGHLIGHTED_LIGHT_SQUARE_COLOR = "#FFFFDD"
+    HIGHLIGHTED_LIGHT_SQUARE_COLOR = "#FFFFCC"
 
     global position
     position = copy(INITIAL_POSITION)
