@@ -39,19 +39,7 @@ class Agent:
             return min_eval
 
     def make_best_move(self, board):
-        best_score = float('-inf')
-        best_move = None
-
-        for move in board.get_possible_moves(self.color):
-            board.make_move(move)
-            score = self.minimax_alpha_beta(board, self.max_depth - 1, float('-inf'), float('inf'), False)
-            board.undo_move()
-
-            if score > best_score:
-                best_score = score
-                best_move = move
-
-        return best_move
+        pass
 
 def opposite_color(color):
     return "w" if color == "b" else "b"
