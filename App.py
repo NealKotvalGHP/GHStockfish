@@ -1034,10 +1034,10 @@ class ChessSim:
         self.gameResult = 0
 
     def game(self):
-        self.printBoard(self)
+        self.printBoard()
 
-        self.playMove(self, "e2e4")
-        self.playMove(self, "e7e5")
+        self.playMove("e2e4")
+        self.playMove("e7e5")
 
     def printBoard(self):
         print(self.position)
@@ -1047,7 +1047,7 @@ class ChessSim:
         positionCopy = copy(self.position)
 
         capture = False
-        self.legalMoves = self.findLegalMoves(self, origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
+        self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
         if not self.promotingPawn and not self.gameEnded:
             if destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0:
@@ -1056,22 +1056,22 @@ class ChessSim:
                     capture = True
                 self.position[destination] = positionCopy[origin]
 
-                self.castling(self, destination)
+                self.castling(destination)
                 
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and ((self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "w" and destination < 8) or (self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "b" and destination >= 56)):
-                    self.promoteTo(self, promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 
-                self.enPassant(self, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and abs(origin - destination) == 16:
                     self.enPassantOpportunity = math.floor((origin + destination) / 2)
                 else:
                     self.enPassantOpportunity = -1
                 
-                self.switchTurn(self)
+                self.switchTurn()
 
                 for location in range(len(self.position)):
                     if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
-                        if self.findLegalMoves(self, location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
+                        if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
                             self.enPassantOpportunity = -1
                         else:
                             self.enPassantOpportunity = math.floor((origin + destination) / 2)
@@ -1084,15 +1084,15 @@ class ChessSim:
                     if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" or capture:
                         self.reachedPositions.clear()
                     self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
-                    self.gameEndLogic(self)
+                    self.gameEndLogic()
                     if not self.gameEnded:
-                        self.printMoveNumberPhrase(self)
+                        self.printMoveNumberPhrase()
             else:
                 print("Error: Illegal move.")
         else:
             print("Error: Illegal move.")
         
-        self.printBoard(self)
+        self.printBoard()
 
         self.selectedLocation = -1
 
@@ -1146,9 +1146,9 @@ class ChessSim:
 
         self.reachedPositions.clear()
         self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
-        self.gameEndLogic(self)
+        self.gameEndLogic()
         if not self.gameEnded:
-           self.printMoveNumberPhrase(self)
+           self.printMoveNumberPhrase()
 
     def enPassant(self, pieceType, pieceColor, destination):
         if pieceType == "P" and self.enPassantOpportunity == destination:
@@ -1161,10 +1161,10 @@ class ChessSim:
         movablePieces = False
         for location in range(len(self.position)):
             if self.color(self, self.position[location]) == self.currentTurn:
-                if len(self.findLegalMoves(self, location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
+                if len(self.findLegalMoves(location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
                     movablePieces = True
                     break
-        if self.inCheck(self, self.position, self.currentTurn) and not movablePieces:
+        if self.inCheck(self.position, self.currentTurn) and not movablePieces:
             if self.currentTurn == "w":
                 print("Black wins by checkmate.")
                 self.gameEnded = True
@@ -1226,147 +1226,147 @@ class ChessSim:
             if pieceColor == "w":
                 if self.position[origin - 8] == 0:
                     possibleDestinationSquares.append(origin - 8)
-                    if self.rank(self, origin) == 2 and self.position[origin - 16] == 0:
+                    if self.rank(origin) == 2 and self.position[origin - 16] == 0:
                         possibleDestinationSquares.append(origin - 16)
-                if self.file(self, origin) + 1 <= 8 and (self.color(self, self.position[origin - 7]) == "b" or self.enPassantOpportunity == origin - 7):
+                if self.file(origin) + 1 <= 8 and (self.color(self.position[origin - 7]) == "b" or self.enPassantOpportunity == origin - 7):
                     possibleDestinationSquares.append(origin - 7)
-                if self.file(self, origin) - 1 > 0 and (self.color(self, self.position[origin - 9]) == "b" or self.enPassantOpportunity == origin - 9):
+                if self.file(origin) - 1 > 0 and (self.color(self.position[origin - 9]) == "b" or self.enPassantOpportunity == origin - 9):
                     possibleDestinationSquares.append(origin - 9)
             elif pieceColor == "b":
                 if self.position[origin + 8] == 0:
                     possibleDestinationSquares.append(origin + 8)
-                    if self.rank(self, origin) == 7 and self.position[origin + 16] == 0:
+                    if self.rank(origin) == 7 and self.position[origin + 16] == 0:
                         possibleDestinationSquares.append(origin + 16)
-                if self.file(self, origin) - 1 > 0 and (self.color(self, self.position[origin + 7]) == "w" or self.enPassantOpportunity == origin + 7):
+                if self.file(origin) - 1 > 0 and (self.color(self.position[origin + 7]) == "w" or self.enPassantOpportunity == origin + 7):
                     possibleDestinationSquares.append(origin + 7)
-                if self.file(self, origin) + 1 <= 8 and (self.color(self, self.position[origin + 9]) == "w" or self.enPassantOpportunity == origin + 9):
+                if self.file(origin) + 1 <= 8 and (self.color(self.position[origin + 9]) == "w" or self.enPassantOpportunity == origin + 9):
                     possibleDestinationSquares.append(origin + 9)
         elif pieceType == "R" or pieceType == "Q":
             for distanceNorth in range(1, 8):
-                if self.rank(self, origin) + distanceNorth <= 8:
+                if self.rank(origin) + distanceNorth <= 8:
                     if self.position[origin - (8 * distanceNorth)] == 0:
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
-                    elif self.color(self, self.position[origin - (8 * distanceNorth)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin - (8 * distanceNorth)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
                         break
-                    elif self.color(self, self.position[origin - (8 * distanceNorth)]) == pieceColor:
+                    elif self.color(self.position[origin - (8 * distanceNorth)]) == pieceColor:
                         break
                 else:
                     break
             for distanceEast in range(1, 8):
-                if self.file(self, origin) + distanceEast <= 8:
+                if self.file(origin) + distanceEast <= 8:
                     if self.position[origin + distanceEast] == 0:
                         possibleDestinationSquares.append(origin + distanceEast)
-                    elif self.color(self, self.position[origin + distanceEast]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + distanceEast]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + distanceEast)
                         break
-                    elif self.color(self, self.position[origin + distanceEast]) == pieceColor:
+                    elif self.color(self.position[origin + distanceEast]) == pieceColor:
                         break
                 else:
                     break
             for distanceSouth in range(1, 8):
-                if self.rank(self, origin) - distanceSouth > 0:
+                if self.rank(origin) - distanceSouth > 0:
                     if self.position[origin + (8 * distanceSouth)] == 0:
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
-                    elif self.color(self, self.position[origin + (8 * distanceSouth)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + (8 * distanceSouth)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
                         break
-                    elif self.color(self, self.position[origin + (8 * distanceSouth)]) == pieceColor:
+                    elif self.color(self.position[origin + (8 * distanceSouth)]) == pieceColor:
                         break
                 else:
                     break
             for distanceWest in range(1, 8):
-                if self.file(self, origin) - distanceWest > 0:
+                if self.file(origin) - distanceWest > 0:
                     if self.position[origin - distanceWest] == 0:
                         possibleDestinationSquares.append(origin - distanceWest)
-                    elif self.color(self, self.position[origin - distanceWest]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin - distanceWest]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - distanceWest)
                         break
-                    elif self.color(self, self.position[origin - distanceWest]) == pieceColor:
+                    elif self.color(self.position[origin - distanceWest]) == pieceColor:
                         break
                 else:
                     break
         elif pieceType == "N":
-            if self.rank(self, origin) + 2 <= 8 and self.file(self, origin) - 1 > 0:
+            if self.rank(origin) + 2 <= 8 and self.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin - 17)
-            if self.rank(self, origin) + 2 <= 8 and self.file(self, origin) + 1 <= 8:
+            if self.rank(origin) + 2 <= 8 and self.file(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin - 15)
-            if self.rank(self, origin) + 1 <= 8 and self.file(self, origin) - 2 > 0:
+            if self.rank(origin) + 1 <= 8 and self.file(origin) - 2 > 0:
                 possibleDestinationSquares.append(origin - 10)
-            if self.rank(self, origin) + 1 <= 8 and self.file(self, origin) + 2 <= 8:
+            if self.rank(origin) + 1 <= 8 and self.file(origin) + 2 <= 8:
                 possibleDestinationSquares.append(origin - 6)
-            if self.rank(self, origin) - 1 > 0 and self.file(self, origin) - 2 > 0:
+            if self.rank(origin) - 1 > 0 and self.file(origin) - 2 > 0:
                 possibleDestinationSquares.append(origin + 6)
-            if self.rank(self, origin) - 1 > 0 and self.file(self, origin) + 2 <= 8:
+            if self.rank(origin) - 1 > 0 and self.file(origin) + 2 <= 8:
                 possibleDestinationSquares.append(origin + 10)
-            if self.rank(self, origin) - 2 > 0 and self.file(self, origin) - 1 > 0:
+            if self.rank(origin) - 2 > 0 and self.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin + 15)
-            if self.rank(self, origin) - 2 > 0 and self.file(self, origin) + 1 <= 8:
+            if self.rank(origin) - 2 > 0 and self.file(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin + 17)
         if pieceType == "B" or pieceType == "Q":
             for distanceNorthwest in range(1, 8):
-                if self.rank(self, origin) + distanceNorthwest <= 8 and self.file(self, origin) - distanceNorthwest > 0:
+                if self.rank(origin) + distanceNorthwest <= 8 and self.file(origin) - distanceNorthwest > 0:
                     if self.position[origin - (9 * distanceNorthwest)] == 0:
                         possibleDestinationSquares.append(origin - (9 * distanceNorthwest))
-                    elif self.color(self, self.position[origin - (9 * distanceNorthwest)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin - (9 * distanceNorthwest)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (9 * distanceNorthwest))
                         break
-                    elif self.color(self, self.position[origin - (9 * distanceNorthwest)]) == pieceColor:
+                    elif self.color(self.position[origin - (9 * distanceNorthwest)]) == pieceColor:
                         break
                 else:
                     break
             for distanceNortheast in range(1, 8):
-                if self.rank(self, origin) + distanceNortheast <= 8 and self.file(self, origin) + distanceNortheast <= 8:
+                if self.rank(origin) + distanceNortheast <= 8 and self.file(origin) + distanceNortheast <= 8:
                     if self.position[origin - (7 * distanceNortheast)] == 0:
                         possibleDestinationSquares.append(origin - (7 * distanceNortheast))
-                    elif self.color(self, self.position[origin - (7 * distanceNortheast)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin - (7 * distanceNortheast)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (7 * distanceNortheast))
                         break
-                    elif self.color(self, self.position[origin - (7 * distanceNortheast)]) == pieceColor:
+                    elif self.color(self.position[origin - (7 * distanceNortheast)]) == pieceColor:
                         break
                 else:
                     break
             for distanceSoutheast in range(1, 8):
-                if self.rank(self, origin) - distanceSoutheast > 0 and self.file(self, origin) + distanceSoutheast <= 8:
+                if self.rank(origin) - distanceSoutheast > 0 and self.file(origin) + distanceSoutheast <= 8:
                     if self.position[origin + (9 * distanceSoutheast)] == 0:
                         possibleDestinationSquares.append(origin + (9 * distanceSoutheast))
-                    elif self.color(self, self.position[origin + (9 * distanceSoutheast)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + (9 * distanceSoutheast)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (9 * distanceSoutheast))
                         break
-                    elif self.color(self, self.position[origin + (9 * distanceSoutheast)]) == pieceColor:
+                    elif self.color(self.position[origin + (9 * distanceSoutheast)]) == pieceColor:
                         break
                 else:
                     break
             for distanceSouthwest in range(1, 8):
-                if self.rank(self, origin) - distanceSouthwest > 0 and self.file(self, origin) - distanceSouthwest > 0:
+                if self.rank(origin) - distanceSouthwest > 0 and self.file(origin) - distanceSouthwest > 0:
                     if self.position[origin + (7 * distanceSouthwest)] == 0:
                         possibleDestinationSquares.append(origin + (7 * distanceSouthwest))
-                    elif self.color(self, self.position[origin + (7 * distanceSouthwest)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + (7 * distanceSouthwest)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (7 * distanceSouthwest))
                         break
-                    elif self.color(self, self.position[origin + (7 * distanceSouthwest)]) == pieceColor:
+                    elif self.color(self.position[origin + (7 * distanceSouthwest)]) == pieceColor:
                         break
                 else:
                     break
         elif pieceType == "K":
-            if self.rank(self, origin) + 1 <= 8:
+            if self.rank(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin - 8)
-            if self.file(self, origin) + 1 <= 8:
+            if self.file(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin + 1)
-            if self.rank(self, origin) - 1 > 0:
+            if self.rank(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin + 8)
-            if self.file(self, origin) - 1 > 0:
+            if self.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin - 1)
-            if self.rank(self, origin) + 1 <= 8 and self.file(self, origin) - 1 > 0:
+            if self.rank(origin) + 1 <= 8 and self.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin - 9)
-            if self.rank(self, origin) + 1 <= 8 and self.file(self, origin) + 1 <= 8:
+            if self.rank(origin) + 1 <= 8 and self.file(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin - 7)
-            if self.rank(self, origin) - 1 > 0 and self.file(self, origin) + 1 <= 8:
+            if self.rank(origin) - 1 > 0 and self.file(origin) + 1 <= 8:
                 possibleDestinationSquares.append(origin + 9)
-            if self.rank(self, origin) - 1 > 0 and self.file(self, origin) - 1 > 0:
+            if self.rank(origin) - 1 > 0 and self.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin + 7)
 
-            if not self.inCheck(self, self.position, self.currentTurn):
+            if not self.inCheck(self.position, self.currentTurn):
                 self.castlingPossible = [[False, False], [False, False]]
                 if pieceColor == "w":
                     if self.castlingRights[0][0]:
@@ -1374,7 +1374,7 @@ class ChessSim:
                             testPosition = copy(self.position)
                             testPosition[origin] = 0
                             testPosition[61] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not self.inCheck(self, testPosition, self.currentTurn):
+                            if not self.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(62)
                                 self.castlingPossible[0][0] = True
                     if self.castlingRights[0][1]:
@@ -1382,7 +1382,7 @@ class ChessSim:
                             testPosition = copy(self.position)
                             testPosition[origin] = 0
                             testPosition[59] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not self.inCheck(self, testPosition, self.currentTurn):
+                            if not self.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(58)
                                 self.castlingPossible[0][1] = True
                 elif pieceColor == "b":
@@ -1391,7 +1391,7 @@ class ChessSim:
                             testPosition = copy(self.position)
                             testPosition[origin] = 0
                             testPosition[5] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not self.inCheck(self, testPosition, self.currentTurn):
+                            if not self.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(6)
                                 self.castlingPossible[1][0] = True
                     if self.castlingRights[1][1]:
@@ -1399,14 +1399,14 @@ class ChessSim:
                             testPosition = copy(self.position)
                             testPosition[origin] = 0
                             testPosition[3] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not self.inCheck(self, testPosition, self.currentTurn):
+                            if not self.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(2)
                                 self.castlingPossible[1][1] = True
         
         legalDestinationSquares = copy(possibleDestinationSquares)
         for destination in possibleDestinationSquares:
             testPosition = copy(self.position)
-            selfCaptureAttempt = self.color(self, testPosition[destination]) == self.currentTurn
+            selfCaptureAttempt = self.color(testPosition[destination]) == self.currentTurn
             testPosition[origin] = 0
             testPosition[destination] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
             if self.enPassantOpportunity == destination:
@@ -1414,7 +1414,7 @@ class ChessSim:
                     testPosition[destination + 8] = 0
                 elif pieceColor == "b":
                     testPosition[destination - 8] = 0
-            if selfCaptureAttempt or self.inCheck(self, testPosition, self.currentTurn):
+            if selfCaptureAttempt or self.inCheck(testPosition, self.currentTurn):
                 legalDestinationSquares.pop(legalDestinationSquares.index(destination))
                 if self.enPassantOpportunity == destination:
                     self.enPassantOpportunity = -1
@@ -1422,21 +1422,21 @@ class ChessSim:
         return legalDestinationSquares
 
     def inCheck(self, testPosition, turn):
-        opponentColor = self.oppositeColor(self, turn)
+        opponentColor = self.oppositeColor(turn)
         kingPosition = testPosition.index(self.PIECE_TYPE_TRANSLATION[("K", turn)])
         
         if turn == "w":
-            if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("P", opponentColor):
+            if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("P", opponentColor):
                 return True
-            if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("P", opponentColor):
+            if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("P", opponentColor):
                 return True
         elif turn == "b":
-            if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("P", opponentColor):
+            if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("P", opponentColor):
                 return True
-            if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("P", opponentColor):
+            if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("P", opponentColor):
                 return True
         for distanceNorth in range(1, 8):
-            if self.rank(self, kingPosition) + distanceNorth <= 8:
+            if self.rank(kingPosition) + distanceNorth <= 8:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (8 * distanceNorth)] != 0:
@@ -1444,7 +1444,7 @@ class ChessSim:
             else:
                 break
         for distanceEast in range(1, 8):
-            if self.file(self, kingPosition) + distanceEast <= 8:
+            if self.file(kingPosition) + distanceEast <= 8:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + distanceEast] != 0:
@@ -1452,7 +1452,7 @@ class ChessSim:
             else:
                 break
         for distanceSouth in range(1, 8):
-            if self.rank(self, kingPosition) - distanceSouth > 0:
+            if self.rank(kingPosition) - distanceSouth > 0:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (8 * distanceSouth)] != 0:
@@ -1460,7 +1460,7 @@ class ChessSim:
             else:
                 break
         for distanceWest in range(1, 8):
-            if self.file(self, kingPosition) - distanceWest > 0:
+            if self.file(kingPosition) - distanceWest > 0:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - distanceWest] != 0:
@@ -1468,7 +1468,7 @@ class ChessSim:
             else:
                 break
         for distanceNorthwest in range (1, 8):
-            if self.rank(self, kingPosition) + distanceNorthwest <= 8 and self.file(self, kingPosition) - distanceNorthwest > 0:
+            if self.rank(kingPosition) + distanceNorthwest <= 8 and self.file(kingPosition) - distanceNorthwest > 0:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (9 * distanceNorthwest)] != 0:
@@ -1476,7 +1476,7 @@ class ChessSim:
             else:
                 break
         for distanceNortheast in range (1, 8):
-            if self.rank(self, kingPosition) + distanceNortheast <= 8 and self.file(self, kingPosition) + distanceNortheast <= 8:
+            if self.rank(kingPosition) + distanceNortheast <= 8 and self.file(kingPosition) + distanceNortheast <= 8:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (7 * distanceNortheast)] != 0:
@@ -1484,7 +1484,7 @@ class ChessSim:
             else:
                 break
         for distanceSoutheast in range (1, 8):
-            if self.rank(self, kingPosition) - distanceSoutheast > 0 and self.file(self, kingPosition) + distanceSoutheast <= 8:
+            if self.rank(kingPosition) - distanceSoutheast > 0 and self.file(kingPosition) + distanceSoutheast <= 8:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (9 * distanceSoutheast)] != 0:
@@ -1492,7 +1492,7 @@ class ChessSim:
             else:
                 break
         for distanceSouthwest in range (1, 8):
-            if self.rank(self, kingPosition) - distanceSouthwest > 0 and self.file(self, kingPosition) - distanceSouthwest > 0:
+            if self.rank(kingPosition) - distanceSouthwest > 0 and self.file(kingPosition) - distanceSouthwest > 0:
                 if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (7 * distanceSouthwest)] != 0:
@@ -1500,38 +1500,38 @@ class ChessSim:
             else:
                 break
 
-        if self.rank(self, kingPosition) + 2 <= 8 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 17]] == ("N", opponentColor):
+        if self.rank(kingPosition) + 2 <= 8 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 17]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) + 2 <= 8 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 15]] == ("N", opponentColor):
+        if self.rank(kingPosition) + 2 <= 8 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 15]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 10]] == ("N", opponentColor):
+        if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 10]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 6]] == ("N", opponentColor):
+        if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 6]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 6]] == ("N", opponentColor):
+        if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 6]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 10]] == ("N", opponentColor):
+        if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 10]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 2 > 0 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 15]] == ("N", opponentColor):
+        if self.rank(kingPosition) - 2 > 0 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 15]] == ("N", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 2 > 0 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 17]] == ("N", opponentColor):
+        if self.rank(kingPosition) - 2 > 0 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 17]] == ("N", opponentColor):
             return True
 
-        if self.rank(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 8]] == ("K", opponentColor):
+        if self.rank(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 8]] == ("K", opponentColor):
             return True
-        if self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 1]] == ("K", opponentColor):
+        if self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 1]] == ("K", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 8]] == ("K", opponentColor):
+        if self.rank(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 8]] == ("K", opponentColor):
             return True
-        if self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 1]] == ("K", opponentColor):
+        if self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 1]] == ("K", opponentColor):
             return True
-        if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("K", opponentColor):
+        if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("K", opponentColor):
             return True
-        if self.rank(self, kingPosition) + 1 <= 8 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("K", opponentColor):
+        if self.rank(kingPosition) + 1 <= 8 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("K", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("K", opponentColor):
+        if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("K", opponentColor):
             return True
-        if self.rank(self, kingPosition) - 1 > 0 and self.file(self, kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("K", opponentColor):
+        if self.rank(kingPosition) - 1 > 0 and self.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("K", opponentColor):
             return True
         
         return False
@@ -1557,7 +1557,7 @@ class ChessSim:
             return "w"
 
     def switchTurn(self):
-        self.currentTurn = self.oppositeColor(self, self.currentTurn)
+        self.currentTurn = self.oppositeColor(self.currentTurn)
 
     def printMoveNumberPhrase(self):
         if self.currentTurn == "w":
@@ -1573,10 +1573,10 @@ class ChessSim:
         else:
             promotionType = ""
 
-        origin = self.convertToLocation(self, originCoordinates)
-        destination = self.convertToLocation(self, destinationCoordinates)
+        origin = self.convertToLocation(originCoordinates)
+        destination = self.convertToLocation(destinationCoordinates)
         
-        self.movePiece(self, origin, destination, promotionType)
+        self.movePiece(origin, destination, promotionType)
 
     def convertToLocation(self, coordinates):
         fileLabels = "abcdefgh"
