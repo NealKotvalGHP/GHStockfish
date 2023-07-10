@@ -92,12 +92,6 @@ class ChessSim:
         self.gameEnded = False
         self.gameResult = 0
 
-    def game(self):
-        self.printBoard(self)
-
-        self.playMove(self, "e2e4")
-        self.playMove(self, "e7e5")
-
     def printBoard(self):
         print(self.position)
 
@@ -106,7 +100,7 @@ class ChessSim:
         positionCopy = copy(self.position)
 
         capture = False
-        self.legalMoves = self.findLegalMoves(self, origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
+        self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
         if not self.promotingPawn and not self.gameEnded:
             if destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0:
@@ -115,12 +109,12 @@ class ChessSim:
                     capture = True
                 self.position[destination] = positionCopy[origin]
 
-                self.castling(self, destination)
+                self.castling(destination)
                 
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and ((self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "w" and destination < 8) or (self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "b" and destination >= 56)):
-                    self.promoteTo(self, promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 
-                self.enPassant(self, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and abs(origin - destination) == 16:
                     self.enPassantOpportunity = math.floor((origin + destination) / 2)
                 else:
@@ -130,7 +124,7 @@ class ChessSim:
 
                 for location in range(len(self.position)):
                     if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
-                        if self.findLegalMoves(self, location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
+                        if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
                             self.enPassantOpportunity = -1
                         else:
                             self.enPassantOpportunity = math.floor((origin + destination) / 2)
@@ -219,11 +213,11 @@ class ChessSim:
     def gameEndLogic(self):
         movablePieces = False
         for location in range(len(self.position)):
-            if self.color(self, self.position[location]) == self.currentTurn:
-                if len(self.findLegalMoves(self, location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
+            if self.color(self.position[location]) == self.currentTurn:
+                if len(self.findLegalMoves(location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
                     movablePieces = True
                     break
-        if self.inCheck(self, self.position, self.currentTurn) and not movablePieces:
+        if self.inCheck(self.position, self.currentTurn) and not movablePieces:
             if self.currentTurn == "w":
                 print("Black wins by checkmate.")
                 self.gameEnded = True
@@ -285,52 +279,52 @@ class ChessSim:
             if pieceColor == "w":
                 if self.position[origin - 8] == 0:
                     possibleDestinationSquares.append(origin - 8)
-                    if self.rank(self, origin) == 2 and self.position[origin - 16] == 0:
+                    if self.rank(origin) == 2 and self.position[origin - 16] == 0:
                         possibleDestinationSquares.append(origin - 16)
-                if self.file(self, origin) + 1 <= 8 and (self.color(self, self.position[origin - 7]) == "b" or self.enPassantOpportunity == origin - 7):
+                if self.file(origin) + 1 <= 8 and (self.color(self.position[origin - 7]) == "b" or self.enPassantOpportunity == origin - 7):
                     possibleDestinationSquares.append(origin - 7)
-                if self.file(self, origin) - 1 > 0 and (self.color(self, self.position[origin - 9]) == "b" or self.enPassantOpportunity == origin - 9):
+                if self.file(origin) - 1 > 0 and (self.color(self.position[origin - 9]) == "b" or self.enPassantOpportunity == origin - 9):
                     possibleDestinationSquares.append(origin - 9)
             elif pieceColor == "b":
                 if self.position[origin + 8] == 0:
                     possibleDestinationSquares.append(origin + 8)
-                    if self.rank(self, origin) == 7 and self.position[origin + 16] == 0:
+                    if self.rank(origin) == 7 and self.position[origin + 16] == 0:
                         possibleDestinationSquares.append(origin + 16)
-                if self.file(self, origin) - 1 > 0 and (self.color(self, self.position[origin + 7]) == "w" or self.enPassantOpportunity == origin + 7):
+                if self.file(origin) - 1 > 0 and (self.color(self.position[origin + 7]) == "w" or self.enPassantOpportunity == origin + 7):
                     possibleDestinationSquares.append(origin + 7)
-                if self.file(self, origin) + 1 <= 8 and (self.color(self, self.position[origin + 9]) == "w" or self.enPassantOpportunity == origin + 9):
+                if self.file(origin) + 1 <= 8 and (self.color(self.position[origin + 9]) == "w" or self.enPassantOpportunity == origin + 9):
                     possibleDestinationSquares.append(origin + 9)
         elif pieceType == "R" or pieceType == "Q":
             for distanceNorth in range(1, 8):
-                if self.rank(self, origin) + distanceNorth <= 8:
+                if self.rank(origin) + distanceNorth <= 8:
                     if self.position[origin - (8 * distanceNorth)] == 0:
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
-                    elif self.color(self, self.position[origin - (8 * distanceNorth)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin - (8 * distanceNorth)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
                         break
-                    elif self.color(self, self.position[origin - (8 * distanceNorth)]) == pieceColor:
+                    elif self.color(self.position[origin - (8 * distanceNorth)]) == pieceColor:
                         break
                 else:
                     break
             for distanceEast in range(1, 8):
-                if self.file(self, origin) + distanceEast <= 8:
+                if self.file(origin) + distanceEast <= 8:
                     if self.position[origin + distanceEast] == 0:
                         possibleDestinationSquares.append(origin + distanceEast)
-                    elif self.color(self, self.position[origin + distanceEast]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + distanceEast]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + distanceEast)
                         break
-                    elif self.color(self, self.position[origin + distanceEast]) == pieceColor:
+                    elif self.color(self.position[origin + distanceEast]) == pieceColor:
                         break
                 else:
                     break
             for distanceSouth in range(1, 8):
-                if self.rank(self, origin) - distanceSouth > 0:
+                if self.rank(origin) - distanceSouth > 0:
                     if self.position[origin + (8 * distanceSouth)] == 0:
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
-                    elif self.color(self, self.position[origin + (8 * distanceSouth)]) == self.oppositeColor(self, pieceColor):
+                    elif self.color(self.position[origin + (8 * distanceSouth)]) == self.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
                         break
-                    elif self.color(self, self.position[origin + (8 * distanceSouth)]) == pieceColor:
+                    elif self.color(self.position[origin + (8 * distanceSouth)]) == pieceColor:
                         break
                 else:
                     break
