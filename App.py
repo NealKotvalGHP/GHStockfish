@@ -1032,7 +1032,7 @@ class ChessSim:
         self.gameEnded = False
         self.gameResult = 0
 
-    def game(self):
+    def run(self):
         self.printBoard()
 
         self.playMove("e2e4")
@@ -1597,4 +1597,4 @@ class ChessSim:
                     allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
         return allLegalMoves
 
-# ChessSim.game(ChessSim)
+# ChessSim.run(ChessSim)
