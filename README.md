@@ -26,227 +26,104 @@
 - ❌ Openings
 - ❌ Machine Learning?
 
-# Board Class
 
-The `Board` class represents a chessboard and provides methods to manage the state of the board and perform various operations.
+# ChessSim Documentation
 
-## Class Overview
+The `ChessSim` class is a Python implementation of a simplified chess simulator. It allows you to simulate and play out chess games using a command-line interface. This documentation provides an overview of the code and its functionalities.
 
-### Attributes
+## Class: ChessSim
 
-- `fen` (str): The FEN notation representing the current state of the board.
-- `board` (numpy.ndarray): An 8x8 matrix representing the chessboard.
-- `turn` (str): The current turn in the game ("w" for white, "b" for black).
-- `letToNum` (dict): A dictionary mapping letters to column numbers.
-- `numToLet` (dict): A dictionary mapping column numbers to letters.
-
-### Methods
-
-- `__init__(fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")`: Initializes a new instance of the `Board` class.
-- `initialize()`: Resets the board to the starting position.
-- `printBoard()`: Prints the current state of the board.
-- `getBoard() -> numpy.ndarray`: Returns the matrix representation of the board.
-- `getTurn() -> str`: Returns the current turn.
-- `getPiece(chessDex: str) -> ChessPiece`: Returns the chess piece object at the specified chessDex (e.g., "e4").
-- `getPieceColRow(col: int, row: int) -> ChessPiece`: Returns the chess piece object at the specified column and row.
-- `makeMove(move: str)`: Makes a move on the board based on the specified chessDex move (e.g., "e2e4").
-- `isValidMove(col: int, row: int, selfColor: str) -> bool`: Checks if a move to the specified column and row is valid for the given color.
-- `isEmptyColRow(col: int, row: int) -> bool`: Checks if the specified column and row on the board is empty.
-- `xyToChess(col: int, row: int) -> str`: Converts column and row indices to chessDex notation (e.g., (1, 1) becomes "a1").
-- `chessToMatrix(chessDex: str) -> Tuple[int, int]`: Converts chessDex notation to column and row indices.
-- `isEnemyPiece(col: int, row: int, color: str) -> bool`: Checks if there is an enemy piece at the specified column and row for the given color.
-- `printValidMoves(move: str)`: Prints the valid moves for the piece at the specified chessDex move.
-
-### Helper Functions
-
-- `fenToMatrix(fen: str) -> numpy.ndarray`: Converts a FEN notation to a matrix representation of the board.
-- `indexToMatrix(col: int, row: int) -> Tuple[int, int]`: Converts column and row indices to matrix indices.
-
-## Usage
-
-### Creating a Board
+### Initialization
 
 ```python
-board = Board()
+def __init__(self)
 ```
 
-### Initializing the Board
+The constructor initializes the `ChessSim` object and sets up the initial state of the chess game. It defines various instance variables to track the game state, including the chessboard position, selected location, legal moves, en passant opportunity, current turn, castling rights, reached positions, move number, promoting pawn flag, piece type translation, piece ID translation, piece type to value translation, piece type to sufficiency value translation, game end flag, and game result.
+
+### Method: game
 
 ```python
-board.initialize()
+def game(self)
 ```
 
-### Getting the Current Turn
+This method starts the chess game by printing the initial board state and playing two sample moves (`e2e4` and `e7e5`). It serves as a simple example of how to use the other methods to play moves in the game.
+
+### Method: printBoard
 
 ```python
-turn = board.getTurn()
+def printBoard(self)
 ```
 
-### Making a Move
+This method prints the current chessboard state to the console. It displays the list of positions representing the chessboard and the pieces' arrangement.
+
+### Method: movePiece
 
 ```python
-board.makeMove("e2e4")
+def movePiece(self, origin, destination, promotionType)
 ```
 
-### Getting the Piece at a Specific ChessDex
+This method handles the movement of a chess piece from the origin to the destination square. It takes three arguments: `origin` (the starting square index), `destination` (the target square index), and `promotionType` (the piece type for pawn promotion). It performs various checks, such as legality of the move, capturing, castling, en passant, pawn promotion, switch of turns, and updating the game state.
+
+### Method: castling
 
 ```python
-piece = board.getPiece("e4")
+def castling(self, destination)
 ```
 
-### Printing the Valid Moves for a Move
+This method handles the castling move for the king and rooks. It takes the `destination` square index as an argument and updates the chessboard position and castling rights accordingly.
+
+### Method: promoteTo
 
 ```python
-board.printValidMoves("e4")
+def promoteTo(self, pieceType, pieceColor)
 ```
 
-### Checking if a Move is Valid
+This method handles the promotion of a pawn to a different piece type. It takes `pieceType` (the type of the promoted piece) and `pieceColor` (the color of the promoted piece) as arguments. It updates the chessboard position and checks for game end conditions.
+
+### Method: enPassant
 
 ```python
-isValid = board.isValidMove(5, 2, "w")
+def enPassant(self, pieceType, pieceColor, destination)
 ```
 
-### Printing the Current State of the Board
+This method handles the en passant capture move. It takes `pieceType` (the type of the moving piece), `pieceColor` (the color of the moving piece), and `destination` (the destination square index) as arguments. It updates the chessboard position accordingly.
+
+### Method: gameEndLogic
 
 ```python
-board.printBoard()
+def gameEndLogic(self)
 ```
 
-## Notes
+This method checks for various game end conditions, such as checkmate, stalemate, the 50-move rule, threefold repetition, and insufficient material. It updates the game end flag and result accordingly.
 
-- The board is represented as an 8x8 matrix, where the rows are numbered from 1 to 8 and the columns are represented by letters 'a' to 'h'.
-- The `fen` attribute represents the current state of the board in Forsyth–Edwards Notation (FEN).
-- The `board` attribute is a numpy ndarray where each element represents a chess piece object or 0 for an empty square.
-- The `turn` attribute stores the current turn in the game, "w" for white and "b" for black.
-- The `letToNum` and `numToLet` dictionaries are used for converting between letters and column numbers.
-- The `makeMove` method updates the board state by moving a piece from one position to another.
-- The `isValidMove` method checks if a move to a specific column and row is valid for the given color.
-- The `printValidMoves` method prints the valid moves for the piece at a specified chessDex move.
-- The `getPiece` method returns the chess piece object at a specified chessDex position.
-- The `isEmptyColRow` method checks if a specific column and row on the board is empty.
-- The `xyToChess` method converts column and row indices to chessDex notation.
-- The `chessToMatrix` method converts chessDex notation to column and row indices.
-- The `isEnemyPiece` method checks if there is an enemy piece at a specific column and row for the given color.
-
-# ChessPiece Class
-
-The `ChessPiece` class is the superclass for all chess pieces in a chess game. It provides the basic attributes and methods common to all chess pieces.
-
-## Class Overview
-
-### Attributes
-
-- `color` (str): The color of the chess piece ("w" for white, "b" for black).
-
-### Methods
-
-- `__init__(color: str)`: Initializes a new instance of the `ChessPiece` class with the specified color.
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the chess piece on the specified board at the given column and row.
-- `__str__() -> str`: Returns a string representation of the chess piece.
-
-## Subclasses
-
-The following subclasses inherit from the `ChessPiece` superclass:
-
-### Pawn
-
-The `Pawn` class represents a pawn chess piece.
-
-#### Additional Attributes
-
-- `rowDict` (dict): A dictionary mapping row numbers to column letters.
-- `enPassantPossible` (bool): Indicates whether the en passant move is possible for the pawn.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the pawn on the specified board at the given column and row.
-
-### Rook
-
-The `Rook` class represents a rook chess piece.
-
-#### Additional Attributes
-
-- `canCastle` (bool): Indicates whether the rook can participate in castling moves.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the rook on the specified board at the given column and row.
-
-### Knight
-
-The `Knight` class represents a knight chess piece.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the knight on the specified board at the given column and row.
-
-### Bishop
-
-The `Bishop` class represents a bishop chess piece.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the bishop on the specified board at the given column and row.
-
-### Queen
-
-The `Queen` class represents a queen chess piece.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the queen on the specified board at the given column and row.
-
-### King
-
-The `King` class represents a king chess piece.
-
-#### Additional Attributes
-
-- `canCastle` (bool): Indicates whether the king can participate in castling moves.
-
-#### Additional Methods
-
-- `validMoves(board, col, row) -> List[Tuple[int, int]]`: Returns a list of valid moves for the king on the specified board at the given column and row.
-
-## Usage
-
-### Creating a Chess Piece
+### Method: findLegalMoves
 
 ```python
-piece = ChessPiece(color="w")
+def findLegalMoves(self, origin, pieceType, pieceColor)
 ```
 
-### Getting the Color of a Chess Piece
+This method finds all legal moves for a given chess piece at the `origin` square. It takes `origin` (the square index of the piece), `pieceType` (the type of the piece), and `pieceColor` (the color of the piece) as arguments. It returns a list of legal destination square indices.
+
+### Method: inCheck
 
 ```python
-color = piece.color
+def inCheck(self, testPosition, turn)
 ```
 
-### Getting the Valid Moves for a Chess Piece
+This method checks if the king of the specified `turn` color is in check in the given `testPosition`. It takes `testPosition` (the position to test) and `turn` (the current turn color) as arguments. It returns `True` if the king is in check, otherwise `False`.
 
-```python
-moves = piece.validMoves(board, col, row)
-```
+### Helper Methods
 
-### Getting the String Representation of a Chess Piece
+The following methods are also defined within the `ChessSim` class:
 
-```python
-pieceStr = str(piece)
-```
+- `color(self, pieceID)`: Returns the color of a piece based on its `pieceID`.
+- `oppositeColor(self, color)`: Returns the opposite color of the specified `color`.
+- `rank(self, squareIndex)`: Returns the rank (row) of the specified `squareIndex`.
+- `file(self, squareIndex)`: Returns the file (column) of the specified `squareIndex`.
+- `printMoveNumberPhrase(self)`: Prints the current move number phrase.
 
-## Notes
+## Conclusion
 
-- The `color` attribute represents the color of the chess piece ("w" for white, "b" for black).
-- Each subclass of `ChessPiece` overrides the `validMoves` method to provide the specific logic for calculating valid moves for that particular chess piece.
-- The `__str__` method returns a string representation of the chess piece, which is useful for printing the chess piece on the board or in other representations.
-- The `Pawn` class has an additional attribute `rowDict` to map row numbers to column letters and an `enPassantPossible` attribute to indicate whether the en passant move is possible for the pawn.
-- The `Rook` class has an additional attribute `canCastle` to indicate whether the rook can participate in castling moves.
-- The `King` class has an additional attribute `canCastle` to indicate whether the king can participate in castling moves.
+The `ChessSim` class provides a simple implementation of a chess simulator. It allows you to simulate chess games, make moves, and check for game end conditions. By utilizing the provided methods and variables, you can extend the functionality of this class to create your own chess AI or user interface. Enjoy playing chess with the `ChessSim`!
 
-```
-
-Please note that this documentation assumes the availability of the `Board` class and its methods mentioned in the code.
-
-
-Please note that this documentation assumes the availability of the `ChessPiece` superclass and its subclasses (`Pawn`, `Rook`, `Knight`, `Bishop`, `Queen`, `King`) in the code.
