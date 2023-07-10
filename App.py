@@ -161,7 +161,7 @@ class Chess:
         self.gameEnded = False
         self.gameResult = 0
 
-    def game(self):
+    def run(self):
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         self.root.title("Chess")
@@ -940,7 +940,7 @@ class Chess:
         return location
 
 game = Chess()
-game.game()
+game.run()
 
 class ChessSim:
     def __init__(self):
