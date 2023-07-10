@@ -806,7 +806,6 @@ class Chess:
                 complex = "d"
                 color = self.DEFAULT_DARK_SQUARE_COLOR
             squares.append(Square(complex, color, location))
-        print("success")
         return squares
 
     def highlightSquares(self):
