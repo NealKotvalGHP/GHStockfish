@@ -1588,7 +1588,7 @@ class ChessSim:
         location = 8 * (7 - rankIndex) + fileIndex
         return location
     
-    def generateAllLegalMoves(self, position):
+    def generateAllLegalMoves(self):
         allLegalMoves = []
         for i in range(64):
             if self.position[i] != 0:
