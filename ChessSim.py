@@ -1,4 +1,4 @@
-import copy
+from copy import copy
 import math
 
 class ChessSim:
