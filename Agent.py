@@ -9,7 +9,6 @@ class Agent:
 
         sim = ChessSim()
 
-        sim.run()
 
         # initialize a variable to store the net piece difference of the board
         score = 0
