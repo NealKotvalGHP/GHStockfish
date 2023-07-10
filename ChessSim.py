@@ -111,9 +111,6 @@ class ChessSim:
     def run(self):
         self.printBoard()
 
-        self.playMove("e2e4")
-        self.playMove("e7e5")
-
     def printBoard(self):
         print(self.position)
 
@@ -167,7 +164,6 @@ class ChessSim:
         else:
             print("Error: Illegal move.")
         
-        self.printBoard()
 
         self.selectedLocation = -1
 
