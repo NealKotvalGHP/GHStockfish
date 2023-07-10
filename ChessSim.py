@@ -81,7 +81,7 @@ class ChessSim:
         }
 
         self.PIECE_ID_TO_VALUE_TRANSLATION = {
-            0 : ("", ""),
+            0 : 0,
             1 : 1,
             2 : 5,
             3 : 3,
