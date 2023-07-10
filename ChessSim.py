@@ -145,14 +145,16 @@ class ChessSim:
                 
                 self.switchTurn()
 
+
+                enPassantOpportunityLocal = copy(self.enPassantOpportunity)
                 for location in range(len(self.position)):
                     if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
                         if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
-
-                            self.enPassantOpportunity = -1
+                            enPassantOpportunityLocal = -1
                         else:
-                            self.enPassantOpportunity = math.floor((origin + destination) / 2)
+                            enPassantOpportunityLocal = math.floor((origin + destination) / 2)
                             break
+                self.enPassantOpportunity = enPassantOpportunityLocal
 
                 if self.currentTurn == "w":
                     self.moveNumber += 1

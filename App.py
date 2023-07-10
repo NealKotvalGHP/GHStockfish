@@ -140,22 +140,6 @@ class Chess:
             "K" : 9999
         }
 
-        self.PIECE_ID_TO_VALUE_TRANSLATION = {
-            0 : 0,
-            1 : 1,
-            2 : 5,
-            3 : 3,
-            4 : 3,
-            5 : 9,
-            6 : 9999,
-            7 : -1,
-            8 : -5,
-            9 : -3,
-            10 : -3,
-            11 : -9,
-            12 : -9999
-        }
-
         self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
             "P" : 100,
             "R" : 100,
@@ -264,14 +248,17 @@ class Chess:
                 
                 self.switchTurn()
 
+
+                enPassantOpportunityLocal = copy(self.enPassantOpportunity)
                 for location in range(len(self.position)):
                     if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
                         if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
-                            self.enPassantOpportunity = -1
+                            enPassantOpportunityLocal = -1
                         else:
-                            self.enPassantOpportunity = math.floor((origin + destination) / 2)
+                            enPassantOpportunityLocal = math.floor((origin + destination) / 2)
                             break
-
+                self.enPassantOpportunity = enPassantOpportunityLocal
+                            
                 if self.currentTurn == "w":
                     self.moveNumber += 1
 
