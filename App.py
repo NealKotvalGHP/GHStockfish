@@ -4,9 +4,6 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import math
 from copy import copy
-from Board import Board
-from Agent import Agent
-
 
 class Piece:
     def __init__(self, type, color, location, value, sufficiencyValue, image):
