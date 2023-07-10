@@ -4,8 +4,16 @@ class Agent:
     def __init__(self):
         pass
 
-    def evaluate(self, board):
+    def evaluate(self):
         score = 0
+
+        sim = ChessSim()
+
+        sim.run()
+
+        print(sim.position)
+
+        
         # This function evaluates the current state of the board and returns a score
         # You need to define your own evaluation function based on the specific game
 
@@ -18,6 +26,7 @@ class Agent:
         #win/loss
 
         return score
+
 
     def minimax(self, game, depth, maximizing_player):
         if depth == 0 or game.gameEnded:
@@ -50,10 +59,11 @@ class Agent:
         return best_move
 
     # Usage example
-    board = initialize_board()
-    best_move = get_best_move(board)
-    make_move(board, best_move)
+    # board = initialize_board()
+    # best_move = get_best_move(board)
+    # make_move(board, best_move)
 
 
 
 
+Agent.evaluate(Agent)

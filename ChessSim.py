@@ -80,6 +80,22 @@ class ChessSim:
             "K" : 9999
         }
 
+        self.PIECE_ID_TO_VALUE_TRANSLATION = {
+            0 : ("", ""),
+            1 : 1,
+            2 : 5,
+            3 : 3,
+            4 : 3,
+            5 : 9,
+            6 : 9999,
+            7 : -1,
+            8 : -5,
+            9 : -3,
+            10 : -3,
+            11 : -9,
+            12 : -9999
+        }
+
         self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
             "P" : 100,
             "R" : 100,
