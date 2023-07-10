@@ -26,9 +26,9 @@ class Square:
 class Chess:
     def __init__(self, root, chessBoard, SQUARE_WIDTH, INITIAL_POSITION, DEFAULT_LIGHT_SQUARE_COLOR, DEFAULT_DARK_SQUARE_COLOR, 
                  HIGHLIGHTED_LIGHT_SQUARE_COLOR, HIGHLIGHTED_DARK_SQUARE_COLOR, currentTurn, position, legalMoves, enPassantOpportunity, 
-                 castlingRights, reachedPositions, moveNumber, promotingPawn, squares, square_ids, pieces, piece_ids, INITIAL_ID_POSITION,
-                 PIECE_TYPE_TRANSLATION, PIECE_ID_TRANSLATION, PIECE_TYPE_TO_IMAGE_TRANSLATION, PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION,
-                 pieceIdToNumberTranslation, idPositions, selectedPiece, gameEnded):
+                 castlingRights, castlingPossible, reachedPositions, moveNumber, promotingPawn, squares, square_ids, pieces, piece_ids, 
+                 INITIAL_ID_POSITION, PIECE_TYPE_TRANSLATION, PIECE_ID_TRANSLATION, PIECE_TYPE_TO_IMAGE_TRANSLATION, PIECE_TYPE_TO_VALUE_TRANSLATION, 
+                 PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION, pieceIdToNumberTranslation, idPositions, selectedPiece, gameEnded):
         self.root = root
         self.chessBoard = chessBoard
         self.SQUARE_WIDTH = SQUARE_WIDTH
@@ -42,6 +42,7 @@ class Chess:
         self.legalMoves = legalMoves
         self.enPassantOpportunity = enPassantOpportunity
         self.castlingRights = castlingRights
+        self.castlingPossible = castlingPossible
         self.reachedPositions = reachedPositions
         self.moveNumber = moveNumber
         self.promotingPawn = promotingPawn
@@ -53,6 +54,7 @@ class Chess:
         self.PIECE_TYPE_TRANSLATION = PIECE_TYPE_TRANSLATION
         self.PIECE_ID_TRANSLATION = PIECE_ID_TRANSLATION
         self.PIECE_TYPE_TO_IMAGE_TRANSLATION = PIECE_TYPE_TO_IMAGE_TRANSLATION
+        self.PIECE_TYPE_TO_VALUE_TRANSLATION = PIECE_TYPE_TO_VALUE_TRANSLATION
         self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION
         self.pieceIdToNumberTranslation = pieceIdToNumberTranslation
         self.idPositions = idPositions
@@ -60,20 +62,17 @@ class Chess:
         self.gameEnded = gameEnded
 
     def game(self):
-        global root
-        root = Tk()
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
-        root.title("Chess")
+        self.root = Tk()
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+        self.root.title("Chess")
 
-        global SQUARE_WIDTH
-        SQUARE_WIDTH = 75
+        self.SQUARE_WIDTH = 75
 
-        global chessBoard 
-        chessBoard = Canvas(root, width = 8 * SQUARE_WIDTH, height = 8 * SQUARE_WIDTH, background = "#FFFFFF")
+        chessBoard = Canvas(self.root, width = 8 * self.SQUARE_WIDTH, height = 8 * self.SQUARE_WIDTH, background = "#FFFFFF")
         chessBoard.grid(column=0, row=0)
 
-        INITIAL_POSITION = [
+        self.INITIAL_POSITION = [
             8, 9, 10, 11, 12, 10, 9, 8,
             7, 7, 7, 7, 7, 7, 7, 7,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -84,55 +83,38 @@ class Chess:
             2, 3, 4, 5, 6, 4, 3, 2
         ]
 
-        global DEFAULT_DARK_SQUARE_COLOR
-        DEFAULT_DARK_SQUARE_COLOR = "#444460"
+        self.DEFAULT_LIGHT_SQUARE_COLOR = "#DDDDDD"
+        self.DEFAULT_DARK_SQUARE_COLOR = "#444460"
+        
+        self.HIGHLIGHTED_LIGHT_SQUARE_COLOR = "#FFFFCC"
+        self.HIGHLIGHTED_DARK_SQUARE_COLOR = "#55554C"
 
-        global DEFAULT_LIGHT_SQUARE_COLOR
-        DEFAULT_LIGHT_SQUARE_COLOR = "#DDDDDD"
+        self.position = copy(self.INITIAL_POSITION)
 
-        global HIGHLIGHTED_DARK_SQUARE_COLOR
-        HIGHLIGHTED_DARK_SQUARE_COLOR = "#55554C"
+        self.legalMoves = []
 
-        global HIGHLIGHTED_LIGHT_SQUARE_COLOR
-        HIGHLIGHTED_LIGHT_SQUARE_COLOR = "#FFFFCC"
+        self.enPassantOpportunity = -1
 
-        global position
-        position = copy(INITIAL_POSITION)
+        self.currentTurn = "w"
 
-        global legalMoves
-        legalMoves = []
-
-        global enPassantOpportunity
-        enPassantOpportunity = -1
-
-        global currentTurn
-        currentTurn = "w"
-
-        global castlingRights
-        castlingRights = [
+        self.castlingRights = [
             [True, True], 
             [True, True]
         ]
 
-        global reachedPositions
-        reachedPositions = [[INITIAL_POSITION, "w", castlingRights, enPassantOpportunity]]
+        self.reachedPositions = [[self.INITIAL_POSITION, "w", self.castlingRights, self.enPassantOpportunity]]
 
-        global moveNumber
-        moveNumber = 1
-        Chess.printMoveNumberPhrase(currentTurn)
+        self.moveNumber = 1
+        Chess.printMoveNumberPhrase(self.currentTurn)
 
-        global promotingPawn
-        promotingPawn = False
+        self.promotingPawn = False
 
-        global squares
-        squares = Chess.initializeSquares()
-        global square_ids
-        square_ids = []
+        self.squares = Chess.initializeSquares()
+        self.square_ids = []
 
-        global pieces
-        pieces = Chess.initializePieces()
+        self.pieces = Chess.initializePieces()
 
-        INITIAL_ID_POSITION = [
+        self.INITIAL_ID_POSITION = [
             25, 27, 29, 31, 32, 30, 28, 26,
             17, 18, 19, 20, 21, 22, 23, 24,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -143,8 +125,7 @@ class Chess:
             9, 11, 13, 15, 16, 14, 12, 10
         ]
 
-        global PIECE_TYPE_TRANSLATION
-        PIECE_TYPE_TRANSLATION = {
+        self.PIECE_TYPE_TRANSLATION = {
             ("P", "w") : 1,
             ("R", "w") : 2,
             ("N", "w") : 3,
@@ -159,8 +140,7 @@ class Chess:
             ("K", "b") : 12
         }
 
-        global PIECE_ID_TRANSLATION
-        PIECE_ID_TRANSLATION = {
+        self.PIECE_ID_TRANSLATION = {
             0 : ("", ""),
             1 : ("P", "w"),
             2 : ("R", "w"),
@@ -176,24 +156,31 @@ class Chess:
             12 : ("K", "b")
         }
 
-        global PIECE_TYPE_TO_IMAGE_TRANSLATION
-        PIECE_TYPE_TO_IMAGE_TRANSLATION = {
-            ("P", "w") : pieces[8 - 1].image,
-            ("R", "w") : pieces[9 - 1].image,
-            ("N", "w") : pieces[11 - 1].image,
-            ("B", "w") : pieces[13 - 1].image,
-            ("Q", "w") : pieces[15 - 1].image,
-            ("K", "w") : pieces[16 - 1].image,
-            ("P", "b") : pieces[24 - 1].image,
-            ("R", "b") : pieces[25 - 1].image,
-            ("N", "b") : pieces[27 - 1].image,
-            ("B", "b") : pieces[29 - 1].image,
-            ("Q", "b") : pieces[31 - 1].image,
-            ("K", "b") : pieces[32 - 1].image
+        self.PIECE_TYPE_TO_IMAGE_TRANSLATION = {
+            ("P", "w") : self.pieces[8 - 1].image,
+            ("R", "w") : self.pieces[9 - 1].image,
+            ("N", "w") : self.pieces[11 - 1].image,
+            ("B", "w") : self.pieces[13 - 1].image,
+            ("Q", "w") : self.pieces[15 - 1].image,
+            ("K", "w") : self.pieces[16 - 1].image,
+            ("P", "b") : self.pieces[24 - 1].image,
+            ("R", "b") : self.pieces[25 - 1].image,
+            ("N", "b") : self.pieces[27 - 1].image,
+            ("B", "b") : self.pieces[29 - 1].image,
+            ("Q", "b") : self.pieces[31 - 1].image,
+            ("K", "b") : self.pieces[32 - 1].image
         }
 
-        global PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION
-        PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
+        self.PIECE_TYPE_TO_VALUE_TRANSLATION = {
+            "P" : 1,
+            "R" : 5,
+            "N" : 3,
+            "B" : 3,
+            "Q" : 9,
+            "K" : 9999
+        }
+
+        self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
             ("P", "w") : 100,
             ("R", "w") : 100,
             ("N", "w") : 50,
@@ -208,286 +195,265 @@ class Chess:
             ("K", "b") : 0
         }
 
-        global pieceIdToNumberTranslation
-        pieceIdToNumberTranslation = {
+        self.pieceIdToNumberTranslation = {
             0: -1
         }
 
-        global piece_ids
-        piece_ids = []
-        global idPositions
-        idPositions = INITIAL_ID_POSITION
+        self.piece_ids = []
+        self.idPositions = self.INITIAL_ID_POSITION
 
-        global selectedPiece
-        selectedPiece = 0
+        self.selectedPiece = 0
 
-        global gameEnded
-        gameEnded = False
+        self.gameEnded = False
 
-        for piece in range(len(pieces)):
-            piece_ids.append(chessBoard.create_image(SQUARE_WIDTH * (pieces[piece].location % 8), SQUARE_WIDTH * math.floor(pieces[piece].location / 8), image = pieces[piece].image, anchor = "nw"))
-            pieceIdToNumberTranslation[piece_ids[piece]] = piece
+        for piece in range(len(self.pieces)):
+            self.piece_ids.append(chessBoard.create_image(self.SQUARE_WIDTH * (self.pieces[piece].location % 8), self.SQUARE_WIDTH * math.floor(self.pieces[piece].location / 8), image = self.pieces[piece].image, anchor = "nw"))
+            self.pieceIdToNumberTranslation[self.piece_ids[piece]] = piece
 
-        for square in range(len(squares)):
-            square_ids.append(chessBoard.create_rectangle(SQUARE_WIDTH * (squares[square].location % 8), SQUARE_WIDTH * math.floor(squares[square].location / 8), SQUARE_WIDTH * (squares[square].location % 8) + SQUARE_WIDTH, SQUARE_WIDTH * math.floor(squares[square].location / 8) + SQUARE_WIDTH, fill = squares[square].color, outline = squares[square].color))
-            chessBoard.tag_lower(square_ids[square])
+        for square in range(len(self.squares)):
+            self.square_ids.append(chessBoard.create_rectangle(self.SQUARE_WIDTH * (self.squares[square].location % 8), self.SQUARE_WIDTH * math.floor(self.squares[square].location / 8), self.SQUARE_WIDTH * (self.squares[square].location % 8) + self.SQUARE_WIDTH, self.SQUARE_WIDTH * math.floor(self.squares[square].location / 8) + self.SQUARE_WIDTH, fill = self.squares[square].color, outline = self.squares[square].color))
+            chessBoard.tag_lower(self.square_ids[square])
 
 
         chessBoard.create_rectangle(-800, -800, -730, -500, fill = "#F1F1F1", outline = "#111111", width = 5, tags = ("white_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[32].image, anchor = "nw", tags = ("white_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[33].image, anchor = "nw", tags = ("white_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[34].image, anchor = "nw", tags = ("white_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[35].image, anchor = "nw", tags = ("white_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[32].image, anchor = "nw", tags = ("white_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[33].image, anchor = "nw", tags = ("white_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[34].image, anchor = "nw", tags = ("white_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[35].image, anchor = "nw", tags = ("white_promotion_UI"))
         
         chessBoard.create_rectangle(-800, -800, -730, -500, fill = "#F1F1F1", outline = "#111111", width = 5, tags = ("black_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[36].image, anchor = "nw", tags = ("black_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[37].image, anchor = "nw", tags = ("black_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[38].image, anchor = "nw", tags = ("black_promotion_UI"))
-        chessBoard.create_image(-800, -800, image = pieces[39].image, anchor = "nw", tags = ("black_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[36].image, anchor = "nw", tags = ("black_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[37].image, anchor = "nw", tags = ("black_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[38].image, anchor = "nw", tags = ("black_promotion_UI"))
+        chessBoard.create_image(-800, -800, image = self.pieces[39].image, anchor = "nw", tags = ("black_promotion_UI"))
 
         Chess.pieceBinds()
-        root.bind("<B1-Motion>", Chess.drag)
-        root.bind("<ButtonRelease>", Chess.deselect)
+        self.root.bind("<B1-Motion>", Chess.drag)
+        self.root.bind("<ButtonRelease>", Chess.deselect)
 
         # This is where you would input a move to play. Player still has to choose
         # which piece to promote to when promoting.
         # playMove("e2e4")
         # playMove("e7e5")
 
-        root.mainloop()
+        self.root.mainloop()
 
     def setSelectedPiece(self, id):
-        global selectedPiece
-        selectedPiece = id
-        chessBoard.tag_raise(selectedPiece)
+        self.selectedPiece = id
+        self.chessBoard.tag_raise(self.selectedPiece)
 
-        origin = pieces[pieceIdToNumberTranslation[selectedPiece]].location
+        origin = self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location
         
-        global legalMoves
-        legalMoves = Chess.findLegalMoves(origin, pieces[pieceIdToNumberTranslation[selectedPiece]].type, pieces[pieceIdToNumberTranslation[selectedPiece]].color, position)
+        self.legalMoves = Chess.findLegalMoves(origin, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color)
         
-        Chess.highlightSquares(legalMoves)
+        Chess.highlightSquares(self.legalMoves)
 
     def drag(self, e):
-        chessBoard.moveto(selectedPiece, e.x - SQUARE_WIDTH / 2, e.y - SQUARE_WIDTH / 2)
+        self.chessBoard.moveto(self.selectedPiece, e.x - self.SQUARE_WIDTH / 2, e.y - self.SQUARE_WIDTH / 2)
 
     def deselect(self, e):
         Chess.movePiece(e.x, e.y)
 
     def movePiece(self, x, y):
-        Chess.unhighlightSquares(legalMoves)
-        global selectedPiece
-        global enPassantOpportunity
-        global reachedPositions
-        global castlingRights
-        global gameEnded
-        global moveNumber
+        Chess.unhighlightSquares(self.legalMoves)
         capture = False
-        origin = pieces[pieceIdToNumberTranslation[selectedPiece]].location
+        origin = self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location
 
-        if not promotingPawn and not gameEnded:
-            destination = math.floor(y / SQUARE_WIDTH) * 8 + math.floor(x / SQUARE_WIDTH)
-            if destination >= 0 and destination < 64 and legalMoves.count(destination) != 0:
-                chessBoard.moveto(selectedPiece, SQUARE_WIDTH * (destination % 8), SQUARE_WIDTH * math.floor(destination / 8))
-                pieces[pieceIdToNumberTranslation[selectedPiece]].location = destination
-                if position[destination] != 0:
-                    chessBoard.moveto(idPositions[destination], -200, -200)
-                position[origin] = 0
-                if position[destination] != 0:
+        if not self.promotingPawn and not self.gameEnded:
+            destination = math.floor(y / self.SQUARE_WIDTH) * 8 + math.floor(x / self.SQUARE_WIDTH)
+            if destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0:
+                self.chessBoard.moveto(self.selectedPiece, self.SQUARE_WIDTH * (destination % 8), self.SQUARE_WIDTH * math.floor(destination / 8))
+                self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location = destination
+                if self.position[destination] != 0:
+                    self.chessBoard.moveto(self.idPositions[destination], -200, -200)
+                self.position[origin] = 0
+                if self.position[destination] != 0:
                     capture = True
-                position[destination] = PIECE_TYPE_TRANSLATION[(pieces[pieceIdToNumberTranslation[selectedPiece]].type, pieces[pieceIdToNumberTranslation[selectedPiece]].color)]
-                idPositions[origin] = 0
-                idPositions[destination] = selectedPiece
+                self.position[destination] = self.PIECE_TYPE_TRANSLATION[(self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color)]
+                self.idPositions[origin] = 0
+                self.idPositions[destination] = self.selectedPiece
 
                 Chess.castling(destination)
                 
                 Chess.pawnPromotion(destination)
                 
-                Chess.enPassant(pieces[pieceIdToNumberTranslation[selectedPiece]].type, pieces[pieceIdToNumberTranslation[selectedPiece]].color, destination)
-                if pieces[pieceIdToNumberTranslation[selectedPiece]].type == "P" and abs(origin - destination) == 16:
-                    enPassantOpportunity = math.floor((origin + destination) / 2)
+                Chess.enPassant(self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color, destination)
+                if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P" and abs(origin - destination) == 16:
+                    self.enPassantOpportunity = math.floor((origin + destination) / 2)
                 else:
-                    enPassantOpportunity = -1
+                    self.enPassantOpportunity = -1
                 
                 Chess.switchTurn()
 
-                for location in range(len(position)):
-                    if PIECE_ID_TRANSLATION[position[location]] == ("P", currentTurn):
-                        if Chess.findLegalMoves(location, "P", currentTurn, position).count(enPassantOpportunity) == 0:
-                            enPassantOpportunity = -1
+                for location in range(len(self.position)):
+                    if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
+                        if Chess.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
+                            self.enPassantOpportunity = -1
                         else:
-                            enPassantOpportunity = math.floor((origin + destination) / 2)
+                            self.enPassantOpportunity = math.floor((origin + destination) / 2)
                             break
 
-                if currentTurn == "w":
-                    moveNumber += 1
+                if self.currentTurn == "w":
+                    self.moveNumber += 1
 
-                if not promotingPawn:
-                    if pieces[pieceIdToNumberTranslation[selectedPiece]].type == "P" or capture:
-                        reachedPositions.clear()
-                    reachedPositions.append([copy(position), copy(currentTurn), copy(castlingRights), copy(enPassantOpportunity)])
+                if not self.promotingPawn:
+                    if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P" or capture:
+                        self.reachedPositions.clear()
+                    self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
                     Chess.gameEndLogic()
-                    if not gameEnded:
-                        Chess.printMoveNumberPhrase(currentTurn)
+                    if not self.gameEnded:
+                        Chess.printMoveNumberPhrase(self.currentTurn)
             else:
-                chessBoard.moveto(selectedPiece, SQUARE_WIDTH * (origin % 8), SQUARE_WIDTH * math.floor(origin / 8))
+                self.chessBoard.moveto(self.selectedPiece, self.SQUARE_WIDTH * (origin % 8), self.SQUARE_WIDTH * math.floor(origin / 8))
         else:
-            chessBoard.moveto(selectedPiece, SQUARE_WIDTH * (origin % 8), SQUARE_WIDTH * math.floor(origin / 8))
-        selectedPiece = 0
+            self.chessBoard.moveto(self.selectedPiece, self.SQUARE_WIDTH * (origin % 8), self.SQUARE_WIDTH * math.floor(origin / 8))
+        self.selectedPiece = 0
 
     def castling(self, destination):
-        global reachedPositions
-        if castlingPossible[0][0] and destination == 62:
-            position[63] = 0
-            position[61] = PIECE_TYPE_TRANSLATION[("R", "w")]
-            idPositions[63] = 0
-            idPositions[61] = 10
-            chessBoard.moveto(10, SQUARE_WIDTH * (61 % 8), SQUARE_WIDTH * math.floor(61 / 8))
-            pieces[10 - 1].location = 61
-            castlingRights[0] = [False, False]
-        elif castlingPossible[0][1] and destination == 58:
-            position[56] = 0
-            position[59] = PIECE_TYPE_TRANSLATION[("R", "w")]
-            idPositions[56] = 0
-            idPositions[59] = 9
-            chessBoard.moveto(9, SQUARE_WIDTH * (59 % 8), SQUARE_WIDTH * math.floor(59 / 8))
-            pieces[9 - 1].location = 59
-            castlingRights[0] = [False, False]
-        elif castlingPossible[1][0] and destination == 6:
-            position[7] = 0
-            position[5] = PIECE_TYPE_TRANSLATION[("R", "b")]
-            idPositions[7] = 0
-            idPositions[5] = 26
-            chessBoard.moveto(26, SQUARE_WIDTH * (5 % 8), SQUARE_WIDTH * math.floor(5 / 8))
-            pieces[26 - 1].location = 5
-            castlingRights[1] = [False, False]
-        elif castlingPossible[1][1] and destination == 2:
-            position[0] = 0
-            position[3] = PIECE_TYPE_TRANSLATION[("R", "b")]
-            idPositions[0] = 0
-            idPositions[3] = 25
-            chessBoard.moveto(25, SQUARE_WIDTH * (3 % 8), SQUARE_WIDTH * math.floor(3 / 8))
-            pieces[25 - 1].location = 3
-            castlingRights[1] = [False, False]
+        if self.castlingPossible[0][0] and destination == 62:
+            self.position[63] = 0
+            self.position[61] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
+            self.idPositions[63] = 0
+            self.idPositions[61] = 10
+            self.chessBoard.moveto(10, self.SQUARE_WIDTH * (61 % 8), self.SQUARE_WIDTH * math.floor(61 / 8))
+            self.pieces[10 - 1].location = 61
+            self.castlingRights[0] = [False, False]
+        elif self.castlingPossible[0][1] and destination == 58:
+            self.position[56] = 0
+            self.position[59] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
+            self.idPositions[56] = 0
+            self.idPositions[59] = 9
+            self.chessBoard.moveto(9, self.SQUARE_WIDTH * (59 % 8), self.SQUARE_WIDTH * math.floor(59 / 8))
+            self.pieces[9 - 1].location = 59
+            self.castlingRights[0] = [False, False]
+        elif self.castlingPossible[1][0] and destination == 6:
+            self.position[7] = 0
+            self.position[5] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
+            self.idPositions[7] = 0
+            self.idPositions[5] = 26
+            self.chessBoard.moveto(26, self.SQUARE_WIDTH * (5 % 8), self.SQUARE_WIDTH * math.floor(5 / 8))
+            self.pieces[26 - 1].location = 5
+            self.castlingRights[1] = [False, False]
+        elif self.castlingPossible[1][1] and destination == 2:
+            self.position[0] = 0
+            self.position[3] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
+            self.idPositions[0] = 0
+            self.idPositions[3] = 25
+            self.chessBoard.moveto(25, self.SQUARE_WIDTH * (3 % 8), self.SQUARE_WIDTH * math.floor(3 / 8))
+            self.pieces[25 - 1].location = 3
+            self.castlingRights[1] = [False, False]
             
-        if pieces[pieceIdToNumberTranslation[selectedPiece]].type == "K":
-            if pieces[pieceIdToNumberTranslation[selectedPiece]].color == "w":
-                castlingRights[0] = [False, False]
-            elif pieces[pieceIdToNumberTranslation[selectedPiece]].color == "b":
-                castlingRights[1] = [False, False]
+        if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "K":
+            if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "w":
+                self.castlingRights[0] = [False, False]
+            elif self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "b":
+                self.castlingRights[1] = [False, False]
             
-        if position[63] != PIECE_TYPE_TRANSLATION[("R", "w")]:
-            castlingRights[0][0] = False
-        if position[56] != PIECE_TYPE_TRANSLATION[("R", "w")]:
-            castlingRights[0][1] = False
-        if position[7] != PIECE_TYPE_TRANSLATION[("R", "b")]:
-            castlingRights[1][0] = False
-        if position[0] != PIECE_TYPE_TRANSLATION[("R", "b")]:
-            castlingRights[1][1] = False
+        if self.position[63] != self.PIECE_TYPE_TRANSLATION[("R", "w")]:
+            self.castlingRights[0][0] = False
+        if self.position[56] != self.PIECE_TYPE_TRANSLATION[("R", "w")]:
+            self.castlingRights[0][1] = False
+        if self.position[7] != self.PIECE_TYPE_TRANSLATION[("R", "b")]:
+            self.castlingRights[1][0] = False
+        if self.position[0] != self.PIECE_TYPE_TRANSLATION[("R", "b")]:
+            self.castlingRights[1][1] = False
 
     def pawnPromotion(self, destination):
-        global promotingPawn
-        baseX = SQUARE_WIDTH * (destination % 8)
-        baseY = SQUARE_WIDTH * math.floor(destination / 8)
+        baseX = self.SQUARE_WIDTH * (destination % 8)
+        baseY = self.SQUARE_WIDTH * math.floor(destination / 8)
         offsetXWhite = [0, 0, 0, 0, 0]
         offsetYWhite = [75, 75, 150, 225, 300]
         offsetXBlack = [0, 0, 0, 0, 0]
         offsetYBlack = [-305, -77, -152, -227, -302]
-        if pieces[pieceIdToNumberTranslation[selectedPiece]].type == "P":
-            if pieces[pieceIdToNumberTranslation[selectedPiece]].color == "w" and destination < 8:
-                promotingPawn = True
-                for id in chessBoard.find_withtag("white_promotion_UI"):
-                    chessBoard.moveto(id, baseX + offsetXWhite[id - 105], baseY + offsetYWhite[id - 105])
-                    chessBoard.tag_raise(id)
-            elif pieces[pieceIdToNumberTranslation[selectedPiece]].color == "b" and destination >= 56:
-                promotingPawn = True
-                for id in chessBoard.find_withtag("black_promotion_UI"):
-                    chessBoard.moveto(id, baseX + offsetXBlack[id - 110], baseY + offsetYBlack[id - 110])
-                    chessBoard.tag_raise(id)
+        if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P":
+            if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "w" and destination < 8:
+                self.promotingPawn = True
+                for id in self.chessBoard.find_withtag("white_promotion_UI"):
+                    self.chessBoard.moveto(id, baseX + offsetXWhite[id - 105], baseY + offsetYWhite[id - 105])
+                    self.chessBoard.tag_raise(id)
+            elif self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "b" and destination >= 56:
+                self.promotingPawn = True
+                for id in self.chessBoard.find_withtag("black_promotion_UI"):
+                    self.chessBoard.moveto(id, baseX + offsetXBlack[id - 110], baseY + offsetYBlack[id - 110])
+                    self.chessBoard.tag_raise(id)
 
-    def promoteTo(self, pieceType, pieceColor, pieceValue):
-        global enPassantOpportunity
-        global reachedPositions
-        global castlingRights
+    def promoteTo(self, pieceType, pieceColor):
         promotionLocation = -1
         if pieceColor == "w":
             for location in range(0, 8):
-                if position[location] == PIECE_TYPE_TRANSLATION[("P", "w")]:
+                if self.position[location] == self.PIECE_TYPE_TRANSLATION[("P", "w")]:
                     promotionLocation = location
                     break
         elif pieceColor == "b":
             for location in range(56, 64):
-                if position[location] == PIECE_TYPE_TRANSLATION[("P", "b")]:
+                if self.position[location] == self.PIECE_TYPE_TRANSLATION[("P", "b")]:
                     promotionLocation = location
                     break
         
-        chessBoard.moveto(idPositions[promotionLocation], -200, -200)
-        promotedPieceId = chessBoard.create_image(SQUARE_WIDTH * (promotionLocation % 8), SQUARE_WIDTH * math.floor(promotionLocation / 8), image = PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)], anchor = "nw")
-        pieces.append(Piece(pieceType, pieceColor, promotionLocation, pieceValue, PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION[(pieceType, pieceColor)], PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)]))
-        chessBoard.tag_bind(promotedPieceId, "<Button-1>", lambda x: Chess.setSelectedPiece(promotedPieceId))
+        self.chessBoard.moveto(self.idPositions[promotionLocation], -200, -200)
+        promotedPieceId = self.chessBoard.create_image(self.SQUARE_WIDTH * (promotionLocation % 8), self.SQUARE_WIDTH * math.floor(promotionLocation / 8), image = self.PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)], anchor = "nw")
+        self.pieces.append(Piece(pieceType, pieceColor, promotionLocation, self.PIECE_TYPE_TO_VALUE_TRANSLATION[pieceType], self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION[(pieceType, pieceColor)], self.PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)]))
+        self.chessBoard.tag_bind(promotedPieceId, "<Button-1>", lambda x: Chess.setSelectedPiece(promotedPieceId))
 
-        position[promotionLocation] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-        idPositions[promotionLocation] = promotedPieceId
-        pieceIdToNumberTranslation[promotedPieceId] = len(pieces) - 1
+        self.position[promotionLocation] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+        self.idPositions[promotionLocation] = promotedPieceId
+        self.pieceIdToNumberTranslation[promotedPieceId] = len(self.pieces) - 1
 
         if pieceColor == "w":
-            for id in chessBoard.find_withtag("white_promotion_UI"):
-                chessBoard.moveto(id, -800, -800)
+            for id in self.chessBoard.find_withtag("white_promotion_UI"):
+                self.chessBoard.moveto(id, -800, -800)
         elif pieceColor == "b":
-            for id in chessBoard.find_withtag("black_promotion_UI"):
-                chessBoard.moveto(id, -800, -800)
+            for id in self.chessBoard.find_withtag("black_promotion_UI"):
+                self.chessBoard.moveto(id, -800, -800)
 
-        reachedPositions.clear()
-        reachedPositions.append([copy(position), copy(currentTurn), copy(castlingRights), copy(enPassantOpportunity)])
+        self.reachedPositions.clear()
+        self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
         Chess.gameEndLogic()
-        if not gameEnded:
-           Chess.printMoveNumberPhrase(currentTurn)
+        if not self.gameEnded:
+           Chess.printMoveNumberPhrase(self.currentTurn)
         
-        global promotingPawn
-        promotingPawn = False
+        self.promotingPawn = False
 
     def enPassant(self, pieceType, pieceColor, destination):
-        if pieceType == "P" and enPassantOpportunity == destination:
+        if pieceType == "P" and self.enPassantOpportunity == destination:
             if pieceColor == "w":
-                chessBoard.moveto(idPositions[destination + 8], -200, -200)
-                position[destination + 8] = 0
-                idPositions[destination + 8] = 0
+                self.chessBoard.moveto(self.idPositions[destination + 8], -200, -200)
+                self.position[destination + 8] = 0
+                self.idPositions[destination + 8] = 0
             elif pieceColor == "b":
-                chessBoard.moveto(idPositions[destination - 8], -200, 200)
-                position[destination - 8] = 0
-                idPositions[destination - 8] = 0
+                self.chessBoard.moveto(self.idPositions[destination - 8], -200, 200)
+                self.position[destination - 8] = 0
+                self.idPositions[destination - 8] = 0
 
     def gameEndLogic(self):
-        global reachedPositions
-        global gameEnded
         movablePieces = False
-        for location in range(len(position)):
-            if Chess.color(position[location]) == currentTurn:
-                if len(Chess.findLegalMoves(location, pieces[pieceIdToNumberTranslation[idPositions[location]]].type, currentTurn, position)) != 0:
+        for location in range(len(self.position)):
+            if Chess.color(self.position[location]) == self.currentTurn:
+                if len(Chess.findLegalMoves(location, self.pieces[self.pieceIdToNumberTranslation[self.idPositions[location]]].type, self.currentTurn)) != 0:
                     movablePieces = True
                     break
-        if Chess.inCheck(position, currentTurn) and not movablePieces:
-            if currentTurn == "w":
+        if Chess.inCheck(self.position, self.currentTurn) and not movablePieces:
+            if self.currentTurn == "w":
                 print("Black wins by checkmate.")
-                gameEnded = True
+                self.gameEnded = True
                 pass
-            elif currentTurn == "b":
+            elif self.currentTurn == "b":
                 print("White wins by checkmate.")
-                gameEnded = True
+                self.gameEnded = True
                 pass
         elif not movablePieces:
             print("The game is a draw by stalemate.")
-            gameEnded = True
+            self.gameEnded = True
             pass
         
-        if len(reachedPositions) > 100:
+        if len(self.reachedPositions) > 100:
             print("The game is a draw by the 50-move rule.")
-            gameEnded = True
+            self.gameEnded = True
             pass
 
         repetitionCounter = 0
-        for absolutePosition in reachedPositions:
-            if absolutePosition == reachedPositions[len(reachedPositions) - 1]:
+        for absolutePosition in self.reachedPositions:
+            if absolutePosition == self.reachedPositions[len(self.reachedPositions) - 1]:
                 repetitionCounter += 1
                 if repetitionCounter == 3:
                     print("The game is a draw by threefold repetition.")
@@ -496,99 +462,93 @@ class Chess:
         
         totalSufficiencyMaterial = 0
         bishopColors = ["", ""]
-        for location in range(len(idPositions)):
-            if idPositions[location] != 0:
-                if pieces[pieceIdToNumberTranslation[idPositions[location]]].type == "B":
+        for location in range(len(self.idPositions)):
+            if self.idPositions[location] != 0:
+                if self.pieces[self.pieceIdToNumberTranslation[self.idPositions[location]]].type == "B":
                     if bishopColors == ["", ""]:
-                        totalSufficiencyMaterial += pieces[pieceIdToNumberTranslation[idPositions[location]]].sufficiencyValue
+                        totalSufficiencyMaterial += self.pieces[self.pieceIdToNumberTranslation[self.idPositions[location]]].sufficiencyValue
                     if (location % 2 + math.floor(location / 8)) % 2 == 0:
                         bishopColors[0] = "l"
                     else:
                         bishopColors[1] = "d"
                     if bishopColors == ["l", "d"]:
-                        totalSufficiencyMaterial += pieces[pieceIdToNumberTranslation[idPositions[location]]].sufficiencyValue
+                        totalSufficiencyMaterial += self.pieces[self.pieceIdToNumberTranslation[self.idPositions[location]]].sufficiencyValue
                 else:
-                    totalSufficiencyMaterial += pieces[pieceIdToNumberTranslation[idPositions[location]]].sufficiencyValue
+                    totalSufficiencyMaterial += self.pieces[self.pieceIdToNumberTranslation[self.idPositions[location]]].sufficiencyValue
                 
                 if totalSufficiencyMaterial >= 100:
                     break
         if totalSufficiencyMaterial < 100:
             print("The game is a draw by insufficient material.")
-            gameEnded = True
+            self.gameEnded = True
             pass
 
-    def findLegalMoves(self, origin, pieceType, pieceColor, position):
-        global castlingPossible
-        castlingPossible = [[False, False], [False, False]]
-        global initiateCastling
-        initiateCastling = [[False, False], [False, False]]
-        global selectedPiece
-        global enPassantOpportunity
+    def findLegalMoves(self, origin, pieceType, pieceColor):
         possibleDestinationSquares = []
 
-        if pieceColor != currentTurn:
+        if pieceColor != self.currentTurn:
             return []
         if pieceType == "P":
             if pieceColor == "w":
-                if position[origin - 8] == 0:
+                if self.position[origin - 8] == 0:
                     possibleDestinationSquares.append(origin - 8)
-                    if Chess.rank(origin) == 2 and position[origin - 16] == 0:
+                    if Chess.rank(origin) == 2 and self.position[origin - 16] == 0:
                         possibleDestinationSquares.append(origin - 16)
-                if Chess.file(origin) + 1 <= 8 and (Chess.color(position[origin - 7]) == "b" or enPassantOpportunity == origin - 7):
+                if Chess.file(origin) + 1 <= 8 and (Chess.color(self.position[origin - 7]) == "b" or self.enPassantOpportunity == origin - 7):
                     possibleDestinationSquares.append(origin - 7)
-                if Chess.file(origin) - 1 > 0 and (Chess.color(position[origin - 9]) == "b" or enPassantOpportunity == origin - 9):
+                if Chess.file(origin) - 1 > 0 and (Chess.color(self.position[origin - 9]) == "b" or self.enPassantOpportunity == origin - 9):
                     possibleDestinationSquares.append(origin - 9)
             elif pieceColor == "b":
-                if position[origin + 8] == 0:
+                if self.position[origin + 8] == 0:
                     possibleDestinationSquares.append(origin + 8)
-                    if Chess.rank(origin) == 7 and position[origin + 16] == 0:
+                    if Chess.rank(origin) == 7 and self.position[origin + 16] == 0:
                         possibleDestinationSquares.append(origin + 16)
-                if Chess.file(origin) - 1 > 0 and (Chess.color(position[origin + 7]) == "w" or enPassantOpportunity == origin + 7):
+                if Chess.file(origin) - 1 > 0 and (Chess.color(self.position[origin + 7]) == "w" or self.enPassantOpportunity == origin + 7):
                     possibleDestinationSquares.append(origin + 7)
-                if Chess.file(origin) + 1 <= 8 and (Chess.color(position[origin + 9]) == "w" or enPassantOpportunity == origin + 9):
+                if Chess.file(origin) + 1 <= 8 and (Chess.color(self.position[origin + 9]) == "w" or self.enPassantOpportunity == origin + 9):
                     possibleDestinationSquares.append(origin + 9)
         elif pieceType == "R" or pieceType == "Q":
             for distanceNorth in range(1, 8):
                 if Chess.rank(origin) + distanceNorth <= 8:
-                    if position[origin - (8 * distanceNorth)] == 0:
+                    if self.position[origin - (8 * distanceNorth)] == 0:
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
-                    elif Chess.color(position[origin - (8 * distanceNorth)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin - (8 * distanceNorth)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (8 * distanceNorth))
                         break
-                    elif Chess.color(position[origin - (8 * distanceNorth)]) == pieceColor:
+                    elif Chess.color(self.position[origin - (8 * distanceNorth)]) == pieceColor:
                         break
                 else:
                     break
             for distanceEast in range(1, 8):
                 if Chess.file(origin) + distanceEast <= 8:
-                    if position[origin + distanceEast] == 0:
+                    if self.position[origin + distanceEast] == 0:
                         possibleDestinationSquares.append(origin + distanceEast)
-                    elif Chess.color(position[origin + distanceEast]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin + distanceEast]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + distanceEast)
                         break
-                    elif Chess.color(position[origin + distanceEast]) == pieceColor:
+                    elif Chess.color(self.position[origin + distanceEast]) == pieceColor:
                         break
                 else:
                     break
             for distanceSouth in range(1, 8):
                 if Chess.rank(origin) - distanceSouth > 0:
-                    if position[origin + (8 * distanceSouth)] == 0:
+                    if self.position[origin + (8 * distanceSouth)] == 0:
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
-                    elif Chess.color(position[origin + (8 * distanceSouth)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin + (8 * distanceSouth)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (8 * distanceSouth))
                         break
-                    elif Chess.color(position[origin + (8 * distanceSouth)]) == pieceColor:
+                    elif Chess.color(self.position[origin + (8 * distanceSouth)]) == pieceColor:
                         break
                 else:
                     break
             for distanceWest in range(1, 8):
                 if Chess.file(origin) - distanceWest > 0:
-                    if position[origin - distanceWest] == 0:
+                    if self.position[origin - distanceWest] == 0:
                         possibleDestinationSquares.append(origin - distanceWest)
-                    elif Chess.color(position[origin - distanceWest]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin - distanceWest]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - distanceWest)
                         break
-                    elif Chess.color(position[origin - distanceWest]) == pieceColor:
+                    elif Chess.color(self.position[origin - distanceWest]) == pieceColor:
                         break
                 else:
                     break
@@ -612,45 +572,45 @@ class Chess:
         if pieceType == "B" or pieceType == "Q":
             for distanceNorthwest in range(1, 8):
                 if Chess.rank(origin) + distanceNorthwest <= 8 and Chess.file(origin) - distanceNorthwest > 0:
-                    if position[origin - (9 * distanceNorthwest)] == 0:
+                    if self.position[origin - (9 * distanceNorthwest)] == 0:
                         possibleDestinationSquares.append(origin - (9 * distanceNorthwest))
-                    elif Chess.color(position[origin - (9 * distanceNorthwest)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin - (9 * distanceNorthwest)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (9 * distanceNorthwest))
                         break
-                    elif Chess.color(position[origin - (9 * distanceNorthwest)]) == pieceColor:
+                    elif Chess.color(self.position[origin - (9 * distanceNorthwest)]) == pieceColor:
                         break
                 else:
                     break
             for distanceNortheast in range(1, 8):
                 if Chess.rank(origin) + distanceNortheast <= 8 and Chess.file(origin) + distanceNortheast <= 8:
-                    if position[origin - (7 * distanceNortheast)] == 0:
+                    if self.position[origin - (7 * distanceNortheast)] == 0:
                         possibleDestinationSquares.append(origin - (7 * distanceNortheast))
-                    elif Chess.color(position[origin - (7 * distanceNortheast)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin - (7 * distanceNortheast)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin - (7 * distanceNortheast))
                         break
-                    elif Chess.color(position[origin - (7 * distanceNortheast)]) == pieceColor:
+                    elif Chess.color(self.position[origin - (7 * distanceNortheast)]) == pieceColor:
                         break
                 else:
                     break
             for distanceSoutheast in range(1, 8):
                 if Chess.rank(origin) - distanceSoutheast > 0 and Chess.file(origin) + distanceSoutheast <= 8:
-                    if position[origin + (9 * distanceSoutheast)] == 0:
+                    if self.position[origin + (9 * distanceSoutheast)] == 0:
                         possibleDestinationSquares.append(origin + (9 * distanceSoutheast))
-                    elif Chess.color(position[origin + (9 * distanceSoutheast)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin + (9 * distanceSoutheast)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (9 * distanceSoutheast))
                         break
-                    elif Chess.color(position[origin + (9 * distanceSoutheast)]) == pieceColor:
+                    elif Chess.color(self.position[origin + (9 * distanceSoutheast)]) == pieceColor:
                         break
                 else:
                     break
             for distanceSouthwest in range(1, 8):
                 if Chess.rank(origin) - distanceSouthwest > 0 and Chess.file(origin) - distanceSouthwest > 0:
-                    if position[origin + (7 * distanceSouthwest)] == 0:
+                    if self.position[origin + (7 * distanceSouthwest)] == 0:
                         possibleDestinationSquares.append(origin + (7 * distanceSouthwest))
-                    elif Chess.color(position[origin + (7 * distanceSouthwest)]) == Chess.oppositeColor(pieceColor):
+                    elif Chess.color(self.position[origin + (7 * distanceSouthwest)]) == Chess.oppositeColor(pieceColor):
                         possibleDestinationSquares.append(origin + (7 * distanceSouthwest))
                         break
-                    elif Chess.color(position[origin + (7 * distanceSouthwest)]) == pieceColor:
+                    elif Chess.color(self.position[origin + (7 * distanceSouthwest)]) == pieceColor:
                         break
                 else:
                     break
@@ -672,77 +632,78 @@ class Chess:
             if Chess.rank(origin) - 1 > 0 and Chess.file(origin) - 1 > 0:
                 possibleDestinationSquares.append(origin + 7)
 
-            if not Chess.inCheck(position, currentTurn):
+            if not Chess.inCheck(self.position, self.currentTurn):
+                self.castlingPossible = [[False, False], [False, False]]
                 if pieceColor == "w":
-                    if castlingRights[0][0]:
-                        if position[61] == 0 and position[62] == 0:
-                            testPosition = copy(position)
+                    if self.castlingRights[0][0]:
+                        if self.position[61] == 0 and self.position[62] == 0:
+                            testPosition = copy(self.position)
                             testPosition[origin] = 0
-                            testPosition[61] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not Chess.inCheck(testPosition, currentTurn):
+                            testPosition[61] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+                            if not Chess.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(62)
-                                castlingPossible[0][0] = True
-                    if castlingRights[0][1]:
-                        if position[59] == 0 and position[58] == 0 and position[57] == 0:
-                            testPosition = copy(position)
+                                self.castlingPossible[0][0] = True
+                    if self.castlingRights[0][1]:
+                        if self.position[59] == 0 and self.position[58] == 0 and self.position[57] == 0:
+                            testPosition = copy(self.position)
                             testPosition[origin] = 0
-                            testPosition[59] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not Chess.inCheck(testPosition, currentTurn):
+                            testPosition[59] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+                            if not Chess.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(58)
-                                castlingPossible[0][1] = True
+                                self.castlingPossible[0][1] = True
                 elif pieceColor == "b":
-                    if castlingRights[1][0]:
-                        if position[5] == 0 and position[6] == 0:
-                            testPosition = copy(position)
+                    if self.castlingRights[1][0]:
+                        if self.position[5] == 0 and self.position[6] == 0:
+                            testPosition = copy(self.position)
                             testPosition[origin] = 0
-                            testPosition[5] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not Chess.inCheck(testPosition, currentTurn):
+                            testPosition[5] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+                            if not Chess.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(6)
-                                castlingPossible[1][0] = True
-                    if castlingRights[1][1]:
-                        if position[3] == 0 and position[2] == 0 and position[1] == 0:
-                            testPosition = copy(position)
+                                self.castlingPossible[1][0] = True
+                    if self.castlingRights[1][1]:
+                        if self.position[3] == 0 and self.position[2] == 0 and self.position[1] == 0:
+                            testPosition = copy(self.position)
                             testPosition[origin] = 0
-                            testPosition[3] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-                            if not Chess.inCheck(testPosition, currentTurn):
+                            testPosition[3] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+                            if not Chess.inCheck(testPosition, self.currentTurn):
                                 possibleDestinationSquares.append(2)
-                                castlingPossible[1][1] = True
+                                self.castlingPossible[1][1] = True
         
         legalDestinationSquares = copy(possibleDestinationSquares)
         for destination in possibleDestinationSquares:
-            testPosition = copy(position)
-            selfCaptureAttempt = Chess.color(testPosition[destination]) == currentTurn
+            testPosition = copy(self.position)
+            selfCaptureAttempt = Chess.color(testPosition[destination]) == self.currentTurn
             testPosition[origin] = 0
-            testPosition[destination] = PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
-            if enPassantOpportunity == destination:
+            testPosition[destination] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
+            if self.enPassantOpportunity == destination:
                 if pieceColor == "w":
                     testPosition[destination + 8] = 0
                 elif pieceColor == "b":
                     testPosition[destination - 8] = 0
-            if selfCaptureAttempt or Chess.inCheck(testPosition, currentTurn):
+            if selfCaptureAttempt or Chess.inCheck(testPosition, self.currentTurn):
                 legalDestinationSquares.pop(legalDestinationSquares.index(destination))
-                if enPassantOpportunity == destination:
-                    enPassantOpportunity = -1
+                if self.enPassantOpportunity == destination:
+                    self.enPassantOpportunity = -1
 
         return legalDestinationSquares
 
-    def inCheck(self, testPosition, currentTurn):
-        opponentColor = Chess.oppositeColor(currentTurn)
-        kingPosition = testPosition.index(PIECE_TYPE_TRANSLATION[("K", currentTurn)])
+    def inCheck(self, testPosition, turn):
+        opponentColor = Chess.oppositeColor(turn)
+        kingPosition = testPosition.index(self.PIECE_TYPE_TRANSLATION[("K", turn)])
         
-        if currentTurn == "w":
-            if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("P", opponentColor):
+        if turn == "w":
+            if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("P", opponentColor):
                 return True
-            if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("P", opponentColor):
+            if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("P", opponentColor):
                 return True
-        elif currentTurn == "b":
-            if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("P", opponentColor):
+        elif turn == "b":
+            if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("P", opponentColor):
                 return True
-            if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("P", opponentColor):
+            if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("P", opponentColor):
                 return True
         for distanceNorth in range(1, 8):
             if Chess.rank(kingPosition) + distanceNorth <= 8:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("R", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (8 * distanceNorth)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (8 * distanceNorth)] != 0:
                     break
@@ -750,7 +711,7 @@ class Chess:
                 break
         for distanceEast in range(1, 8):
             if Chess.file(kingPosition) + distanceEast <= 8:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("R", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + distanceEast]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + distanceEast] != 0:
                     break
@@ -758,7 +719,7 @@ class Chess:
                 break
         for distanceSouth in range(1, 8):
             if Chess.rank(kingPosition) - distanceSouth > 0:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("R", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (8 * distanceSouth)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (8 * distanceSouth)] != 0:
                     break
@@ -766,7 +727,7 @@ class Chess:
                 break
         for distanceWest in range(1, 8):
             if Chess.file(kingPosition) - distanceWest > 0:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("R", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("R", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - distanceWest]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - distanceWest] != 0:
                     break
@@ -774,7 +735,7 @@ class Chess:
                 break
         for distanceNorthwest in range (1, 8):
             if Chess.rank(kingPosition) + distanceNorthwest <= 8 and Chess.file(kingPosition) - distanceNorthwest > 0:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("B", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (9 * distanceNorthwest)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (9 * distanceNorthwest)] != 0:
                     break
@@ -782,7 +743,7 @@ class Chess:
                 break
         for distanceNortheast in range (1, 8):
             if Chess.rank(kingPosition) + distanceNortheast <= 8 and Chess.file(kingPosition) + distanceNortheast <= 8:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("B", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition - (7 * distanceNortheast)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition - (7 * distanceNortheast)] != 0:
                     break
@@ -790,7 +751,7 @@ class Chess:
                 break
         for distanceSoutheast in range (1, 8):
             if Chess.rank(kingPosition) - distanceSoutheast > 0 and Chess.file(kingPosition) + distanceSoutheast <= 8:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("B", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (9 * distanceSoutheast)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (9 * distanceSoutheast)] != 0:
                     break
@@ -798,45 +759,45 @@ class Chess:
                 break
         for distanceSouthwest in range (1, 8):
             if Chess.rank(kingPosition) - distanceSouthwest > 0 and Chess.file(kingPosition) - distanceSouthwest > 0:
-                if PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("B", opponentColor) or PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("Q", opponentColor):
+                if self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("B", opponentColor) or self.PIECE_ID_TRANSLATION[testPosition[kingPosition + (7 * distanceSouthwest)]] == ("Q", opponentColor):
                     return True
                 elif testPosition[kingPosition + (7 * distanceSouthwest)] != 0:
                     break
             else:
                 break
 
-        if Chess.rank(kingPosition) + 2 <= 8 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 17]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) + 2 <= 8 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 17]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) + 2 <= 8 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 15]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) + 2 <= 8 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 15]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 2 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 10]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 10]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 2 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 6]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 6]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 2 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 6]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 2 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 6]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 2 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 10]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 2 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 10]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 2 > 0 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 15]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) - 2 > 0 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 15]] == ("N", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 2 > 0 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 17]] == ("N", opponentColor):
+        if Chess.rank(kingPosition) - 2 > 0 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 17]] == ("N", opponentColor):
             return True
 
-        if Chess.rank(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 8]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 8]] == ("K", opponentColor):
             return True
-        if Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 1]] == ("K", opponentColor):
+        if Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 1]] == ("K", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 8]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 8]] == ("K", opponentColor):
             return True
-        if Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 1]] == ("K", opponentColor):
+        if Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 1]] == ("K", opponentColor):
             return True
-        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 9]] == ("K", opponentColor):
             return True
-        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) + 1 <= 8 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition - 7]] == ("K", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 1 <= 8 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) + 1 <= 8 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 9]] == ("K", opponentColor):
             return True
-        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 1 > 0 and PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("K", opponentColor):
+        if Chess.rank(kingPosition) - 1 > 0 and Chess.file(kingPosition) - 1 > 0 and self.PIECE_ID_TRANSLATION[testPosition[kingPosition + 7]] == ("K", opponentColor):
             return True
         
         return False
@@ -862,44 +823,43 @@ class Chess:
             return "w"
 
     def switchTurn(self):
-        global currentTurn
-        currentTurn = Chess.oppositeColor(currentTurn)
+        self.currentTurn = Chess.oppositeColor(self.currentTurn)
 
-    def printMoveNumberPhrase(self, currentTurn):
-        if currentTurn == "w":
-            print("Move " + str(moveNumber) + ". White to move.")
-        elif currentTurn == "b":
-            print("Move " + str(moveNumber) + ". Black to move.")
+    def printMoveNumberPhrase(self):
+        if self.currentTurn == "w":
+            print("Move " + str(self.moveNumber) + ". White to move.")
+        elif self.currentTurn == "b":
+            print("Move " + str(self.moveNumber) + ". Black to move.")
 
     def initializeSquares(self):
         squares = []
         for location in range(64):
             if (location % 2 + math.floor(location / 8)) % 2 == 0:
                 complex = "l"
-                color = DEFAULT_LIGHT_SQUARE_COLOR
+                color = self.DEFAULT_LIGHT_SQUARE_COLOR
             else:
                 complex = "d"
-                color = DEFAULT_DARK_SQUARE_COLOR
+                color = self.DEFAULT_DARK_SQUARE_COLOR
             squares.append(Square(complex, color, location))
         return squares
 
-    def highlightSquares(self, legalMoves):
-        for square in squares:
-            if legalMoves.count(square.location) != 0:
+    def highlightSquares(self):
+        for square in self.squares:
+            if self.legalMoves.count(square.location) != 0:
                 if square.complex == "l":
-                    square.color = HIGHLIGHTED_LIGHT_SQUARE_COLOR
+                    square.color = self.HIGHLIGHTED_LIGHT_SQUARE_COLOR
                 elif square.complex == "d":
-                    square.color = HIGHLIGHTED_DARK_SQUARE_COLOR
-                chessBoard.itemconfig(square_ids[square.location], fill = square.color, outline = square.color)
+                    square.color = self.HIGHLIGHTED_DARK_SQUARE_COLOR
+                self.chessBoard.itemconfig(self.square_ids[square.location], fill = square.color, outline = square.color)
 
-    def unhighlightSquares(self, legalMoves):
-        for square in squares:
-            if legalMoves.count(square.location) != 0:
+    def unhighlightSquares(self):
+        for square in self.squares:
+            if self.legalMoves.count(square.location) != 0:
                 if square.complex == "l":
-                    square.color = DEFAULT_LIGHT_SQUARE_COLOR
+                    square.color = self.DEFAULT_LIGHT_SQUARE_COLOR
                 elif square.complex == "d":
-                    square.color = DEFAULT_DARK_SQUARE_COLOR
-                chessBoard.itemconfig(square_ids[square.location], fill = square.color, outline = square.color)
+                    square.color = self.DEFAULT_DARK_SQUARE_COLOR
+                self.chessBoard.itemconfig(self.square_ids[square.location], fill = square.color, outline = square.color)
 
     def initializePieces(self):
         pieces = [
@@ -948,61 +908,59 @@ class Chess:
         return pieces
 
     def pieceBinds(self):
-        chessBoard.tag_bind(1, "<Button-1>", lambda x: Chess.setSelectedPiece(1))
-        chessBoard.tag_bind(2, "<Button-1>", lambda x: Chess.setSelectedPiece(2))
-        chessBoard.tag_bind(3, "<Button-1>", lambda x: Chess.setSelectedPiece(3))
-        chessBoard.tag_bind(4, "<Button-1>", lambda x: Chess.setSelectedPiece(4))
-        chessBoard.tag_bind(5, "<Button-1>", lambda x: Chess.setSelectedPiece(5))
-        chessBoard.tag_bind(6, "<Button-1>", lambda x: Chess.setSelectedPiece(6))
-        chessBoard.tag_bind(7, "<Button-1>", lambda x: Chess.setSelectedPiece(7))
-        chessBoard.tag_bind(8, "<Button-1>", lambda x: Chess.setSelectedPiece(8))
-        chessBoard.tag_bind(9, "<Button-1>", lambda x: Chess.setSelectedPiece(9))
-        chessBoard.tag_bind(10, "<Button-1>", lambda x: Chess.setSelectedPiece(10))
-        chessBoard.tag_bind(11, "<Button-1>", lambda x: Chess.setSelectedPiece(11))
-        chessBoard.tag_bind(12, "<Button-1>", lambda x: Chess.setSelectedPiece(12))
-        chessBoard.tag_bind(13, "<Button-1>", lambda x: Chess.setSelectedPiece(13))
-        chessBoard.tag_bind(14, "<Button-1>", lambda x: Chess.setSelectedPiece(14))
-        chessBoard.tag_bind(15, "<Button-1>", lambda x: Chess.setSelectedPiece(15))
-        chessBoard.tag_bind(16, "<Button-1>", lambda x: Chess.setSelectedPiece(16))
-        chessBoard.tag_bind(17, "<Button-1>", lambda x: Chess.setSelectedPiece(17))
-        chessBoard.tag_bind(18, "<Button-1>", lambda x: Chess.setSelectedPiece(18))
-        chessBoard.tag_bind(19, "<Button-1>", lambda x: Chess.setSelectedPiece(19))
-        chessBoard.tag_bind(20, "<Button-1>", lambda x: Chess.setSelectedPiece(20))
-        chessBoard.tag_bind(21, "<Button-1>", lambda x: Chess.setSelectedPiece(21))
-        chessBoard.tag_bind(22, "<Button-1>", lambda x: Chess.setSelectedPiece(22))
-        chessBoard.tag_bind(23, "<Button-1>", lambda x: Chess.setSelectedPiece(23))
-        chessBoard.tag_bind(24, "<Button-1>", lambda x: Chess.setSelectedPiece(24))
-        chessBoard.tag_bind(25, "<Button-1>", lambda x: Chess.setSelectedPiece(25))
-        chessBoard.tag_bind(26, "<Button-1>", lambda x: Chess.setSelectedPiece(26))
-        chessBoard.tag_bind(27, "<Button-1>", lambda x: Chess.setSelectedPiece(27))
-        chessBoard.tag_bind(28, "<Button-1>", lambda x: Chess.setSelectedPiece(28))
-        chessBoard.tag_bind(29, "<Button-1>", lambda x: Chess.setSelectedPiece(29))
-        chessBoard.tag_bind(30, "<Button-1>", lambda x: Chess.setSelectedPiece(30))
-        chessBoard.tag_bind(31, "<Button-1>", lambda x: Chess.setSelectedPiece(31))
-        chessBoard.tag_bind(32, "<Button-1>", lambda x: Chess.setSelectedPiece(32))
+        self.chessBoard.tag_bind(1, "<Button-1>", lambda x: Chess.setSelectedPiece(1))
+        self.chessBoard.tag_bind(2, "<Button-1>", lambda x: Chess.setSelectedPiece(2))
+        self.chessBoard.tag_bind(3, "<Button-1>", lambda x: Chess.setSelectedPiece(3))
+        self.chessBoard.tag_bind(4, "<Button-1>", lambda x: Chess.setSelectedPiece(4))
+        self.chessBoard.tag_bind(5, "<Button-1>", lambda x: Chess.setSelectedPiece(5))
+        self.chessBoard.tag_bind(6, "<Button-1>", lambda x: Chess.setSelectedPiece(6))
+        self.chessBoard.tag_bind(7, "<Button-1>", lambda x: Chess.setSelectedPiece(7))
+        self.chessBoard.tag_bind(8, "<Button-1>", lambda x: Chess.setSelectedPiece(8))
+        self.chessBoard.tag_bind(9, "<Button-1>", lambda x: Chess.setSelectedPiece(9))
+        self.chessBoard.tag_bind(10, "<Button-1>", lambda x: Chess.setSelectedPiece(10))
+        self.chessBoard.tag_bind(11, "<Button-1>", lambda x: Chess.setSelectedPiece(11))
+        self.chessBoard.tag_bind(12, "<Button-1>", lambda x: Chess.setSelectedPiece(12))
+        self.chessBoard.tag_bind(13, "<Button-1>", lambda x: Chess.setSelectedPiece(13))
+        self.chessBoard.tag_bind(14, "<Button-1>", lambda x: Chess.setSelectedPiece(14))
+        self.chessBoard.tag_bind(15, "<Button-1>", lambda x: Chess.setSelectedPiece(15))
+        self.chessBoard.tag_bind(16, "<Button-1>", lambda x: Chess.setSelectedPiece(16))
+        self.chessBoard.tag_bind(17, "<Button-1>", lambda x: Chess.setSelectedPiece(17))
+        self.chessBoard.tag_bind(18, "<Button-1>", lambda x: Chess.setSelectedPiece(18))
+        self.chessBoard.tag_bind(19, "<Button-1>", lambda x: Chess.setSelectedPiece(19))
+        self.chessBoard.tag_bind(20, "<Button-1>", lambda x: Chess.setSelectedPiece(20))
+        self.chessBoard.tag_bind(21, "<Button-1>", lambda x: Chess.setSelectedPiece(21))
+        self.chessBoard.tag_bind(22, "<Button-1>", lambda x: Chess.setSelectedPiece(22))
+        self.chessBoard.tag_bind(23, "<Button-1>", lambda x: Chess.setSelectedPiece(23))
+        self.chessBoard.tag_bind(24, "<Button-1>", lambda x: Chess.setSelectedPiece(24))
+        self.chessBoard.tag_bind(25, "<Button-1>", lambda x: Chess.setSelectedPiece(25))
+        self.chessBoard.tag_bind(26, "<Button-1>", lambda x: Chess.setSelectedPiece(26))
+        self.chessBoard.tag_bind(27, "<Button-1>", lambda x: Chess.setSelectedPiece(27))
+        self.chessBoard.tag_bind(28, "<Button-1>", lambda x: Chess.setSelectedPiece(28))
+        self.chessBoard.tag_bind(29, "<Button-1>", lambda x: Chess.setSelectedPiece(29))
+        self.chessBoard.tag_bind(30, "<Button-1>", lambda x: Chess.setSelectedPiece(30))
+        self.chessBoard.tag_bind(31, "<Button-1>", lambda x: Chess.setSelectedPiece(31))
+        self.chessBoard.tag_bind(32, "<Button-1>", lambda x: Chess.setSelectedPiece(32))
 
-        chessBoard.tag_bind(106, "<Button-1>", lambda x: Chess.promoteTo("Q", "w", 9))
-        chessBoard.tag_bind(107, "<Button-1>", lambda x: Chess.promoteTo("N", "w", 3))
-        chessBoard.tag_bind(108, "<Button-1>", lambda x: Chess.promoteTo("R", "w", 5))
-        chessBoard.tag_bind(109, "<Button-1>", lambda x: Chess.promoteTo("B", "w", 3))
-        chessBoard.tag_bind(111, "<Button-1>", lambda x: Chess.promoteTo("Q", "b", 9))
-        chessBoard.tag_bind(112, "<Button-1>", lambda x: Chess.promoteTo("N", "b", 3))
-        chessBoard.tag_bind(113, "<Button-1>", lambda x: Chess.promoteTo("R", "b", 5))
-        chessBoard.tag_bind(114, "<Button-1>", lambda x: Chess.promoteTo("B", "b", 3))
+        self.chessBoard.tag_bind(106, "<Button-1>", lambda x: Chess.promoteTo("Q", "w"))
+        self.chessBoard.tag_bind(107, "<Button-1>", lambda x: Chess.promoteTo("N", "w"))
+        self.chessBoard.tag_bind(108, "<Button-1>", lambda x: Chess.promoteTo("R", "w"))
+        self.chessBoard.tag_bind(109, "<Button-1>", lambda x: Chess.promoteTo("B", "w"))
+        self.chessBoard.tag_bind(111, "<Button-1>", lambda x: Chess.promoteTo("Q", "b"))
+        self.chessBoard.tag_bind(112, "<Button-1>", lambda x: Chess.promoteTo("N", "b"))
+        self.chessBoard.tag_bind(113, "<Button-1>", lambda x: Chess.promoteTo("R", "b"))
+        self.chessBoard.tag_bind(114, "<Button-1>", lambda x: Chess.promoteTo("B", "b"))
 
-    def playMove(move):
-        global root
-
+    def playMove(self, move):
         originCoordinates = move[0] + move[1]
         destinationCoordinates = move[2] + move[3]
 
         origin = Chess.convertToLocation(originCoordinates)
         destination = Chess.convertToLocation(destinationCoordinates)
 
-        x = SQUARE_WIDTH * (destination % 8) + SQUARE_WIDTH / 2
-        y = SQUARE_WIDTH * math.floor(destination / 8) + SQUARE_WIDTH / 2
+        x = self.SQUARE_WIDTH * (destination % 8) + self.SQUARE_WIDTH / 2
+        y = self.SQUARE_WIDTH * math.floor(destination / 8) + self.SQUARE_WIDTH / 2
         
-        Chess.setSelectedPiece(idPositions[origin])
+        Chess.setSelectedPiece(self.idPositions[origin])
         Chess.movePiece(x, y)
 
     def convertToLocation(self, coordinates):
