@@ -1159,7 +1159,7 @@ class ChessSim:
     def gameEndLogic(self):
         movablePieces = False
         for location in range(len(self.position)):
-            if self.color(self, self.position[location]) == self.currentTurn:
+            if self.color(self.position[location]) == self.currentTurn:
                 if len(self.findLegalMoves(location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
                     movablePieces = True
                     break
