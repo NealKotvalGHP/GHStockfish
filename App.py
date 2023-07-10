@@ -1587,9 +1587,15 @@ class ChessSim:
 
         location = 8 * (7 - rankIndex) + fileIndex
         return location
-<<<<<<< HEAD
+    
+    def generateAllLegalMoves(self, position):
+        allLegalMoves = []
+        for i in range(64):
+            if self.position[i] != 0:
+                piece = self.PIECE_ID_TRANSLATION[self.position[i]][0]
+                pieceColor = self.PIECE_ID_TRANSLATION[self.position[i]][1]
+                if self.currentTurn == pieceColor:
+                    allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
+        return allLegalMoves
 
 # ChessSim.game(ChessSim)
-=======
-    
->>>>>>> e3e7fff6f4ba792775ef19f01b6d6f54855fa896
