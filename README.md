@@ -9,18 +9,18 @@
 - ✅ Make Moves
 - ✅ FEN to Matrix
 - ✅ Pawn Logic + Generate Moves
-  - ❌ En Passant
+  - ✅ En Passant
 - ✅ Rook Logic + Generate Moves 
 - ✅ Knight Logic + Generate Moves
 - ✅ Bishop Logic + Generate Moves
 - ✅ Queen Logic + Generate Moves
 - ✅ King Logic + Generate Moves
-  - ❌ Castling
-  - ❌ Check
-  - ❌ Checkmate
-- ❌ Edge Cases
+  - ✅ Castling
+  - ✅ Check
+  - ✅ Checkmate
+- ✅ Edge Cases
 - ✅ Generate Moves Via Engine
-- ✅ Random Moves
+- ❌ Random Moves
 - ❌ Evaluation Function
 - ❌ Transposition Table
 - ❌ Openings
