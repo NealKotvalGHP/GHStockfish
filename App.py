@@ -1587,5 +1587,9 @@ class ChessSim:
 
         location = 8 * (7 - rankIndex) + fileIndex
         return location
+<<<<<<< HEAD
 
 # ChessSim.game(ChessSim)
+=======
+    
+>>>>>>> e3e7fff6f4ba792775ef19f01b6d6f54855fa896
