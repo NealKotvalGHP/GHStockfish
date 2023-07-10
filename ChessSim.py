@@ -148,7 +148,7 @@ class ChessSim:
                 for location in range(len(self.position)):
                     if self.PIECE_ID_TRANSLATION[self.position[location]] == ("P", self.currentTurn):
                         if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
-                        if self.findLegalMoves(location, "P", self.currentTurn).count(self.enPassantOpportunity) == 0:
+
                             self.enPassantOpportunity = -1
                         else:
                             self.enPassantOpportunity = math.floor((origin + destination) / 2)
@@ -238,12 +238,10 @@ class ChessSim:
         for location in range(len(self.position)):
             if self.color(self.position[location]) == self.currentTurn:
                 if len(self.findLegalMoves(location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
-            if self.color(self.position[location]) == self.currentTurn:
-                if len(self.findLegalMoves(location, self.PIECE_ID_TRANSLATION[self.position[location]][0], self.currentTurn)) != 0:
                     movablePieces = True
                     break
         if self.inCheck(self.position, self.currentTurn) and not movablePieces:
-        if self.inCheck(self.position, self.currentTurn) and not movablePieces:
+        
             if self.currentTurn == "w":
                 print("Black wins by checkmate.")
                 self.gameEnded = True
