@@ -666,3 +666,20 @@ class ChessSim:
             else:
                 allLegalMoves.append([])
         return allLegalMoves
+    
+    def playMoveReturn(self, move):
+        originCoordinates = move[0] + move[1]
+        destinationCoordinates = move[2] + move[3]
+        if len(move) == 5:
+            promotionType = move[4]
+        else:
+            promotionType = ""
+
+        origin = self.convertToLocation(originCoordinates)
+        destination = self.convertToLocation(destinationCoordinates)
+
+        simGame = copy(self)
+        
+        simGame.movePiece(origin, destination, promotionType)
+
+        return simGame
