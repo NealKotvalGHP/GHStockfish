@@ -4,10 +4,51 @@ from copy import copy
 import numpy as np
 
 class Agent:
+    
     def __init__(self, color):
         self.color = color
+        
+    #minimize
+    def minimize(self, game, depth):
+        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+
+        if depth == 0 or game.gameEnded():
+            return self.evaluate(game)
+        
+        min_val = float('-inf')
+
+        # initializing a simulation
+        for move in self.generateAllLegalMoves(sim):
+            tempSim = copy(sim)
+            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
+            eval = self.maximize(tempSim, depth-1)
+            min_eval = min(min_val, eval)
+        return min_eval
+        
+    #maximize
+    def maximize(self, game, depth):
+        #initializing a simulation
+        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+
+        if depth == 0 or game.gameEnded():
+            return self.evaluate(game)
+        
+        max_val = float('+inf')
+
+        # initializing a simulation
+        for move in self.generateAllLegalMoves(sim):
+            tempSim = copy(sim)
+            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
+            eval = self.maximize(tempSim, depth-1)
+            max_eval = min(max_val, eval)
+        return max_eval
 
 
+    def simulate(self, path, sim):
+        for ply in range(len(path)):
+            legalMoves = self.generateAllLegalMoves(sim)
+            sim.playMove(self.convertToMove(legalMoves[path[ply]]))
+        pass
 
     def evaluate(self, game):
         score = 0
@@ -89,21 +130,36 @@ class Agent:
         return score
     
     def playBestMove(self, game):
-        legalMoves = self.generateAllLegalMoves(game)
+        # legalMoves = self.generateAllLegalMoves(game)
 
-        scores = []
-        for move in legalMoves:
-            sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-            sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
-            scores.append(self.evaluate(sim))
-        print(legalMoves[np.argmax(scores)])
-        return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
+        # scores = []
+        # for move in legalMoves:
+        #     sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+        #     sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
+        #     scores.append(self.evaluate(sim))
+        # print(legalMoves[np.argmax(scores)])
+        # return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
+
+        current_board = copy(game)
+        best_move = None
+        best_eval = float('-inf')
+
+        # Iterate over all possible moves and find the best one
+        for move in self.generateAllLegalMoves(game):
+            new_board = playMove(current_board, move)
+            eval = minimize(new_board, 2)  # Set the desired depth for the minimax search
+            if eval > best_eval:
+                best_eval = eval
+                best_move = move
+
+        # Make the best move
+        current_board = make_move(current_board, best_move)
     
     def selectRandomMove(self, game, legalMoves):
         move = legalMoves[0]
         selectedMove = ""
         promotion = False
-        selectedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
+        selectedMove = self.convertToMove(move)
         if self.color == "w" and game.position[move[0]] == 1 and selectedMove[3] == "8":
             promotion = True
         elif self.color == "b" and game.position[move[0]] == 7 and selectedMove[3] == "1":
@@ -112,6 +168,18 @@ class Agent:
             selectedMove = copy(selectedMove) + "Q"
         
         return selectedMove
+
+    # move is a 2-tuple. 3-tuple if there is promotion information. Converts to string.
+    def convertToMove(self, move):
+
+        convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
+
+        if len(move) == 3:
+            promotionType = move[2]
+        else:
+            promotionType = ""
+
+        return convertedMove + promotionType
 
     def convertToCoordinates(self, location):
         fileLabels = "abcdefgh"
