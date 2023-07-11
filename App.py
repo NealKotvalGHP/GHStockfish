@@ -142,6 +142,22 @@ class Chess:
             "K" : 9999
         }
 
+        self.PIECE_ID_TO_VALUE_TRANSLATION = {
+            0 : 0,
+            1 : 1,
+            2 : 5,
+            3 : 3,
+            4 : 3,
+            5 : 9,
+            6 : 9999,
+            7 : -1,
+            8 : -5,
+            9 : -3,
+            10 : -3,
+            11 : -9,
+            12 : -9999
+        }
+
         self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
             "P" : 100,
             "R" : 100,
@@ -162,6 +178,8 @@ class Chess:
 
         self.gameEnded = False
         self.gameResult = 0
+
+        self.agent = Agent(self.computerColor)
 
     def run(self):
         self.root.columnconfigure(0, weight=1)
@@ -202,8 +220,7 @@ class Chess:
         self.root.mainloop()
     
     def playComputerResponse(self):
-        agent = Agent(self.position, self.computerColor, self.castlingRights, self.enPassantOpportunity)
-        self.playMove(agent.playBestMove())
+        self.playMove(self.agent.playBestMove(self))
 
     def setSelectedPiece(self, id):
         self.selectedPiece = id
@@ -956,6 +973,18 @@ class Chess:
 
         location = 8 * (7 - rankIndex) + fileIndex
         return location
-
+    
+    def generateAllLegalMoves(self):
+        allLegalMoves = []
+        for i in range(64):
+            if self.color(self.position[i]) == self.currentTurn:
+                piece = self.PIECE_ID_TRANSLATION[self.position[i]][0]
+                pieceColor = self.PIECE_ID_TRANSLATION[self.position[i]][1]
+                if self.currentTurn == pieceColor:
+                    allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
+            else:
+                allLegalMoves.append([])
+        return allLegalMoves
+    
 game = Chess("w")
 game.run()
