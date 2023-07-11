@@ -64,6 +64,7 @@ class Chess:
 
         self.currentTurn = "w"
         self.computerColor = computerColor
+        self.computerThinking = False
 
         self.reachedPositions = [[self.INITIAL_POSITION, "w", self.castlingRights, self.enPassantOpportunity]]
 
@@ -220,20 +221,25 @@ class Chess:
         self.root.mainloop()
     
     def playComputerResponse(self):
+        self.chessBoard.update()
+        self.computerThinking = True
         self.playMove(self.agent.playBestMove(self))
+        self.computerThinking = False
 
-    def setSelectedPiece(self, id):
-        self.selectedPiece = id
-        self.chessBoard.tag_raise(self.selectedPiece)
+    def setSelectedPiece(self, id, computerExecuted):
+        if not self.computerThinking or computerExecuted:
+            self.selectedPiece = id
+            self.chessBoard.tag_raise(self.selectedPiece)
 
-        origin = self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location
+            origin = self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location
         
-        self.legalMoves = self.findLegalMoves(origin, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color)
+            self.legalMoves = self.findLegalMoves(origin, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color)
         
-        self.highlightSquares()
+            self.highlightSquares()
 
     def drag(self, e):
-        self.chessBoard.moveto(self.selectedPiece, e.x - self.SQUARE_WIDTH / 2, e.y - self.SQUARE_WIDTH / 2)
+        if not self.computerThinking:
+            self.chessBoard.moveto(self.selectedPiece, e.x - self.SQUARE_WIDTH / 2, e.y - self.SQUARE_WIDTH / 2)
 
     def deselect(self, e):
         self.movePiece(e.x, e.y, "")
@@ -270,7 +276,6 @@ class Chess:
                     self.enPassantOpportunity = -1
                 
                 self.switchTurn()
-
 
                 enPassantOpportunityLocal = copy(self.enPassantOpportunity)
                 for location in range(len(self.position)):
@@ -385,7 +390,7 @@ class Chess:
         self.chessBoard.moveto(self.idPositions[promotionLocation], -200, -200)
         promotedPieceId = self.chessBoard.create_image(self.SQUARE_WIDTH * (promotionLocation % 8), self.SQUARE_WIDTH * math.floor(promotionLocation / 8), image = self.PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)], anchor = "nw")
         self.pieces.append(Piece(pieceType, pieceColor, promotionLocation, self.PIECE_TYPE_TO_VALUE_TRANSLATION[pieceType], self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION[pieceType], self.PIECE_TYPE_TO_IMAGE_TRANSLATION[(pieceType, pieceColor)]))
-        self.chessBoard.tag_bind(promotedPieceId, "<Button-1>", lambda x: self.setSelectedPiece(promotedPieceId))
+        self.chessBoard.tag_bind(promotedPieceId, "<Button-1>", lambda x: self.setSelectedPiece(promotedPieceId, False))
 
         self.position[promotionLocation] = self.PIECE_TYPE_TRANSLATION[(pieceType, pieceColor)]
         self.idPositions[promotionLocation] = promotedPieceId
@@ -905,38 +910,38 @@ class Chess:
         return pieces
 
     def pieceBinds(self):
-        self.chessBoard.tag_bind(1, "<Button-1>", lambda x: self.setSelectedPiece(1))
-        self.chessBoard.tag_bind(2, "<Button-1>", lambda x: self.setSelectedPiece(2))
-        self.chessBoard.tag_bind(3, "<Button-1>", lambda x: self.setSelectedPiece(3))
-        self.chessBoard.tag_bind(4, "<Button-1>", lambda x: self.setSelectedPiece(4))
-        self.chessBoard.tag_bind(5, "<Button-1>", lambda x: self.setSelectedPiece(5))
-        self.chessBoard.tag_bind(6, "<Button-1>", lambda x: self.setSelectedPiece(6))
-        self.chessBoard.tag_bind(7, "<Button-1>", lambda x: self.setSelectedPiece(7))
-        self.chessBoard.tag_bind(8, "<Button-1>", lambda x: self.setSelectedPiece(8))
-        self.chessBoard.tag_bind(9, "<Button-1>", lambda x: self.setSelectedPiece(9))
-        self.chessBoard.tag_bind(10, "<Button-1>", lambda x: self.setSelectedPiece(10))
-        self.chessBoard.tag_bind(11, "<Button-1>", lambda x: self.setSelectedPiece(11))
-        self.chessBoard.tag_bind(12, "<Button-1>", lambda x: self.setSelectedPiece(12))
-        self.chessBoard.tag_bind(13, "<Button-1>", lambda x: self.setSelectedPiece(13))
-        self.chessBoard.tag_bind(14, "<Button-1>", lambda x: self.setSelectedPiece(14))
-        self.chessBoard.tag_bind(15, "<Button-1>", lambda x: self.setSelectedPiece(15))
-        self.chessBoard.tag_bind(16, "<Button-1>", lambda x: self.setSelectedPiece(16))
-        self.chessBoard.tag_bind(17, "<Button-1>", lambda x: self.setSelectedPiece(17))
-        self.chessBoard.tag_bind(18, "<Button-1>", lambda x: self.setSelectedPiece(18))
-        self.chessBoard.tag_bind(19, "<Button-1>", lambda x: self.setSelectedPiece(19))
-        self.chessBoard.tag_bind(20, "<Button-1>", lambda x: self.setSelectedPiece(20))
-        self.chessBoard.tag_bind(21, "<Button-1>", lambda x: self.setSelectedPiece(21))
-        self.chessBoard.tag_bind(22, "<Button-1>", lambda x: self.setSelectedPiece(22))
-        self.chessBoard.tag_bind(23, "<Button-1>", lambda x: self.setSelectedPiece(23))
-        self.chessBoard.tag_bind(24, "<Button-1>", lambda x: self.setSelectedPiece(24))
-        self.chessBoard.tag_bind(25, "<Button-1>", lambda x: self.setSelectedPiece(25))
-        self.chessBoard.tag_bind(26, "<Button-1>", lambda x: self.setSelectedPiece(26))
-        self.chessBoard.tag_bind(27, "<Button-1>", lambda x: self.setSelectedPiece(27))
-        self.chessBoard.tag_bind(28, "<Button-1>", lambda x: self.setSelectedPiece(28))
-        self.chessBoard.tag_bind(29, "<Button-1>", lambda x: self.setSelectedPiece(29))
-        self.chessBoard.tag_bind(30, "<Button-1>", lambda x: self.setSelectedPiece(30))
-        self.chessBoard.tag_bind(31, "<Button-1>", lambda x: self.setSelectedPiece(31))
-        self.chessBoard.tag_bind(32, "<Button-1>", lambda x: self.setSelectedPiece(32))
+        self.chessBoard.tag_bind(1, "<Button-1>", lambda x: self.setSelectedPiece(1, False))
+        self.chessBoard.tag_bind(2, "<Button-1>", lambda x: self.setSelectedPiece(2, False))
+        self.chessBoard.tag_bind(3, "<Button-1>", lambda x: self.setSelectedPiece(3, False))
+        self.chessBoard.tag_bind(4, "<Button-1>", lambda x: self.setSelectedPiece(4, False))
+        self.chessBoard.tag_bind(5, "<Button-1>", lambda x: self.setSelectedPiece(5, False))
+        self.chessBoard.tag_bind(6, "<Button-1>", lambda x: self.setSelectedPiece(6, False))
+        self.chessBoard.tag_bind(7, "<Button-1>", lambda x: self.setSelectedPiece(7, False))
+        self.chessBoard.tag_bind(8, "<Button-1>", lambda x: self.setSelectedPiece(8, False))
+        self.chessBoard.tag_bind(9, "<Button-1>", lambda x: self.setSelectedPiece(9, False))
+        self.chessBoard.tag_bind(10, "<Button-1>", lambda x: self.setSelectedPiece(10, False))
+        self.chessBoard.tag_bind(11, "<Button-1>", lambda x: self.setSelectedPiece(11, False))
+        self.chessBoard.tag_bind(12, "<Button-1>", lambda x: self.setSelectedPiece(12, False))
+        self.chessBoard.tag_bind(13, "<Button-1>", lambda x: self.setSelectedPiece(13, False))
+        self.chessBoard.tag_bind(14, "<Button-1>", lambda x: self.setSelectedPiece(14, False))
+        self.chessBoard.tag_bind(15, "<Button-1>", lambda x: self.setSelectedPiece(15, False))
+        self.chessBoard.tag_bind(16, "<Button-1>", lambda x: self.setSelectedPiece(16, False))
+        self.chessBoard.tag_bind(17, "<Button-1>", lambda x: self.setSelectedPiece(17, False))
+        self.chessBoard.tag_bind(18, "<Button-1>", lambda x: self.setSelectedPiece(18, False))
+        self.chessBoard.tag_bind(19, "<Button-1>", lambda x: self.setSelectedPiece(19, False))
+        self.chessBoard.tag_bind(20, "<Button-1>", lambda x: self.setSelectedPiece(20, False))
+        self.chessBoard.tag_bind(21, "<Button-1>", lambda x: self.setSelectedPiece(21, False))
+        self.chessBoard.tag_bind(22, "<Button-1>", lambda x: self.setSelectedPiece(22, False))
+        self.chessBoard.tag_bind(23, "<Button-1>", lambda x: self.setSelectedPiece(23, False))
+        self.chessBoard.tag_bind(24, "<Button-1>", lambda x: self.setSelectedPiece(24, False))
+        self.chessBoard.tag_bind(25, "<Button-1>", lambda x: self.setSelectedPiece(25, False))
+        self.chessBoard.tag_bind(26, "<Button-1>", lambda x: self.setSelectedPiece(26, False))
+        self.chessBoard.tag_bind(27, "<Button-1>", lambda x: self.setSelectedPiece(27, False))
+        self.chessBoard.tag_bind(28, "<Button-1>", lambda x: self.setSelectedPiece(28, False))
+        self.chessBoard.tag_bind(29, "<Button-1>", lambda x: self.setSelectedPiece(29, False))
+        self.chessBoard.tag_bind(30, "<Button-1>", lambda x: self.setSelectedPiece(30, False))
+        self.chessBoard.tag_bind(31, "<Button-1>", lambda x: self.setSelectedPiece(31, False))
+        self.chessBoard.tag_bind(32, "<Button-1>", lambda x: self.setSelectedPiece(32, False))
 
         self.chessBoard.tag_bind(106, "<Button-1>", lambda x: self.promoteTo("Q", "w"))
         self.chessBoard.tag_bind(107, "<Button-1>", lambda x: self.promoteTo("N", "w"))
@@ -961,7 +966,7 @@ class Chess:
         x = self.SQUARE_WIDTH * (destination % 8) + self.SQUARE_WIDTH / 2
         y = self.SQUARE_WIDTH * math.floor(destination / 8) + self.SQUARE_WIDTH / 2
         
-        self.setSelectedPiece(self.idPositions[origin])
+        self.setSelectedPiece(self.idPositions[origin], True)
         self.movePiece(x, y, promotionType)
 
     def convertToLocation(self, coordinates):

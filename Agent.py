@@ -56,23 +56,17 @@ class Agent:
         if game.gameEnded:
             if self.color == "w":
                 if game.gameResult == 1:
-                    score = float('+inf')
+                    score = float('inf')
                 elif game.gameResult == -1:
                     score = float('-inf')
                 else:
                     score = 0
-            else:
-                if game.gameResult == 1:
-                    score = float('-inf')
-                elif game.gameResult == -1:
-                    score = float('+inf')
-                else:
-                    score = 0
+            return score
         
         # This function evaluates the current state of the board and returns a score
         # You need to define your own evaluation function based on the specific game
 
-
+        
 
         # initialize a variable to store the net piece difference of the board
         pieceDiff = 0
@@ -82,7 +76,7 @@ class Agent:
         # print("piece diff: " + str(pieceDiff))
 
 
-
+        
         #positional advantages
 
         # all pieces on back 2 ranks
@@ -119,14 +113,15 @@ class Agent:
 
 
         # combine all evaluations above and weigh them into the variable "score"
+        
 
-        score = (pieceDiff - (back2RanksDiff / 7) - (centerPawnsDiff / 2))
+        score += pieceDiff #- (back2RanksDiff / 7) - (centerPawnsDiff / 2))
 
         return score
     
     def playBestMove(self, game):
         self.nextEvaluations = []
-        sim = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+        sim = copy(game)
         if self.color == "w":
             self.minimax(sim, self.depth, True)
             bestEval = max(self.nextEvaluations)
@@ -135,7 +130,6 @@ class Agent:
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
         bestMove = self.convertToMove(self.generateAllLegalMoves(game)[bestMoveIndex])
-
         return bestMove
 
     

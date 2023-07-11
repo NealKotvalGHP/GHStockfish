@@ -105,7 +105,6 @@ class ChessSim:
     def movePiece(self, origin, destination, promotionType):
         self.selectedLocation = origin
         positionCopy = copy(self.position)
-
         capture = False
         self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
@@ -150,8 +149,6 @@ class ChessSim:
                     self.gameEndLogic()
             else:
                 print("Error: Illegal move.")
-        else:
-            print("Error: Illegal move.")
         
 
         self.selectedLocation = -1
@@ -223,24 +220,23 @@ class ChessSim:
                     movablePieces = True
                     break
         if self.inCheck(self.position, self.currentTurn) and not movablePieces:
-        
             if self.currentTurn == "w":
-                print("Black wins by checkmate.")
+                # Black wins by checkmate.
                 self.gameEnded = True
                 self.gameResult = -1
                 pass
             elif self.currentTurn == "b":
-                print("White wins by checkmate.")
+                # White wins by checkmate.
                 self.gameEnded = True
                 self.gameResult = 1
                 pass
         elif not movablePieces:
-            print("The game is a draw by stalemate.")
+            # The game is a draw by stalemate.
             self.gameEnded = True
             pass
         
         if len(self.reachedPositions) > 100:
-            print("The game is a draw by the 50-move rule.")
+            # The game is a draw by the 50-move rule.
             self.gameEnded = True
             pass
 
@@ -249,7 +245,7 @@ class ChessSim:
             if absolutePosition == self.reachedPositions[len(self.reachedPositions) - 1]:
                 repetitionCounter += 1
                 if repetitionCounter == 3:
-                    print("The game is a draw by threefold repetition.")
+                    # The game is a draw by threefold repetition.
                     self.gameEnded = True
                     pass
         
@@ -272,7 +268,7 @@ class ChessSim:
                 if totalSufficiencyMaterial >= 100:
                     break
         if totalSufficiencyMaterial < 100:
-            print("The game is a draw by insufficient material.")
+            # The game is a draw by insufficient material.
             self.gameEnded = True
             pass
 
