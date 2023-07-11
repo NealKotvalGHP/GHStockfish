@@ -5,10 +5,12 @@ import numpy as np
 
 class Agent:
     
-    def __init__(self, color):
+    def __init__(self, color, depth):
         self.color = color
+        self.depth = depth
+        self.nextEvaluations = []
         
-    def minimax(self,game,depth,maximizingPlayer):
+    def minimax(self, game, depth, maximizingPlayer):
         if depth == 0 or game.gameEnded:
             return self.evaluate(game)
         if maximizingPlayer:
@@ -18,18 +20,21 @@ class Agent:
             for move in moves:
                 branch = copy(game)
                 branch.playMove(self.convertToMove(move))
-                eval = self.minimax(branch, depth-1, false)
+                eval = self.minimax(branch, depth-1, False)
                 maxEval = max(maxEval, eval)
+                if depth == self.depth - 1:
+                    self.nextEvaluations.append(maxEval)
             return maxEval
         else:
             minEval = float('inf')
             moves = self.generateAllLegalMoves(game)
-
             for move in moves:
                 branch = copy(game)
                 branch.playMove(self.convertToMove(move))
-                eval = self.minimax(branch, depth-1, true)
+                eval = self.minimax(branch, depth-1, True)
                 minEval = min(minEval, eval)
+                if depth == self.depth - 1:
+                    self.nextEvaluations.append(minEval)
             return minEval
 
 
@@ -105,7 +110,7 @@ class Agent:
 
 
         # DEBUG -> print the position in the shape of chessboard for readability
-        print(np.reshape(game.position, (8, 8)))
+        # print(np.reshape(game.position, (8, 8)))
 
 
 
@@ -119,12 +124,17 @@ class Agent:
         return score
     
     def playBestMove(self, game):
-        bestEval = self.minimax(game, 2, False)
-        moves = self.generateAllLegalMoves(game)
-        for move in moves:
-            temp = copy(game)
-            temp.playMove(self.convertToMove())
-            if bestEval == self.evaluate()
+        self.nextEvaluations = []
+        if self.color == "w":
+            self.minimax(game, self.depth, True)
+            bestEval = max(self.nextEvaluations)
+        elif self.color == "b":
+            self.minimax(game, self.depth, False)
+            bestEval = min(self.nextEvaluations)
+        bestMoveIndex = self.nextEvaluations.index(bestEval)
+        bestMove = self.convertToMove(game.generateAllLegalMoves()[bestMoveIndex])
+
+        return bestMove
 
     
     def selectRandomMove(self, game, legalMoves):

@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self, INITIAL_POSITION, turn, castlingRights, enPassantOpportunity):
+    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity):
         self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
@@ -13,7 +13,7 @@ class ChessSim:
 
         self.enPassantOpportunity = enPassantOpportunity
 
-        self.currentTurn = turn
+        self.currentTurn = startingTurn
 
         self.castlingRights = castlingRights
 
@@ -58,7 +58,7 @@ class ChessSim:
             11 : ("Q", "b"),
             12 : ("K", "b")
         }
-
+        print
         self.PIECE_TYPE_TO_VALUE_TRANSLATION = {
             "P" : 1,
             "R" : 5,
