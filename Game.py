@@ -18,7 +18,7 @@ simTest.playMove("g8f6")
 simTest.playMove("h5f7")
 
 # Agent will be initialized with the position it is analyzing. To evaluate positions branching from this,
-# run the simulator to update self.game.position. The initial position is stored inside of self.position.
+# run the simulator to update self.game.position. The position to analyze is stored inside of self.position.
 # I will add a restart function inside of the simulator that returns to the initial self.position.
 agent = Agent(simTest.position, simTest.currentTurn, simTest.castlingRights, simTest.enPassantOpportunity)
 print(agent.evaluate())
