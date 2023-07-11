@@ -2,7 +2,7 @@ from ChessSim import ChessSim
 from Agent import Agent
 
 simTest = ChessSim()
-
+print(simTest.position)
 
 simTest.playMove("e2e4")
 simTest.playMove("e7e5")
