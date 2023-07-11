@@ -7,6 +7,8 @@ class Agent:
     def __init__(self, color):
         self.color = color
 
+
+
     def evaluate(self, game):
         score = 0
 
@@ -89,10 +91,13 @@ class Agent:
     def playBestMove(self, game):
         legalMoves = self.generateAllLegalMoves(game)
 
-        selectedMove = self.selectRandomMove(game, legalMoves)
-
-
-        return selectedMove
+        scores = []
+        for move in legalMoves:
+            sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+            sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
+            scores.append(self.evaluate(sim))
+        print(legalMoves[np.argmax(scores)])
+        return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
     
     def selectRandomMove(self, game, legalMoves):
         move = legalMoves[0]
