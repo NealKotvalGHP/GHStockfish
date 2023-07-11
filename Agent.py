@@ -95,16 +95,14 @@ class Agent:
         return selectedMove
     
     def selectRandomMove(self, game, legalMoves):
+        move = legalMoves[0]
         selectedMove = ""
         promotion = False
-        for location in range(len(legalMoves)):
-            if len(legalMoves[location]) != 0:
-                selectedMove = self.convertToCoordinates(location) + self.convertToCoordinates(legalMoves[location][0])
-                if self.color == "w" and game.position[location] == 1 and selectedMove[3] == "8":
-                    promotion = True
-                elif self.color == "b" and game.position[location] == 7 and selectedMove[3] == "1":
-                    promotion = True
-                break
+        selectedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
+        if self.color == "w" and game.position[move[0]] == 1 and selectedMove[3] == "8":
+            promotion = True
+        elif self.color == "b" and game.position[move[0]] == 7 and selectedMove[3] == "1":
+            promotion = True
         if promotion:
             selectedMove = copy(selectedMove) + "Q"
         
@@ -122,11 +120,10 @@ class Agent:
     def generateAllLegalMoves(self, game):
         allLegalMoves = []
         for i in range(64):
-            if game.color(game.position[i]) == game.currentTurn:
+            if game.color(game.position[i]) == self.color:
                 piece = game.PIECE_ID_TRANSLATION[game.position[i]][0]
                 pieceColor = game.PIECE_ID_TRANSLATION[game.position[i]][1]
                 if game.currentTurn == pieceColor:
-                    allLegalMoves.append(game.findLegalMoves(i, piece, pieceColor))
-            else:
-                allLegalMoves.append([])
+                    for move in game.findLegalMoves(i, piece, pieceColor):
+                        allLegalMoves.append((i, move))
         return allLegalMoves
