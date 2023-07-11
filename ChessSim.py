@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity):
+    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity, reachedPositions):
         self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
@@ -22,7 +22,7 @@ class ChessSim:
             [False, False]
         ]
 
-        self.reachedPositions = [[self.INITIAL_POSITION, "w", self.castlingRights, self.enPassantOpportunity]]
+        self.reachedPositions = reachedPositions
 
         self.moveNumber = 1
 
@@ -108,7 +108,6 @@ class ChessSim:
 
         capture = False
         self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
-        self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
         if not self.promotingPawn and not self.gameEnded:
             if destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0:
@@ -118,13 +117,10 @@ class ChessSim:
                 self.position[destination] = positionCopy[origin]
 
                 self.castling(destination)
-                self.castling(destination)
                 
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and ((self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "w" and destination < 8) or (self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "b" and destination >= 56)):
-                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
-                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
                 
-                self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and abs(origin - destination) == 16:
                     self.enPassantOpportunity = math.floor((origin + destination) / 2)
@@ -152,8 +148,6 @@ class ChessSim:
                         self.reachedPositions.clear()
                     self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
                     self.gameEndLogic()
-                    if not self.gameEnded:
-                        self.printMoveNumberPhrase()
             else:
                 print("Error: Illegal move.")
         else:
@@ -213,8 +207,6 @@ class ChessSim:
         self.reachedPositions.clear()
         self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
         self.gameEndLogic()
-        if not self.gameEnded:
-           self.printMoveNumberPhrase()
 
     def enPassant(self, pieceType, pieceColor, destination):
         if pieceType == "P" and self.enPassantOpportunity == destination:
