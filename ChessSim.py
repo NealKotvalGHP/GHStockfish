@@ -2,17 +2,8 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self):
-        self.INITIAL_POSITION = [
-            8, 9, 10, 11, 12, 10, 9, 8,
-            7, 7, 7, 7, 7, 7, 7, 7,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1,
-            2, 3, 4, 5, 6, 4, 3, 2
-        ]
+    def __init__(self, INITIAL_POSITION, turn, castlingRights, enPassantOpportunity):
+        self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
 
@@ -20,14 +11,11 @@ class ChessSim:
 
         self.legalMoves = []
 
-        self.enPassantOpportunity = -1
+        self.enPassantOpportunity = enPassantOpportunity
 
-        self.currentTurn = "w"
+        self.currentTurn = turn
 
-        self.castlingRights = [
-            [True, True], 
-            [True, True]
-        ]
+        self.castlingRights = castlingRights
 
         self.castlingPossible = [
             [False, False],
@@ -670,9 +658,11 @@ class ChessSim:
     def generateAllLegalMoves(self):
         allLegalMoves = []
         for i in range(64):
-            if self.position[i] != 0:
+            if self.color(self.position[i]) == self.currentTurn:
                 piece = self.PIECE_ID_TRANSLATION[self.position[i]][0]
                 pieceColor = self.PIECE_ID_TRANSLATION[self.position[i]][1]
                 if self.currentTurn == pieceColor:
                     allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
+            else:
+                allLegalMoves.append([])
         return allLegalMoves

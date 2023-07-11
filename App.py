@@ -4,6 +4,7 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import math
 from copy import copy
+from Agent import Agent
 
 class Piece:
     def __init__(self, type, color, location, value, sufficiencyValue, image):
@@ -21,7 +22,7 @@ class Square:
         self.location = location
 
 class Chess:
-    def __init__(self):
+    def __init__(self, computerColor):
         self.root = Tk()
 
         self.SQUARE_WIDTH = 75
@@ -51,8 +52,6 @@ class Chess:
 
         self.enPassantOpportunity = -1
 
-        self.currentTurn = "w"
-
         self.castlingRights = [
             [True, True], 
             [True, True]
@@ -62,6 +61,9 @@ class Chess:
             [False, False],
             [False, False]
         ]
+
+        self.currentTurn = "w"
+        self.computerColor = computerColor
 
         self.reachedPositions = [[self.INITIAL_POSITION, "w", self.castlingRights, self.enPassantOpportunity]]
 
@@ -194,12 +196,14 @@ class Chess:
         self.root.bind("<B1-Motion>", self.drag)
         self.root.bind("<ButtonRelease>", self.deselect)
 
-        # This is where you would input a move to play. Player still has to choose
-        # which piece to promote to when promoting.
-        # playMove("e2e4")
-        # playMove("e7e5")
+        if self.computerColor == "w":
+            self.playComputerResponse()
         
         self.root.mainloop()
+    
+    def playComputerResponse(self):
+        agent = Agent(self.position, self.computerColor, self.castlingRights, self.enPassantOpportunity)
+        self.playMove(agent.playBestMove())
 
     def setSelectedPiece(self, id):
         self.selectedPiece = id
@@ -215,9 +219,9 @@ class Chess:
         self.chessBoard.moveto(self.selectedPiece, e.x - self.SQUARE_WIDTH / 2, e.y - self.SQUARE_WIDTH / 2)
 
     def deselect(self, e):
-        self.movePiece(e.x, e.y)
+        self.movePiece(e.x, e.y, "")
 
-    def movePiece(self, x, y):
+    def movePiece(self, x, y, promotionType):
         self.unhighlightSquares()
         capture = False
         origin = self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].location
@@ -239,6 +243,8 @@ class Chess:
                 self.castling(destination)
                 
                 self.pawnPromotion(destination)
+                if promotionType != "":
+                    self.promoteTo(promotionType, self.currentTurn)
                 
                 self.enPassant(self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type, self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color, destination)
                 if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P" and abs(origin - destination) == 16:
@@ -269,6 +275,9 @@ class Chess:
                     self.gameEndLogic()
                     if not self.gameEnded:
                         self.printMoveNumberPhrase()
+                        if self.currentTurn == self.computerColor:
+                            self.playComputerResponse()
+
             else:
                 self.chessBoard.moveto(self.selectedPiece, self.SQUARE_WIDTH * (origin % 8), self.SQUARE_WIDTH * math.floor(origin / 8))
         else:
@@ -331,7 +340,7 @@ class Chess:
         offsetYWhite = [75, 75, 150, 225, 300]
         offsetXBlack = [0, 0, 0, 0, 0]
         offsetYBlack = [-305, -77, -152, -227, -302]
-        if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P":
+        if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].type == "P" and not self.currentTurn == self.computerColor:
             if self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "w" and destination < 8:
                 self.promotingPawn = True
                 for id in self.chessBoard.find_withtag("white_promotion_UI"):
@@ -376,7 +385,10 @@ class Chess:
         self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
         self.gameEndLogic()
         if not self.gameEnded:
-           self.printMoveNumberPhrase()
+            self.printMoveNumberPhrase()
+            if self.currentTurn == self.computerColor and self.promotingPawn:
+                self.promotingPawn = False
+                self.playComputerResponse()
         
         self.promotingPawn = False
 
@@ -921,15 +933,19 @@ class Chess:
     def playMove(self, move):
         originCoordinates = move[0] + move[1]
         destinationCoordinates = move[2] + move[3]
+        if len(move) == 5:
+            promotionType = move[4]
+        else:
+            promotionType = ""
 
-        origin = self.convertToLocation(self, originCoordinates)
-        destination = self.convertToLocation(self, destinationCoordinates)
+        origin = self.convertToLocation(originCoordinates)
+        destination = self.convertToLocation(destinationCoordinates)
 
         x = self.SQUARE_WIDTH * (destination % 8) + self.SQUARE_WIDTH / 2
         y = self.SQUARE_WIDTH * math.floor(destination / 8) + self.SQUARE_WIDTH / 2
         
-        self.setSelectedPiece(self, self.idPositions[origin])
-        self.movePiece(self, x, y)
+        self.setSelectedPiece(self.idPositions[origin])
+        self.movePiece(x, y, promotionType)
 
     def convertToLocation(self, coordinates):
         fileLabels = "abcdefgh"
@@ -941,5 +957,5 @@ class Chess:
         location = 8 * (7 - rankIndex) + fileIndex
         return location
 
-game = Chess()
+game = Chess("w")
 game.run()
