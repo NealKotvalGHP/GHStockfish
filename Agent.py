@@ -8,40 +8,30 @@ class Agent:
     def __init__(self, color):
         self.color = color
         
-    #minimize
-    def minimize(self, game, depth):
-        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-
-        if depth == 0 or game.gameEnded():
+    def minimax(self,game,depth,maximizingPlayer):
+        if depth == 0 or game.gameEnded:
             return self.evaluate(game)
-        
-        min_val = float('-inf')
+        if maximizingPlayer:
+            maxEval = float('-inf')
+            moves = self.generateAllLegalMoves(game)
 
-        # initializing a simulation
-        for move in self.generateAllLegalMoves(sim):
-            tempSim = copy(sim)
-            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
-            eval = self.maximize(tempSim, depth-1)
-            min_eval = min(min_val, eval)
-        return min_eval
-        
-    #maximize
-    def maximize(self, game, depth):
-        #initializing a simulation
-        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+            for move in moves:
+                branch = copy(game)
+                branch.playMove(self.convertToMove(move))
+                eval = self.minimax(branch, depth-1, false)
+                maxEval = max(maxEval, eval)
+            return maxEval
+        else:
+            minEval = float('+inf')
+            moves = self.generateAllLegalMoves(game)
 
-        if depth == 0 or game.gameEnded():
-            return self.evaluate(game)
-        
-        max_val = float('+inf')
+            for move in moves:
+                branch = copy(game)
+                branch.playMove(self.convertToMove(move))
+                eval = self.minimax(branch, depth-1, true)
+                minEval = min(minEval, eval)
+            return minEval
 
-        # initializing a simulation
-        for move in self.generateAllLegalMoves(sim):
-            tempSim = copy(sim)
-            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
-            eval = self.maximize(tempSim, depth-1)
-            max_eval = min(max_val, eval)
-        return max_eval
 
 
     def simulate(self, path, sim):
@@ -130,30 +120,16 @@ class Agent:
         return score
     
     def playBestMove(self, game):
-        # legalMoves = self.generateAllLegalMoves(game)
+        legalMoves = self.generateAllLegalMoves(game)
 
-        # scores = []
-        # for move in legalMoves:
-        #     sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-        #     sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
-        #     scores.append(self.evaluate(sim))
-        # print(legalMoves[np.argmax(scores)])
-        # return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
+        scores = []
+        for move in legalMoves:
+            sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
+            sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
+            scores.append(self.evaluate(sim))
+        print(legalMoves[np.argmax(scores)])
+        return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
 
-        current_board = copy(game)
-        best_move = None
-        best_eval = float('-inf')
-
-        # Iterate over all possible moves and find the best one
-        for move in self.generateAllLegalMoves(game):
-            new_board = playMove(current_board, move)
-            eval = minimize(new_board, 2)  # Set the desired depth for the minimax search
-            if eval > best_eval:
-                best_eval = eval
-                best_move = move
-
-        # Make the best move
-        current_board = make_move(current_board, best_move)
     
     def selectRandomMove(self, game, legalMoves):
         move = legalMoves[0]
