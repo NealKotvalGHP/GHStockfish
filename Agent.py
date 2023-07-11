@@ -22,7 +22,7 @@ class Agent:
                 maxEval = max(maxEval, eval)
             return maxEval
         else:
-            minEval = float('+inf')
+            minEval = float('inf')
             moves = self.generateAllLegalMoves(game)
 
             for move in moves:
@@ -31,7 +31,6 @@ class Agent:
                 eval = self.minimax(branch, depth-1, true)
                 minEval = min(minEval, eval)
             return minEval
-
 
 
     def simulate(self, path, sim):
@@ -120,15 +119,12 @@ class Agent:
         return score
     
     def playBestMove(self, game):
-        legalMoves = self.generateAllLegalMoves(game)
-
-        scores = []
-        for move in legalMoves:
-            sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-            sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
-            scores.append(self.evaluate(sim))
-        print(legalMoves[np.argmax(scores)])
-        return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
+        bestEval = self.minimax(game, 2, False)
+        moves = self.generateAllLegalMoves(game)
+        for move in moves:
+            temp = copy(game)
+            temp.playMove(self.convertToMove())
+            if bestEval == self.evaluate()
 
     
     def selectRandomMove(self, game, legalMoves):
