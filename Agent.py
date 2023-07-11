@@ -87,7 +87,7 @@ class Agent:
         return score
     
     def playBestMove(self, game):
-        legalMoves = game.generateAllLegalMoves()
+        legalMoves = self.generateAllLegalMoves(game)
 
         selectedMove = self.selectRandomMove(game, legalMoves)
 
@@ -118,3 +118,15 @@ class Agent:
         rank = rankLabels[7 - math.floor(location / 8)]
 
         return file + rank
+    
+    def generateAllLegalMoves(self, game):
+        allLegalMoves = []
+        for i in range(64):
+            if game.color(game.position[i]) == game.currentTurn:
+                piece = game.PIECE_ID_TRANSLATION[game.position[i]][0]
+                pieceColor = game.PIECE_ID_TRANSLATION[game.position[i]][1]
+                if game.currentTurn == pieceColor:
+                    allLegalMoves.append(game.findLegalMoves(i, piece, pieceColor))
+            else:
+                allLegalMoves.append([])
+        return allLegalMoves
