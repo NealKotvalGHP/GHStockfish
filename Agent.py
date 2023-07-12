@@ -22,9 +22,9 @@ class Agent:
             bestMove = None
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
+                branch = ChessSim(game.position, game.currentTurn, deepcopy(game.castlingRights), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
+                eval, _ = self.minimax(branch, depth-1, alpha, beta, False)
                 if eval > maxEval:
                     maxEval = eval
                     bestMove = move
@@ -38,9 +38,9 @@ class Agent:
             bestMove = None
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
+                branch = ChessSim(game.position, game.currentTurn, deepcopy(game.castlingRights), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
+                eval, _ = self.minimax(branch, depth-1, alpha, beta, True)
                 if eval < minEval:
                     minEval = eval
                     bestMove = move
@@ -60,9 +60,9 @@ class Agent:
         #win/loss
         if game.gameEnded:
             if game.gameResult == 1:
-                score = float('inf')
+                score = 100000000
             elif game.gameResult == -1:
-                score = float('-inf')
+                score = -100000000
             else:
                 score = 0
             return score
@@ -133,7 +133,6 @@ class Agent:
 
 
         score = (2000 * pieceDiff) + (netPositionScore / 2)
-        #print(score, np.reshape(game.position, (8, 8)))
 
         return score
     

@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, castlingPossible, enPassantOpportunity, reachedPositions):
+    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity, reachedPositions):
         self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
@@ -17,7 +17,7 @@ class ChessSim:
 
         self.castlingRights = castlingRights
 
-        self.castlingPossible = castlingPossible
+        self.castlingPossible = [[False, False], [False, False]]
 
         self.reachedPositions = reachedPositions
 

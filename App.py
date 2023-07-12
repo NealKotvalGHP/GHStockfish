@@ -226,7 +226,7 @@ class Chess:
     def playComputerResponse(self):
         self.chessBoard.update()
         self.computerThinking = True
-        copyOfSelf = ChessSim(deepcopy(self.position), deepcopy(self.currentTurn), deepcopy(self.castlingRights), deepcopy(self.castlingPossible), deepcopy(self.enPassantOpportunity), deepcopy(self.reachedPositions))
+        copyOfSelf = ChessSim(deepcopy(self.position), deepcopy(self.currentTurn), deepcopy(self.castlingRights), deepcopy(self.enPassantOpportunity), deepcopy(self.reachedPositions))
         self.playMove(self.agent.playBestMove(copyOfSelf))
         self.computerThinking = False
 
