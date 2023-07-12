@@ -164,7 +164,6 @@ class Agent:
                 pieceAccess = game.PIECE_ID_TRANSLATION[game.position[i]]
                 piece = pieceAccess[0]
                 pieceColor = pieceAccess[1]
-                if turn == pieceColor:
-                    for move in game.findLegalMoves(i, piece, pieceColor):
-                        allLegalMoves.append((i, move))
+                for move in game.findLegalMoves(i, piece, pieceColor):
+                    allLegalMoves.append((i, move))
         return allLegalMoves
