@@ -24,11 +24,11 @@ class Agent:
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
                 maxEval = max(maxEval, eval)
-                alpha = max(deepcopy(alpha), deepcopy(eval))
+                alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
             if depth == self.depth - 1:
-                self.nextEvaluations.append(deepcopy(maxEval))
+                self.nextEvaluations.append(maxEval)
             return maxEval
         else:
             minEval = float('inf')
@@ -38,11 +38,11 @@ class Agent:
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
                 minEval = min(minEval, eval)
-                beta = min(deepcopy(beta), deepcopy(eval))
+                beta = min(beta, eval)
                 if beta <= alpha:
                     break
             if depth == self.depth - 1:
-                self.nextEvaluations.append(deepcopy(minEval))
+                self.nextEvaluations.append(minEval)
             return minEval
 
     def evaluate(self, game):
