@@ -1,6 +1,7 @@
 from ChessSim import ChessSim
 import math
 from copy import copy
+from copy import deepcopy
 import numpy as np
 
 class Agent:
@@ -19,7 +20,7 @@ class Agent:
             maxEval = float('-inf')
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, False)
                 maxEval = max(maxEval, eval)
@@ -30,7 +31,7 @@ class Agent:
             minEval = float('inf')
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, True)
                 minEval = min(minEval, eval)
