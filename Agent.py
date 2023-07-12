@@ -1,7 +1,6 @@
 from ChessSim import ChessSim
 import math
 from copy import copy
-from copy import deepcopy
 import numpy as np
 
 class Agent:
@@ -21,7 +20,7 @@ class Agent:
             moves = self.generateAllLegalMoves(game)
             for move in moves:
                 branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
-                branch.playMove(self.convertToMove(move))
+                branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, False)
                 maxEval = max(maxEval, eval)
             if depth == self.depth - 1:
@@ -32,19 +31,12 @@ class Agent:
             moves = self.generateAllLegalMoves(game)
             for move in moves:
                 branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
-                branch.playMove(self.convertToMove(move))
+                branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, True)
                 minEval = min(minEval, eval)
             if depth == self.depth - 1:
                 self.nextEvaluations.append(minEval)
             return minEval
-
-
-    def simulate(self, path, sim):
-        for ply in range(len(path)):
-            legalMoves = self.generateAllLegalMoves(sim)
-            sim.playMove(self.convertToMove(legalMoves[path[ply]]))
-        pass
 
     def evaluate(self, game):
         score = 0
@@ -116,7 +108,7 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
-        score += pieceDiff #- (back2RanksDiff / 7) - (centerPawnsDiff / 2))
+        score += pieceDiff - (back2RanksDiff / 7) - (centerPawnsDiff / 2)
 
         return score
     
@@ -130,21 +122,22 @@ class Agent:
             self.minimax(sim, self.depth, False)
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
-        bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex])
-
+        bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
+        
         return bestMove
 
 
     # move is a 2-tuple. 3-tuple if there is promotion information. Converts to string.
-    def convertToMove(self, move):
-        
+    def convertToMove(self, move, game):
         convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
 
-        if len(move) == 3:
-            promotionType = move[2]
+        if convertedMove[3] == "8" and game.currentTurn == "w":
+            promotionType = "Q"
+        elif convertedMove[3] == "1" and game.currentTurn == "b":
+            promotionType = "Q"
         else:
             promotionType = ""
-
+        
         return convertedMove + promotionType
 
     def convertToCoordinates(self, location):
