@@ -157,13 +157,6 @@ class Agent:
         return file + rank
     
     def generateAllLegalMoves(self, game):
-        allLegalMoves = []
-        turn = game.currentTurn
-        for i in range(64):
-            if game.color(game.position[i]) == turn:
-                pieceAccess = game.PIECE_ID_TRANSLATION[game.position[i]]
-                piece = pieceAccess[0]
-                pieceColor = pieceAccess[1]
-                for move in game.findLegalMoves(i, piece, pieceColor):
-                    allLegalMoves.append((i, move))
+        allLegalMoves = [(i, move) for i in range(64) if game.color(game.position[i]) == game.currentTurn
+                        for move in game.findLegalMoves(i, *game.PIECE_ID_TRANSLATION[game.position[i]])]
         return allLegalMoves
