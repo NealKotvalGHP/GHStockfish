@@ -225,7 +225,7 @@ class Chess:
     def playComputerResponse(self):
         self.chessBoard.update()
         self.computerThinking = True
-        copyOfSelf = ChessSim(deepcopy(self.position), deepcopy(self.currentTurn), deepcopy(self.castlingRights), deepcopy(self.enPassantOpportunity), deepcopy(self.reachedPositions))
+        copyOfSelf = ChessSim(deepcopy(self.position), deepcopy(self.currentTurn), deepcopy(self.castlingRights), deepcopy(self.castlingPossible), deepcopy(self.enPassantOpportunity), deepcopy(self.reachedPositions))
         self.playMove(self.agent.playBestMove(copyOfSelf))
         self.computerThinking = False
 
@@ -956,6 +956,7 @@ class Chess:
         self.chessBoard.tag_bind(114, "<Button-1>", lambda x: self.promoteTo("B", "b"))
 
     def playMove(self, move):
+        print(move)
         originCoordinates = move[0] + move[1]
         destinationCoordinates = move[2] + move[3]
         if len(move) == 5:
@@ -981,18 +982,6 @@ class Chess:
 
         location = 8 * (7 - rankIndex) + fileIndex
         return location
-    
-    def generateAllLegalMoves(self):
-        allLegalMoves = []
-        for i in range(64):
-            if self.color(self.position[i]) == self.currentTurn:
-                piece = self.PIECE_ID_TRANSLATION[self.position[i]][0]
-                pieceColor = self.PIECE_ID_TRANSLATION[self.position[i]][1]
-                if self.currentTurn == pieceColor:
-                    allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
-            else:
-                allLegalMoves.append([])
-        return allLegalMoves
     
 game = Chess("w")
 game.run()

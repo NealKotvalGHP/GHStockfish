@@ -1,6 +1,7 @@
 from ChessSim import ChessSim
 import math
 from copy import copy
+from copy import deepcopy
 import numpy as np
 
 class Agent:
@@ -19,7 +20,7 @@ class Agent:
             maxEval = float('-inf')
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, False)
                 maxEval = max(maxEval, eval)
@@ -30,7 +31,7 @@ class Agent:
             minEval = float('inf')
             moves = self.generateAllLegalMoves(game)
             for move in moves:
-                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, True)
                 minEval = min(minEval, eval)
@@ -131,12 +132,12 @@ class Agent:
     def convertToMove(self, move, game):
         convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
 
-        if convertedMove[3] == "8" and game.currentTurn == "w":
-            promotionType = "Q"
-        elif convertedMove[3] == "1" and game.currentTurn == "b":
-            promotionType = "Q"
-        else:
-            promotionType = ""
+        promotionType = ""
+        if game.PIECE_ID_TRANSLATION[game.position[move[0]]][0] == "P":
+            if convertedMove[3] == "8" and game.currentTurn == "w":
+                promotionType = "Q"
+            elif convertedMove[3] == "1" and game.currentTurn == "b":
+                promotionType = "Q"
         
         return convertedMove + promotionType
 

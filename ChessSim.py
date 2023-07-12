@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity, reachedPositions):
+    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, castlingPossible, enPassantOpportunity, reachedPositions):
         self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
@@ -17,10 +17,7 @@ class ChessSim:
 
         self.castlingRights = castlingRights
 
-        self.castlingPossible = [
-            [False, False],
-            [False, False]
-        ]
+        self.castlingPossible = castlingPossible
 
         self.reachedPositions = reachedPositions
 
@@ -149,6 +146,7 @@ class ChessSim:
                     self.gameEndLogic()
             else:
                 print("Error: Illegal move.")
+                print(destination)
         
 
         self.selectedLocation = -1
@@ -642,32 +640,3 @@ class ChessSim:
 
         location = 8 * (7 - rankIndex) + fileIndex
         return location
-    
-    def generateAllLegalMoves(self):
-        allLegalMoves = []
-        for i in range(64):
-            if self.color(self.position[i]) == self.currentTurn:
-                piece = self.PIECE_ID_TRANSLATION[self.position[i]][0]
-                pieceColor = self.PIECE_ID_TRANSLATION[self.position[i]][1]
-                if self.currentTurn == pieceColor:
-                    allLegalMoves.append(self.findLegalMoves(i, piece, pieceColor))
-            else:
-                allLegalMoves.append([])
-        return allLegalMoves
-    
-    def playMoveReturn(self, move):
-        originCoordinates = move[0] + move[1]
-        destinationCoordinates = move[2] + move[3]
-        if len(move) == 5:
-            promotionType = move[4]
-        else:
-            promotionType = ""
-
-        origin = self.convertToLocation(originCoordinates)
-        destination = self.convertToLocation(destinationCoordinates)
-
-        simGame = copy(self)
-        
-        simGame.movePiece(origin, destination, promotionType)
-
-        return simGame
