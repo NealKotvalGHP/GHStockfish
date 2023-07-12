@@ -1,6 +1,7 @@
 from ChessSim import ChessSim
 import math
 from copy import copy
+from copy import deepcopy
 import numpy as np
 
 class Agent:
@@ -129,23 +130,10 @@ class Agent:
             self.minimax(sim, self.depth, False)
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
-        bestMove = self.convertToMove(self.generateAllLegalMoves(game)[bestMoveIndex])
+        bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex])
+
         return bestMove
 
-    
-    def selectRandomMove(self, game, legalMoves):
-        move = legalMoves[0]
-        selectedMove = ""
-        promotion = False
-        selectedMove = self.convertToMove(move)
-        if self.color == "w" and game.position[move[0]] == 1 and selectedMove[3] == "8":
-            promotion = True
-        elif self.color == "b" and game.position[move[0]] == 7 and selectedMove[3] == "1":
-            promotion = True
-        if promotion:
-            selectedMove = copy(selectedMove) + "Q"
-        
-        return selectedMove
 
     # move is a 2-tuple. 3-tuple if there is promotion information. Converts to string.
     def convertToMove(self, move):

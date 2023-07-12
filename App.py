@@ -4,7 +4,9 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import math
 from copy import copy
+from copy import deepcopy
 from Agent import Agent
+from ChessSim import ChessSim
 
 class Piece:
     def __init__(self, type, color, location, value, sufficiencyValue, image):
@@ -223,7 +225,8 @@ class Chess:
     def playComputerResponse(self):
         self.chessBoard.update()
         self.computerThinking = True
-        self.playMove(self.agent.playBestMove(self))
+        copyOfSelf = ChessSim(deepcopy(self.position), deepcopy(self.currentTurn), deepcopy(self.castlingRights), deepcopy(self.enPassantOpportunity), deepcopy(self.reachedPositions))
+        self.playMove(self.agent.playBestMove(copyOfSelf))
         self.computerThinking = False
 
     def setSelectedPiece(self, id, computerExecuted):
@@ -345,7 +348,7 @@ class Chess:
                 self.castlingRights[0] = [False, False]
             elif self.pieces[self.pieceIdToNumberTranslation[self.selectedPiece]].color == "b":
                 self.castlingRights[1] = [False, False]
-            
+
         if self.position[63] != self.PIECE_TYPE_TRANSLATION[("R", "w")]:
             self.castlingRights[0][0] = False
         if self.position[56] != self.PIECE_TYPE_TRANSLATION[("R", "w")]:
