@@ -56,13 +56,12 @@ class Agent:
 
         #win/loss
         if game.gameEnded:
-            if self.color == "w":
-                if game.gameResult == 1:
-                    score = float('inf')
-                elif game.gameResult == -1:
-                    score = float('-inf')
-                else:
-                    score = 0
+            if game.gameResult == 1:
+                score = float('inf')
+            elif game.gameResult == -1:
+                score = float('-inf')
+            else:
+                score = 0
             return score
         
         
@@ -129,7 +128,9 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
+
         score += (100 * pieceDiff) + (netPositionScore / 2)
+
 
         return score
     
