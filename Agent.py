@@ -132,13 +132,12 @@ class Agent:
     def convertToMove(self, move, game):
         convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
 
+        promotionType = ""
         if game.PIECE_ID_TRANSLATION[game.position[move[0]]][0] == "P":
             if convertedMove[3] == "8" and game.currentTurn == "w":
                 promotionType = "Q"
             elif convertedMove[3] == "1" and game.currentTurn == "b":
                 promotionType = "Q"
-            else:
-                promotionType = ""
         
         return convertedMove + promotionType
 
