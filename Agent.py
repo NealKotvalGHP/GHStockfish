@@ -130,7 +130,7 @@ class Agent:
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
         bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
-        print(self.nextEvaluations)
+        
         return bestMove
 
 
