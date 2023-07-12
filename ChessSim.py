@@ -25,6 +25,8 @@ class ChessSim:
 
         self.promotingPawn = False
 
+        self.isCastling = False
+
         self.PIECE_TYPE_TRANSLATION = {
             ("P", "w") : 1,
             ("R", "w") : 2,
@@ -272,7 +274,7 @@ class ChessSim:
         self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
         if not self.promotingPawn and not self.gameEnded:
-            if destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0:
+            if (destination >= 0 and destination < 64 and self.legalMoves.count(destination) != 0) or self.isCastling:
                 self.position[origin] = 0
                 if positionCopy[destination] != 0:
                     capture = True
@@ -302,10 +304,10 @@ class ChessSim:
                             break
                 self.enPassantOpportunity = enPassantOpportunityLocal
 
-                if self.currentTurn == "w":
+                if self.currentTurn == "w" and not self.isCastling:
                     self.moveNumber += 1
 
-                if not self.promotingPawn:
+                if not self.promotingPawn and not self.isCastling:
                     if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" or capture:
                         self.reachedPositions.clear()
                     self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
@@ -319,9 +321,10 @@ class ChessSim:
 
     def castling(self, destination):
         if self.castlingPossible[0][0] and destination == 62:
-            self.position[63] = 0
-            self.position[61] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
+            self.isCastling = True
+            self.movePiece(63, 61, "")
             self.castlingRights[0] = [False, False]
+            self.isCastling = False
         elif self.castlingPossible[0][1] and destination == 58:
             self.position[56] = 0
             self.position[59] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
