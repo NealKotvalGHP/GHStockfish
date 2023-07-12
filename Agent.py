@@ -3,6 +3,7 @@ import math
 from copy import copy
 from copy import deepcopy
 import numpy as np
+import time
 
 class Agent:
     
@@ -120,6 +121,8 @@ class Agent:
         return score
     
     def playBestMove(self, game):
+        start = time.time()
+
         self.nextEvaluations = []
         sim = copy(game)
         if self.color == "w":
@@ -130,6 +133,10 @@ class Agent:
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
         bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
+
+        end = time.time()
+
+        print(f"Move took: {end-start} seconds")
         
         return bestMove
 
