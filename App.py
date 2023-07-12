@@ -24,7 +24,7 @@ class Square:
         self.location = location
 
 class Chess:
-    def __init__(self, computerColor):
+    def __init__(self, computerColor, depth):
         self.root = Tk()
 
         self.SQUARE_WIDTH = 75
@@ -182,7 +182,8 @@ class Chess:
         self.gameEnded = False
         self.gameResult = 0
 
-        self.agent = Agent(self.computerColor, 3)
+        self.depth = depth
+        self.agent = Agent(self.computerColor, self.depth)
 
     def run(self):
         self.root.columnconfigure(0, weight=1)
@@ -956,7 +957,6 @@ class Chess:
         self.chessBoard.tag_bind(114, "<Button-1>", lambda x: self.promoteTo("B", "b"))
 
     def playMove(self, move):
-        print(move)
         originCoordinates = move[0] + move[1]
         destinationCoordinates = move[2] + move[3]
         if len(move) == 5:
@@ -983,5 +983,5 @@ class Chess:
         location = 8 * (7 - rankIndex) + fileIndex
         return location
     
-game = Chess("w")
+game = Chess("b", 3)
 game.run()

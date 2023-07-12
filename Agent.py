@@ -24,11 +24,11 @@ class Agent:
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
                 maxEval = max(maxEval, eval)
-                alpha = max(alpha, eval)
+                alpha = max(deepcopy(alpha), deepcopy(eval))
                 if beta <= alpha:
                     break
             if depth == self.depth - 1:
-                self.nextEvaluations.append(maxEval)
+                self.nextEvaluations.append(deepcopy(maxEval))
             return maxEval
         else:
             minEval = float('inf')
@@ -38,11 +38,11 @@ class Agent:
                 branch.playMove(self.convertToMove(move, branch))
                 eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
                 minEval = min(minEval, eval)
-                beta = min(beta, eval)
+                beta = min(deepcopy(beta), deepcopy(eval))
                 if beta <= alpha:
                     break
             if depth == self.depth - 1:
-                self.nextEvaluations.append(minEval)
+                self.nextEvaluations.append(deepcopy(minEval))
             return minEval
 
     def evaluate(self, game):
@@ -115,7 +115,7 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
-        score += pieceDiff - (back2RanksDiff / 7) - (centerPawnsDiff / 2)
+        score += (100 * pieceDiff) - back2RanksDiff / 70 #+ centerPawnsDiff / 20
 
         return score
     
@@ -130,7 +130,7 @@ class Agent:
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
         bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
-        
+        print(self.nextEvaluations)
         return bestMove
 
 
