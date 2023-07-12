@@ -11,7 +11,7 @@ class Agent:
         self.depth = depth
         self.nextEvaluations = []
         
-    def minimax(self, game, depth, maximizingPlayer):
+    def minimax(self, game, depth, alpha, beta, maximizingPlayer):
         if depth == 0 or game.gameEnded:
             if depth == self.depth - 1:
                 self.nextEvaluations.append(self.evaluate(game))
@@ -22,8 +22,11 @@ class Agent:
             for move in moves:
                 branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval = self.minimax(branch, depth-1, False)
+                eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
                 maxEval = max(maxEval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
             if depth == self.depth - 1:
                 self.nextEvaluations.append(maxEval)
             return maxEval
@@ -33,8 +36,11 @@ class Agent:
             for move in moves:
                 branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval = self.minimax(branch, depth-1, True)
+                eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
                 minEval = min(minEval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
             if depth == self.depth - 1:
                 self.nextEvaluations.append(minEval)
             return minEval
@@ -117,10 +123,10 @@ class Agent:
         self.nextEvaluations = []
         sim = copy(game)
         if self.color == "w":
-            self.minimax(sim, self.depth, True)
+            self.minimax(sim, self.depth, float('-inf'), float('inf'), True)
             bestEval = max(self.nextEvaluations)
         elif self.color == "b":
-            self.minimax(sim, self.depth, False)
+            self.minimax(sim, self.depth, float('-inf'), float('inf'), False)
             bestEval = min(self.nextEvaluations)
         bestMoveIndex = self.nextEvaluations.index(bestEval)
         bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)

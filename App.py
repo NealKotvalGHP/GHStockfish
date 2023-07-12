@@ -182,7 +182,7 @@ class Chess:
         self.gameEnded = False
         self.gameResult = 0
 
-        self.agent = Agent(self.computerColor, 2)
+        self.agent = Agent(self.computerColor, 3)
 
     def run(self):
         self.root.columnconfigure(0, weight=1)
