@@ -26,14 +26,11 @@ class Agent:
                 branch.playMove(self.convertToMove(move, branch))
                 eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
                 if eval > maxEval:
-                    print(eval, maxEval)
                     maxEval = eval
-                    print("new max eval: " + str(maxEval))
                     bestMove = move
                 alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
-            print(maxEval, bestMove)
             return maxEval, bestMove
 
         else:
@@ -46,12 +43,10 @@ class Agent:
                 eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
                 if eval < minEval:
                     minEval = eval
-                    print("new min eval: " + str(minEval))
                     bestMove = move
                 beta = min(beta, eval)
                 if beta <= alpha:
                     break
-            print(minEval, bestMove)
             return minEval, bestMove
 
 
@@ -138,7 +133,7 @@ class Agent:
 
 
         score = (10000 * pieceDiff) + (netPositionScore / 2)
-        print(score, np.reshape(game.position, (8, 8)))
+        #print(score, np.reshape(game.position, (8, 8)))
 
         return score
     
