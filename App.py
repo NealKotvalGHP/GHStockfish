@@ -983,5 +983,5 @@ class Chess:
         location = 8 * (7 - rankIndex) + fileIndex
         return location
     
-game = Chess("b", 4)
+game = Chess("w", 4)
 game.run()

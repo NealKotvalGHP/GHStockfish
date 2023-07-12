@@ -55,13 +55,12 @@ class Agent:
 
         #win/loss
         if game.gameEnded:
-            if self.color == "w":
-                if game.gameResult == 1:
-                    score = float('inf')
-                elif game.gameResult == -1:
-                    score = float('-inf')
-                else:
-                    score = 0
+            if game.gameResult == 1:
+                score = float('inf')
+            elif game.gameResult == -1:
+                score = float('-inf')
+            else:
+                score = 0
             return score
         
         # This function evaluates the current state of the board and returns a score
@@ -116,7 +115,7 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
-        score += (100 * pieceDiff) - back2RanksDiff / 70 + centerPawnsDiff / 20
+        score += (100 * pieceDiff) - back2RanksDiff + centerPawnsDiff / 20
 
         return score
     
