@@ -152,13 +152,13 @@ class Chess:
             3 : 3,
             4 : 3,
             5 : 9,
-            6 : 9999,
+            6 : 0,
             7 : -1,
             8 : -5,
             9 : -3,
             10 : -3,
             11 : -9,
-            12 : -9999
+            12 : 0
         }
 
         self.PIECE_TYPE_TO_SUFFICIENCY_VALUE_TRANSLATION = {
