@@ -291,7 +291,8 @@ class ChessSim:
                 else:
                     self.enPassantOpportunity = -1
                 
-                self.switchTurn()
+                if not self.isCastling:
+                    self.switchTurn()
 
 
                 enPassantOpportunityLocal = copy(self.enPassantOpportunity)
@@ -326,17 +327,20 @@ class ChessSim:
             self.castlingRights[0] = [False, False]
             self.isCastling = False
         elif self.castlingPossible[0][1] and destination == 58:
-            self.position[56] = 0
-            self.position[59] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
+            self.isCastling = True
+            self.movePiece(56, 59, "")
             self.castlingRights[0] = [False, False]
+            self.isCastling = False
         elif self.castlingPossible[1][0] and destination == 6:
-            self.position[7] = 0
-            self.position[5] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
+            self.isCastling = True
+            self.movePiece(7, 5, "")
             self.castlingRights[1] = [False, False]
+            self.isCastling = False
         elif self.castlingPossible[1][1] and destination == 2:
-            self.position[0] = 0
-            self.position[3] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
+            self.isCastling = True
+            self.movePiece(0, 3, "")
             self.castlingRights[1] = [False, False]
+            self.isCastling = False
             
         if self.PIECE_ID_TRANSLATION[self.position[self.selectedLocation]][0] == "K":
             if self.PIECE_ID_TRANSLATION[self.position[self.selectedLocation]][1] == "w":
