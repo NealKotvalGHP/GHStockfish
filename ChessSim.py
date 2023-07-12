@@ -2,7 +2,7 @@ from copy import copy
 import math
 
 class ChessSim:
-    def __init__(self, INITIAL_POSITION, turn, castlingRights, enPassantOpportunity):
+    def __init__(self, INITIAL_POSITION, startingTurn, castlingRights, enPassantOpportunity, reachedPositions):
         self.INITIAL_POSITION = INITIAL_POSITION
 
         self.position = copy(self.INITIAL_POSITION)
@@ -13,7 +13,7 @@ class ChessSim:
 
         self.enPassantOpportunity = enPassantOpportunity
 
-        self.currentTurn = turn
+        self.currentTurn = startingTurn
 
         self.castlingRights = castlingRights
 
@@ -22,7 +22,7 @@ class ChessSim:
             [False, False]
         ]
 
-        self.reachedPositions = [[self.INITIAL_POSITION, "w", self.castlingRights, self.enPassantOpportunity]]
+        self.reachedPositions = reachedPositions
 
         self.moveNumber = 1
 
@@ -58,7 +58,7 @@ class ChessSim:
             11 : ("Q", "b"),
             12 : ("K", "b")
         }
-
+        print
         self.PIECE_TYPE_TO_VALUE_TRANSLATION = {
             "P" : 1,
             "R" : 5,
@@ -105,9 +105,7 @@ class ChessSim:
     def movePiece(self, origin, destination, promotionType):
         self.selectedLocation = origin
         positionCopy = copy(self.position)
-
         capture = False
-        self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
         self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
 
         if not self.promotingPawn and not self.gameEnded:
@@ -118,13 +116,10 @@ class ChessSim:
                 self.position[destination] = positionCopy[origin]
 
                 self.castling(destination)
-                self.castling(destination)
                 
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and ((self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "w" and destination < 8) or (self.PIECE_ID_TRANSLATION[positionCopy[origin]][1] == "b" and destination >= 56)):
-                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
-                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
+                    self.promoteTo(promotionType, self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])
                 
-                self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 self.enPassant(self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1], destination)
                 if self.PIECE_ID_TRANSLATION[positionCopy[origin]][0] == "P" and abs(origin - destination) == 16:
                     self.enPassantOpportunity = math.floor((origin + destination) / 2)
@@ -152,12 +147,8 @@ class ChessSim:
                         self.reachedPositions.clear()
                     self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
                     self.gameEndLogic()
-                    if not self.gameEnded:
-                        self.printMoveNumberPhrase()
             else:
                 print("Error: Illegal move.")
-        else:
-            print("Error: Illegal move.")
         
 
         self.selectedLocation = -1
@@ -213,8 +204,6 @@ class ChessSim:
         self.reachedPositions.clear()
         self.reachedPositions.append([copy(self.position), copy(self.currentTurn), copy(self.castlingRights), copy(self.enPassantOpportunity)])
         self.gameEndLogic()
-        if not self.gameEnded:
-           self.printMoveNumberPhrase()
 
     def enPassant(self, pieceType, pieceColor, destination):
         if pieceType == "P" and self.enPassantOpportunity == destination:
@@ -231,24 +220,23 @@ class ChessSim:
                     movablePieces = True
                     break
         if self.inCheck(self.position, self.currentTurn) and not movablePieces:
-        
             if self.currentTurn == "w":
-                print("Black wins by checkmate.")
+                # Black wins by checkmate.
                 self.gameEnded = True
                 self.gameResult = -1
                 pass
             elif self.currentTurn == "b":
-                print("White wins by checkmate.")
+                # White wins by checkmate.
                 self.gameEnded = True
                 self.gameResult = 1
                 pass
         elif not movablePieces:
-            print("The game is a draw by stalemate.")
+            # The game is a draw by stalemate.
             self.gameEnded = True
             pass
         
         if len(self.reachedPositions) > 100:
-            print("The game is a draw by the 50-move rule.")
+            # The game is a draw by the 50-move rule.
             self.gameEnded = True
             pass
 
@@ -257,7 +245,7 @@ class ChessSim:
             if absolutePosition == self.reachedPositions[len(self.reachedPositions) - 1]:
                 repetitionCounter += 1
                 if repetitionCounter == 3:
-                    print("The game is a draw by threefold repetition.")
+                    # The game is a draw by threefold repetition.
                     self.gameEnded = True
                     pass
         
@@ -280,7 +268,7 @@ class ChessSim:
                 if totalSufficiencyMaterial >= 100:
                     break
         if totalSufficiencyMaterial < 100:
-            print("The game is a draw by insufficient material.")
+            # The game is a draw by insufficient material.
             self.gameEnded = True
             pass
 

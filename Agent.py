@@ -1,47 +1,43 @@
 from ChessSim import ChessSim
 import math
 from copy import copy
+from copy import deepcopy
 import numpy as np
 
 class Agent:
     
-    def __init__(self, color):
+    def __init__(self, color, depth):
         self.color = color
+        self.depth = depth
+        self.nextEvaluations = []
         
-    #minimize
-    def minimize(self, game, depth):
-        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-
-        if depth == 0 or game.gameEnded():
+    def minimax(self, game, depth, maximizingPlayer):
+        if depth == 0 or game.gameEnded:
+            if depth == self.depth - 1:
+                self.nextEvaluations.append(self.evaluate(game))
             return self.evaluate(game)
-        
-        min_val = float('-inf')
-
-        # initializing a simulation
-        for move in self.generateAllLegalMoves(sim):
-            tempSim = copy(sim)
-            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
-            eval = self.maximize(tempSim, depth-1)
-            min_eval = min(min_val, eval)
-        return min_eval
-        
-    #maximize
-    def maximize(self, game, depth):
-        #initializing a simulation
-        sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-
-        if depth == 0 or game.gameEnded():
-            return self.evaluate(game)
-        
-        max_val = float('+inf')
-
-        # initializing a simulation
-        for move in self.generateAllLegalMoves(sim):
-            tempSim = copy(sim)
-            tempSim.playMove(self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1]))
-            eval = self.maximize(tempSim, depth-1)
-            max_eval = min(max_val, eval)
-        return max_eval
+        if maximizingPlayer:
+            maxEval = float('-inf')
+            moves = self.generateAllLegalMoves(game)
+            for move in moves:
+                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch.playMove(self.convertToMove(move))
+                eval = self.minimax(branch, depth-1, False)
+                maxEval = max(maxEval, eval)
+            if depth == self.depth - 1:
+                self.nextEvaluations.append(maxEval)
+            return maxEval
+        else:
+            minEval = float('inf')
+            moves = self.generateAllLegalMoves(game)
+            for move in moves:
+                branch = ChessSim(copy(game.position), copy(game.currentTurn), copy(game.castlingRights), copy(game.enPassantOpportunity), copy(game.reachedPositions))
+                branch.playMove(self.convertToMove(move))
+                eval = self.minimax(branch, depth-1, True)
+                minEval = min(minEval, eval)
+            if depth == self.depth - 1:
+                self.nextEvaluations.append(minEval)
+            return minEval
 
 
     def simulate(self, path, sim):
@@ -61,23 +57,17 @@ class Agent:
         if game.gameEnded:
             if self.color == "w":
                 if game.gameResult == 1:
-                    score = float('+inf')
+                    score = float('inf')
                 elif game.gameResult == -1:
                     score = float('-inf')
                 else:
                     score = 0
-            else:
-                if game.gameResult == 1:
-                    score = float('-inf')
-                elif game.gameResult == -1:
-                    score = float('+inf')
-                else:
-                    score = 0
+            return score
         
         # This function evaluates the current state of the board and returns a score
         # You need to define your own evaluation function based on the specific game
 
-
+        
 
         # initialize a variable to store the net piece difference of the board
         pieceDiff = 0
@@ -87,7 +77,7 @@ class Agent:
         # print("piece diff: " + str(pieceDiff))
 
 
-
+        
         #positional advantages
 
         # all pieces on back 2 ranks
@@ -116,7 +106,7 @@ class Agent:
 
 
         # DEBUG -> print the position in the shape of chessboard for readability
-        print(np.reshape(game.position, (8, 8)))
+        # print(np.reshape(game.position, (8, 8)))
 
 
 
@@ -124,54 +114,30 @@ class Agent:
 
 
         # combine all evaluations above and weigh them into the variable "score"
+        
 
-        score = (pieceDiff - (back2RanksDiff / 7) - (centerPawnsDiff / 2))
+        score += pieceDiff #- (back2RanksDiff / 7) - (centerPawnsDiff / 2))
 
         return score
     
     def playBestMove(self, game):
-        # legalMoves = self.generateAllLegalMoves(game)
+        self.nextEvaluations = []
+        sim = copy(game)
+        if self.color == "w":
+            self.minimax(sim, self.depth, True)
+            bestEval = max(self.nextEvaluations)
+        elif self.color == "b":
+            self.minimax(sim, self.depth, False)
+            bestEval = min(self.nextEvaluations)
+        bestMoveIndex = self.nextEvaluations.index(bestEval)
+        bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex])
 
-        # scores = []
-        # for move in legalMoves:
-        #     sim = ChessSim(game.position, game.currentTurn, game.castlingRights, game.enPassantOpportunity)
-        #     sim.playMove(self.convertToCoordinates(move[0])+self.convertToCoordinates(move[1]))
-        #     scores.append(self.evaluate(sim))
-        # print(legalMoves[np.argmax(scores)])
-        # return self.convertToCoordinates(legalMoves[np.argmax(scores)][0]) + self.convertToCoordinates(legalMoves[np.argmax(scores)][1])
+        return bestMove
 
-        current_board = copy(game)
-        best_move = None
-        best_eval = float('-inf')
-
-        # Iterate over all possible moves and find the best one
-        for move in self.generateAllLegalMoves(game):
-            new_board = playMove(current_board, move)
-            eval = minimize(new_board, 2)  # Set the desired depth for the minimax search
-            if eval > best_eval:
-                best_eval = eval
-                best_move = move
-
-        # Make the best move
-        current_board = make_move(current_board, best_move)
-    
-    def selectRandomMove(self, game, legalMoves):
-        move = legalMoves[0]
-        selectedMove = ""
-        promotion = False
-        selectedMove = self.convertToMove(move)
-        if self.color == "w" and game.position[move[0]] == 1 and selectedMove[3] == "8":
-            promotion = True
-        elif self.color == "b" and game.position[move[0]] == 7 and selectedMove[3] == "1":
-            promotion = True
-        if promotion:
-            selectedMove = copy(selectedMove) + "Q"
-        
-        return selectedMove
 
     # move is a 2-tuple. 3-tuple if there is promotion information. Converts to string.
     def convertToMove(self, move):
-
+        
         convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
 
         if len(move) == 3:
@@ -193,7 +159,7 @@ class Agent:
     def generateAllLegalMoves(self, game):
         allLegalMoves = []
         for i in range(64):
-            if game.color(game.position[i]) == self.color:
+            if game.color(game.position[i]) == game.currentTurn:
                 piece = game.PIECE_ID_TRANSLATION[game.position[i]][0]
                 pieceColor = game.PIECE_ID_TRANSLATION[game.position[i]][1]
                 if game.currentTurn == pieceColor:
