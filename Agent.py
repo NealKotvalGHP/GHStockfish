@@ -11,7 +11,8 @@ class Agent:
         self.color = color
         self.depth = depth
         self.nextEvaluations = []
-        
+
+
     def minimax(self, game, depth, alpha, beta, maximizingPlayer):
         if depth == 0 or game.gameEnded:
             if depth == self.depth - 1:
@@ -64,9 +65,6 @@ class Agent:
                     score = 0
             return score
         
-        # This function evaluates the current state of the board and returns a score
-        # You need to define your own evaluation function based on the specific game
-
         
 
         # initialize a variable to store the net piece difference of the board
@@ -80,29 +78,44 @@ class Agent:
         
         #positional advantages
 
-        # all pieces on back 2 ranks
-        # positive "back2RanksDiff" means white has that much more material on their first 2 ranks (bad for white)
-        # negative means black has that much more material on their back 2 ranks (bad for black)
-        back2RanksDiff = 0
-        whiteBack2Ranks = game.position[:16]
-        blackBack2Ranks = game.position[-16:]
+        # PIECE MAPS !!!
+        # init a variable to store the score of the avaluated positions
+        netPositionScore = 0
+        idxInBoard = -1
 
-        for piece in whiteBack2Ranks:
-            # dont count the king and dont count opposite colored pieces
-            if game.PIECE_ID_TO_VALUE_TRANSLATION[piece] > 0 and game.PIECE_ID_TO_VALUE_TRANSLATION[piece] != 9999:
-                back2RanksDiff += game.PIECE_ID_TO_VALUE_TRANSLATION[piece]
+        
+        for piece in game.position:
+            idxInBoard += 1
+            pieceType = game.PIECE_ID_TRANSLATION[piece][0]
+            pieceColor = game.PIECE_ID_TRANSLATION[piece][1]
+            
+            if pieceColor == "w":
+                if pieceType == "P":
+                    netPositionScore += game.pawnWTable[idxInBoard]
+                elif pieceType == "N":
+                    netPositionScore += game.knightWTable[idxInBoard]
+                elif pieceType == "B":
+                    netPositionScore += game.bishopWTable[idxInBoard]
+                elif pieceType == "R":
+                    netPositionScore += game.rookWTable[idxInBoard]
+                elif pieceType == "Q":
+                    netPositionScore += game.queenWTable[idxInBoard]
+            else:
+                if pieceType == "P":
+                    netPositionScore -= game.pawnBTable[idxInBoard]
+                elif pieceType == "N":
+                    netPositionScore -= game.knightBTable[idxInBoard]
+                elif pieceType == "B":
+                    netPositionScore -= game.bishopBTable[idxInBoard]
+                elif pieceType == "R":
+                    netPositionScore -= game.rookBTable[idxInBoard]
+                elif pieceType == "Q":
+                    netPositionScore -= game.queenBTable[idxInBoard]
+        
 
+        
 
-        for piece in blackBack2Ranks:
-            # dont count the king and dont count opposite colored pieces
-            if game.PIECE_ID_TO_VALUE_TRANSLATION[piece] < 0 and game.PIECE_ID_TO_VALUE_TRANSLATION[piece] != -9999:
-                back2RanksDiff += game.PIECE_ID_TO_VALUE_TRANSLATION[piece]
-
-        # list of piece IDs on the 4 center squares of board + find difference
-        # positive difference is bad for white, good for black
-        # negative is bad for black, good for white
-        centerSquares = [game.position[27], game.position[28], game.position[35], game.position[36]]
-        centerPawnsDiff = centerSquares.count(1) - centerSquares.count(7)
+        # print(netPositionScore)
 
 
         # DEBUG -> print the position in the shape of chessboard for readability
@@ -116,7 +129,7 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
-        score += (100 * pieceDiff) - back2RanksDiff / 70 + centerPawnsDiff / 20
+        score += (100 * pieceDiff) + (netPositionScore / 2)
 
         return score
     

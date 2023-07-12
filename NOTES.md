@@ -1,5 +1,5 @@
 Todo for optimizing eval:
-
+- 
 
 Todo minimax:
 - alpha beta pruning
