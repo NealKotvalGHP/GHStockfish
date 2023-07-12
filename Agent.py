@@ -158,11 +158,13 @@ class Agent:
     
     def generateAllLegalMoves(self, game):
         allLegalMoves = []
+        turn = game.currentTurn
         for i in range(64):
-            if game.color(game.position[i]) == game.currentTurn:
-                piece = game.PIECE_ID_TRANSLATION[game.position[i]][0]
-                pieceColor = game.PIECE_ID_TRANSLATION[game.position[i]][1]
-                if game.currentTurn == pieceColor:
+            if game.color(game.position[i]) == turn:
+                pieceAccess = game.PIECE_ID_TRANSLATION[game.position[i]]
+                piece = pieceAccess[0]
+                pieceColor = pieceAccess[1]
+                if turn == pieceColor:
                     for move in game.findLegalMoves(i, piece, pieceColor):
                         allLegalMoves.append((i, move))
         return allLegalMoves

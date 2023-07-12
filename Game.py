@@ -2,7 +2,8 @@ from ChessSim import ChessSim
 from Agent import Agent
 from App import Chess
 
-simTest = ChessSim(INITIAL_POSITION, "w", [[True, True], [True, True]], -1)
+initial = []
+simTest = ChessSim(initial, "w", [[True, True], [True, True]], -1)
 
 print(simTest.position)
 
