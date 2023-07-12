@@ -14,37 +14,42 @@ class Agent:
         
     def minimax(self, game, depth, alpha, beta, maximizingPlayer):
         if depth == 0 or game.gameEnded:
-            if depth == self.depth - 1:
-                self.nextEvaluations.append(self.evaluate(game))
-            return self.evaluate(game)
+            return self.evaluate(game), None  # Return evaluation score and None for the best move
+
         if maximizingPlayer:
             maxEval = float('-inf')
+            bestMove = None
             moves = self.generateAllLegalMoves(game)
             for move in moves:
                 branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
-                maxEval = max(maxEval, eval)
+                eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), False)
+                if eval > maxEval:
+                    maxEval = eval
+                    bestMove = move
                 alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
-            if depth == self.depth - 1:
-                self.nextEvaluations.append(maxEval)
-            return maxEval
+
+            return maxEval, bestMove
+
         else:
             minEval = float('inf')
+            bestMove = None
             moves = self.generateAllLegalMoves(game)
             for move in moves:
                 branch = ChessSim(deepcopy(game.position), deepcopy(game.currentTurn), deepcopy(game.castlingRights), deepcopy(game.castlingPossible), deepcopy(game.enPassantOpportunity), deepcopy(game.reachedPositions))
                 branch.playMove(self.convertToMove(move, branch))
-                eval = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
-                minEval = min(minEval, eval)
+                eval, _ = self.minimax(branch, depth-1, deepcopy(alpha), deepcopy(beta), True)
+                if eval < minEval:
+                    minEval = eval
+                    bestMove = move
                 beta = min(beta, eval)
                 if beta <= alpha:
                     break
-            if depth == self.depth - 1:
-                self.nextEvaluations.append(minEval)
-            return minEval
+
+            return minEval, bestMove
+
 
     def evaluate(self, game):
         score = 0
@@ -121,27 +126,35 @@ class Agent:
     
     def playBestMove(self, game):
         start = time.time()
-
-        self.nextEvaluations = []
         sim = copy(game)
+        # if self.color == "w":
+        #     self.minimax(sim, self.depth, float('-inf'), float('inf'), True)
+        #     bestEval = max(self.nextEvaluations)
+        # elif self.color == "b":
+        #     self.minimax(sim, self.depth, float('-inf'), float('inf'), False)
+
+
+        #     bestEval = min(self.nextEvaluations)
+        # bestMoveIndex = self.nextEvaluations.index(bestEval)
+        # bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
+
+        
         if self.color == "w":
-            self.minimax(sim, self.depth, float('-inf'), float('inf'), True)
-            bestEval = max(self.nextEvaluations)
-        elif self.color == "b":
-            self.minimax(sim, self.depth, float('-inf'), float('inf'), False)
-            bestEval = min(self.nextEvaluations)
-        bestMoveIndex = self.nextEvaluations.index(bestEval)
-        bestMove = self.convertToMove(self.generateAllLegalMoves(sim)[bestMoveIndex], game)
-
+            _, bestMove = self.minimax(sim, self.depth, float('-inf'), float('inf'), True)
+        if self.color == "b":
+            _, bestMove = self.minimax(sim, self.depth, float('-inf'), float('inf'), False)
         end = time.time()
-
         print(f"Move took: {end-start} seconds")
         
-        return bestMove
+        return self.convertToMove(bestMove, game)
 
 
     # move is a 2-tuple. 3-tuple if there is promotion information. Converts to string.
     def convertToMove(self, move, game):
+
+        # print(f"Coord 1: {self.convertToCoordinates(move[0]))}")
+        # print(f"Coord 2: {self.convertToCoordinates(int(move[1]))}")
+
         convertedMove = self.convertToCoordinates(move[0]) + self.convertToCoordinates(move[1])
 
         promotionType = ""
@@ -156,7 +169,6 @@ class Agent:
     def convertToCoordinates(self, location):
         fileLabels = "abcdefgh"
         rankLabels = "12345678"
-
         file = fileLabels[location % 8]
         rank = rankLabels[7 - math.floor(location / 8)]
 
