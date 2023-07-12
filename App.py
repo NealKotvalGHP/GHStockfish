@@ -956,7 +956,7 @@ class Chess:
         self.chessBoard.tag_bind(114, "<Button-1>", lambda x: self.promoteTo("B", "b"))
 
     def playMove(self, move):
-        # print(move)
+        print(move)
         originCoordinates = move[0] + move[1]
         destinationCoordinates = move[2] + move[3]
         if len(move) == 5:
