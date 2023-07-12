@@ -115,7 +115,7 @@ class Agent:
         # combine all evaluations above and weigh them into the variable "score"
         
 
-        score += (100 * pieceDiff) - back2RanksDiff / 70 #+ centerPawnsDiff / 20
+        score += (100 * pieceDiff) - back2RanksDiff / 70 + centerPawnsDiff / 20
 
         return score
     
