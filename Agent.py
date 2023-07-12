@@ -132,7 +132,7 @@ class Agent:
         
 
 
-        score = (10000 * pieceDiff) + (netPositionScore / 2)
+        score = (2000 * pieceDiff) + (netPositionScore / 2)
         #print(score, np.reshape(game.position, (8, 8)))
 
         return score
