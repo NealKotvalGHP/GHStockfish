@@ -64,7 +64,7 @@ class ChessSim:
             "N" : 3,
             "B" : 3,
             "Q" : 9,
-            "K" : 9999
+            "K" : 0
         }
 
         self.PIECE_ID_TO_VALUE_TRANSLATION = {
