@@ -268,7 +268,7 @@ class ChessSim:
         print(self.position)
 
     def movePiece(self, origin, destination, promotionType):
-        self.selectedLocation = origin
+        self.selectedLocation = copy(origin)
         positionCopy = copy(self.position)
         capture = False
         self.legalMoves = self.findLegalMoves(origin, self.PIECE_ID_TRANSLATION[positionCopy[origin]][0], self.PIECE_ID_TRANSLATION[positionCopy[origin]][1])

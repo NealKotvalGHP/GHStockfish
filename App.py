@@ -311,7 +311,7 @@ class Chess:
         self.selectedPiece = 0
 
     def castling(self, destination):
-        if self.castlingPossible[0][0] and destination == 62:
+        if self.castlingPossible[0][0] and self.castlingRights[0][0] and destination == 62:
             self.position[63] = 0
             self.position[61] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
             self.idPositions[63] = 0
@@ -319,7 +319,7 @@ class Chess:
             self.chessBoard.moveto(10, self.SQUARE_WIDTH * (61 % 8), self.SQUARE_WIDTH * math.floor(61 / 8))
             self.pieces[10 - 1].location = 61
             self.castlingRights[0] = [False, False]
-        elif self.castlingPossible[0][1] and destination == 58:
+        elif self.castlingPossible[0][1] and self.castlingRights[0][1] and destination == 58:
             self.position[56] = 0
             self.position[59] = self.PIECE_TYPE_TRANSLATION[("R", "w")]
             self.idPositions[56] = 0
@@ -327,7 +327,7 @@ class Chess:
             self.chessBoard.moveto(9, self.SQUARE_WIDTH * (59 % 8), self.SQUARE_WIDTH * math.floor(59 / 8))
             self.pieces[9 - 1].location = 59
             self.castlingRights[0] = [False, False]
-        elif self.castlingPossible[1][0] and destination == 6:
+        elif self.castlingPossible[1][0] and self.castlingRights[1][0] and destination == 6:
             self.position[7] = 0
             self.position[5] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
             self.idPositions[7] = 0
@@ -335,7 +335,7 @@ class Chess:
             self.chessBoard.moveto(26, self.SQUARE_WIDTH * (5 % 8), self.SQUARE_WIDTH * math.floor(5 / 8))
             self.pieces[26 - 1].location = 5
             self.castlingRights[1] = [False, False]
-        elif self.castlingPossible[1][1] and destination == 2:
+        elif self.castlingPossible[1][1] and self.castlingRights[1][1] and destination == 2:
             self.position[0] = 0
             self.position[3] = self.PIECE_TYPE_TRANSLATION[("R", "b")]
             self.idPositions[0] = 0
@@ -983,5 +983,5 @@ class Chess:
         location = 8 * (7 - rankIndex) + fileIndex
         return location
     
-game = Chess("b", 3)
+game = Chess("w", 4)
 game.run()
